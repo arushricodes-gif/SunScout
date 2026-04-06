@@ -24,8 +24,8 @@ L.circleMarker(${JSON.stringify(coords[coords.length-1])},{radius:6,color:'rgba(
   }).join('\n');
 
   // Move SUNRISE label further right, SUNSET further right too
-  const sc = [lat, lon - 0.002];   // sunset — shifted right vs before
-  const rc = [lat, lon + 0.006];   // sunrise — shifted more right
+  const sc = [lat, lon - 0.004];   // sunset — shifted right vs before
+  const rc = [lat, lon + 0.004];   // sunrise — shifted more right
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
