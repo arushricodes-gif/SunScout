@@ -158,7 +158,7 @@ function updateView(p){
 
 updateView({el:${mel},az:${maz},time:'${simTime}',iso:'${simIso}'});
 drawArc();
-map.on('change',function(){moveSun(curEl,curAz);});
+map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
 // Internal animation loop
 var ai=${startIdx};
