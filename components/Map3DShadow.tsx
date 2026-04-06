@@ -78,9 +78,9 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
   <div class="tbadge">☀️ &nbsp;<span id="stm">${simTime}</span></div>
   <div class="hint">🖱 Drag · Scroll zoom · ↔ rotate · ▲▼ tilt</div>
 
-  <!-- View angle controls — top right -->
+  <!-- Set View Angle controls — top right -->
   <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:6px;align-items:center;background:rgba(255,255,255,0.95);border:2px solid rgba(224,123,0,0.25);border-radius:16px;padding:12px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
-    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;">View angle</div>
+    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;">Set View Angle</div>
     <button class="cb" onclick="aT(-10)">▲</button>
     <div style="display:flex;gap:5px;">
       <button class="cb" onclick="aR(-15)">◀</button>
