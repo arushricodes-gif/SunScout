@@ -53,7 +53,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 <link href="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.css" rel="stylesheet"/>
-<script src="https://cdn.osmbuildings.org/3.1.0/OSMBuildings-Leaflet.js"></script>
+<script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}html,body{background:#0A0C10;overflow:hidden;}
 #map{width:100%;height:600px;}
