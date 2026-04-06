@@ -14,6 +14,7 @@ interface TabExplorerProps {
   coords: [number, number];
   setCoords: (c: [number, number]) => void;
   targetDate: string;
+  setTargetDate: (d: string) => void;
   simTime: string;
   setSimTime: (t: string) => void;
   animating: boolean;
@@ -29,11 +30,35 @@ type ViewType = '3d' | '2d';
 const ORG = '#E07B00', ORG_LT = '#FFF3E0', TEXT_DARK = '#1A1A1A', TEXT_SUB = '#888888', WHITE = '#FFFFFF';
 
 export default function TabExplorer({
-  coords, setCoords, targetDate, simTime, setSimTime,
+  coords, setCoords, targetDate, setTargetDate, simTime, setSimTime,
   animating, setAnimating, solarData, loading,
 }: TabExplorerProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('location');
   const [viewType, setViewType] = useState<ViewType>('3d');
+  const [datePreset, setDatePreset] = useState('Today');
+  const [showCustomDate, setShowCustomDate] = useState(false);
+  const YEAR = new Date().getFullYear();
+  const CELESTIAL: Record<string, string | null> = {
+    'Today': null,
+    'Spring Equinox': `${YEAR}-03-20`,
+    'Summer Solstice': `${YEAR}-06-21`,
+    'Autumn Equinox': `${YEAR}-09-22`,
+    'Winter Solstice': `${YEAR}-12-21`,
+    'Custom Date': 'custom',
+  };
+  const handlePreset = (preset: string) => {
+    setDatePreset(preset);
+    if (preset === 'Custom Date') { setShowCustomDate(true); }
+    else if (preset === 'Today') {
+      setShowCustomDate(false);
+      const now = new Date();
+      setTargetDate(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`);
+    } else {
+      setShowCustomDate(false);
+      const d = CELESTIAL[preset];
+      if (d) setTargetDate(d);
+    }
+  };
 
   const [lat, lon] = coords;
   const data = solarData;
@@ -114,6 +139,17 @@ export default function TabExplorer({
           {/* Single combined control + info bar */}
           {data && (
             <div style={{ background: WHITE, border: `2px solid ${ORG_LT}`, borderRadius: 14, padding: '10px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', boxShadow: '0 2px 8px rgba(224,123,0,0.06)' }}>
+
+              {/* Season selector */}
+              <select value={datePreset} onChange={e => handlePreset(e.target.value)}
+                style={{ padding: '6px 10px', fontSize: 12, fontWeight: 700, borderRadius: 8, border: '2px solid #FFF3E0', background: '#fff', color: '#1A1A1A', cursor: 'pointer', flexShrink: 0 }}>
+                {Object.keys(CELESTIAL).map(k => <option key={k} value={k}>{k}</option>)}
+              </select>
+              {showCustomDate && (
+                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)}
+                  style={{ padding: '6px 10px', fontSize: 12, borderRadius: 8, border: '2px solid #FFF3E0', background: '#fff', color: '#1A1A1A', flexShrink: 0 }} />
+              )}
+              <div style={{ width: 1, height: 20, background: '#FFF3E0', flexShrink: 0 }} />
 
               {/* Date + sun times — left */}
               <span style={{ fontSize: 13, fontWeight: 600, color: TEXT_SUB, whiteSpace: 'nowrap' }}>

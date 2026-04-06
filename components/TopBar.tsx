@@ -134,27 +134,7 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
         </div>
 
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
-
-        {/* Date preset */}
-        <select
-          className="select-field"
-          value={datePreset}
-          onChange={e => handlePreset(e.target.value)}
-          style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 180px', minWidth: 140 }}
-        >
-          {Object.keys(CELESTIAL_DATES).map(k => (
-            <option key={k} value={k}>{k}</option>
-          ))}
-        </select>
-
-        {/* Custom date input */}
-        {showCustomDate && (
-          <input
-            type="date"
-            className="input-field"
-            value={targetDate}
-            onChange={e => setTargetDate(e.target.value)}
-            style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 150px' }}
+        style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 150px' }}
           />
         )}
 
