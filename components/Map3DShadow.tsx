@@ -53,7 +53,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 <link href="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.css" rel="stylesheet"/>
-<script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
+<script src="https://cdn.osmbuildings.org/3.1.0/OSMBuildings-Leaflet.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}html,body{background:#0A0C10;overflow:hidden;}
 #map{width:100%;height:600px;}
@@ -110,9 +110,9 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 <script>
 const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
-var _sc=(function(){try{var s=window.parent.sessionStorage.getItem('osmCam');return s?JSON.parse(s):{rot:0,tilt:0};}catch(e){return{rot:0,tilt:0};}})();
+var _sc=(function(){try{var s=sessionStorage.getItem('osmCam');return s?JSON.parse(s):{rot:0,tilt:0};}catch(e){return{rot:0,tilt:0};}})();
 let curT='s',tL=null,curRot=_sc.rot||0,curTilt=_sc.tilt||0;
-function saveCamera(){try{window.parent.sessionStorage.setItem('osmCam',JSON.stringify({rot:curRot,tilt:curTilt}));}catch(e){}}
+function saveCamera(){try{sessionStorage.setItem('osmCam',JSON.stringify({rot:curRot,tilt:curTilt}));}catch(e){}}
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:17,minZoom:15,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setRotation(curRot);map.setTilt(curTilt);

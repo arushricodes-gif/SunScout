@@ -164,8 +164,8 @@ export function getSunTimes(lat: number, lon: number, dateStr: string, tzOffsetM
     return new Date((lo.getTime() + hi.getTime()) / 2);
   };
 
-  const riseDate = bsearch(2, 11, true);   // sunrise between 02:00–11:00 local
-  const setDate  = bsearch(13, 23, false); // sunset  between 13:00–23:00 local
+  const riseDate = bsearch(0, 14, true);   // sunrise between 02:00–11:00 local
+  const setDate  = bsearch(10, 24, false); // sunset  between 13:00–23:00 local
 
   // Solar noon: ternary search for max elevation 09:00–16:00 local
   let lo = new Date(localMidMs + 9  * 3600000);
