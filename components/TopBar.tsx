@@ -69,7 +69,7 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
 
         {/* Search */}
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: 6, alignItems: 'center', flex: '1 1 200px', minWidth: 180 }}>
-          <input className="input-field" placeholder="Search city..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ flex: 1, padding: '8px 12px', fontSize: 14 }} />
+          <input className="input-field" placeholder="Search for a place..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ flex: 1, padding: '8px 12px', fontSize: 14 }} />
           <button type="submit" className="btn-primary" disabled={searching} style={{ padding: '8px 14px', whiteSpace: 'nowrap', fontSize: 13 }}>{searching ? '...' : '🔍'}</button>
           {searchError && <span style={{ color: '#c00', fontSize: 12 }}>{searchError}</span>}
         </form>
