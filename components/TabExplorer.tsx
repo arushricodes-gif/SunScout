@@ -111,65 +111,67 @@ export default function TabExplorer({
       {/* ── SUN PATH ── */}
       {viewMode === 'sunpath' && (
         <>
-          {/* Controls row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
-
-            {/* Play/Pause toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontWeight: 700, fontSize: 14 }}
-              onClick={toggleAnimating}>
-              <div style={{ width: 44, height: 24, borderRadius: 12, background: animating ? ORG : '#D1D5DB', position: 'relative', transition: 'background .2s' }}>
-                <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: animating ? 23 : 3, transition: 'left .2s' }} />
-              </div>
-              {animating ? '⏸ Pause' : '▶ Play'}
-            </div>
-
-            {/* Time sliders — only when paused */}
-            {!animating && (
-              <div style={{ display: 'flex', gap: 20, flex: 1, minWidth: 200 }}>
-                <label style={{ flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: TEXT_DARK }}>Hour: {simH}</span>
-                  <input type="range" min={0} max={23} value={simH}
-                    onChange={e => setSimHM(+e.target.value, simM)}
-                    style={{ width: '100%', accentColor: ORG }} />
-                </label>
-                <label style={{ flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: TEXT_DARK }}>Minute: {simM}</span>
-                  <input type="range" min={0} max={55} step={5} value={simM}
-                    onChange={e => setSimHM(simH, +e.target.value)}
-                    style={{ width: '100%', accentColor: ORG }} />
-                </label>
-              </div>
-            )}
-
-            {/* 3D / 2D toggle */}
-            <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
-              {([
-                { id: '3d', label: '🏙 3D Shadow' },
-                { id: '2d', label: '🗺 2D View' },
-              ] as { id: ViewType; label: string }[]).map(v => (
-                <button key={v.id} onClick={() => setViewType(v.id)} style={{
-                  background: viewType === v.id ? ORG : WHITE,
-                  color: viewType === v.id ? '#fff' : TEXT_DARK,
-                  border: `2px solid ${viewType === v.id ? ORG : '#E5E7EB'}`,
-                  borderRadius: 10, padding: '8px 14px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                }}>{v.label}</button>
-              ))}
-            </div>
-          </div>
-
-          {/* HUD bar */}
+          {/* Single combined control + info bar */}
           {data && (
-            <div style={{ background: WHITE, border: `2px solid ${ORG_LT}`, borderRadius: 14, padding: '12px 22px', marginBottom: 10, display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'center', boxShadow: '0 2px 8px rgba(224,123,0,0.06)' }}>
-              {[
-                { label: '📅', val: new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) },
-                { label: '🌅 Sunrise', val: data.sunTimes.rise },
-                { label: '🌇 Sunset',  val: data.sunTimes.set  },
-                { label: '☀️ Noon',    val: data.sunTimes.noon  },
-              ].map(item => (
-                <span key={item.label} style={{ fontSize: 14, fontWeight: 600, color: TEXT_SUB }}>
-                  {item.label} <b style={{ color: ORG, fontSize: 16 }}>{item.val}</b>
-                </span>
-              ))}
+            <div style={{ background: WHITE, border: `2px solid ${ORG_LT}`, borderRadius: 14, padding: '10px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', boxShadow: '0 2px 8px rgba(224,123,0,0.06)' }}>
+
+              {/* Date + sun times — left */}
+              <span style={{ fontSize: 13, fontWeight: 600, color: TEXT_SUB, whiteSpace: 'nowrap' }}>
+                📅 <b style={{ color: TEXT_DARK }}>{new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</b>
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: TEXT_SUB, whiteSpace: 'nowrap' }}>
+                🌅 Sunrise <b style={{ color: ORG }}>{data.sunTimes.rise}</b>
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: TEXT_SUB, whiteSpace: 'nowrap' }}>
+                🌇 Sunset <b style={{ color: ORG }}>{data.sunTimes.set}</b>
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: TEXT_SUB, whiteSpace: 'nowrap' }}>
+                ☀️ Noon <b style={{ color: ORG }}>{data.sunTimes.noon}</b>
+              </span>
+
+              <div style={{ flex: 1 }} />
+
+              {/* Time sliders — only when paused, compact */}
+              {!animating && (
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: TEXT_DARK, whiteSpace: 'nowrap' }}>
+                    Hr {simH}
+                    <input type="range" min={0} max={23} value={simH}
+                      onChange={e => setSimHM(+e.target.value, simM)}
+                      style={{ width: 80, accentColor: ORG }} />
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: TEXT_DARK, whiteSpace: 'nowrap' }}>
+                    Min {simM}
+                    <input type="range" min={0} max={55} step={5} value={simM}
+                      onChange={e => setSimHM(simH, +e.target.value)}
+                      style={{ width: 80, accentColor: ORG }} />
+                  </label>
+                </div>
+              )}
+
+              {/* Play/Pause */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap' }}
+                onClick={toggleAnimating}>
+                <div style={{ width: 40, height: 22, borderRadius: 11, background: animating ? ORG : '#D1D5DB', position: 'relative', transition: 'background .2s', flexShrink: 0 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: animating ? 21 : 3, transition: 'left .2s' }} />
+                </div>
+                {animating ? '⏸ Pause' : '▶ Play'}
+              </div>
+
+              <div style={{ width: 1, height: 24, background: ORG_LT, flexShrink: 0 }} />
+
+              {/* 3D / 2D toggle */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                {([{ id: '3d', label: '🏙 3D' }, { id: '2d', label: '🗺 2D' }] as { id: ViewType; label: string }[]).map(v => (
+                  <button key={v.id} onClick={() => setViewType(v.id)} style={{
+                    background: viewType === v.id ? ORG : WHITE,
+                    color: viewType === v.id ? '#fff' : TEXT_DARK,
+                    border: `2px solid ${viewType === v.id ? ORG : '#E5E7EB'}`,
+                    borderRadius: 8, padding: '6px 12px', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+                  }}>{v.label}</button>
+                ))}
+              </div>
+
             </div>
           )}
 
