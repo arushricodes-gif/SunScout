@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import TabGuide from '@/components/TabGuide';
 import TabExplorer from '@/components/TabExplorer';
@@ -25,22 +25,15 @@ export interface PathPoint {
   time: string; el: number; az: number; iso: string;
 }
 
-// Read timezone offset synchronously from browser — always correct, no API needed
-// Returns minutes east of UTC. IST = +330, EST = -300, UTC = 0
-const TZ_OFFSET = typeof window !== 'undefined' ? -new Date().getTimezoneOffset() : 0;
-
-// Get today's date in LOCAL time (not UTC)
 function getLocalDateStr() {
   const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 }
 
 export default function Home() {
   const [activeTab, setActiveTab]   = useState(0);
   const [coords, setCoords]         = useState<[number, number]>([51.505, -0.09]);
+  const [tzOffset, setTzOffset]     = useState(0);
   const [targetDate, setTargetDate] = useState(getLocalDateStr);
   const [simTime, setSimTime]       = useState(() => {
     const n = new Date();
@@ -50,7 +43,6 @@ export default function Home() {
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [loading, setLoading]     = useState(false);
 
-  // GPS on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -60,21 +52,41 @@ export default function Home() {
     }
   }, []);
 
-  const fetchSolar = useCallback(async (st: string) => {
-    setLoading(true);
-    try {
-      const url = `/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${TZ_OFFSET}&simTime=${st}`;
-      const r    = await fetch(url);
-      const data = await r.json();
-      setSolarData(data);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchAll() {
+      let tz = Math.round(coords[1] / 15) * 60;
+      try {
+        const r = await fetch(`/api/timezone?lat=${coords[0]}&lon=${coords[1]}`);
+        const d = await r.json();
+        if (typeof d.offsetMinutes === 'number') tz = d.offsetMinutes;
+      } catch {}
+
+      if (cancelled) return;
+      setTzOffset(tz);
+
+      setLoading(true);
+      try {
+        const url = `/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`;
+        const r   = await fetch(url);
+        const data = await r.json();
+        if (!cancelled) setSolarData(data);
+      } catch (e) { console.error(e); }
+      finally { if (!cancelled) setLoading(false); }
+    }
+
+    fetchAll();
+    return () => { cancelled = true; };
   }, [coords[0], coords[1], targetDate]);
 
-  useEffect(() => { fetchSolar(simTime); }, [coords[0], coords[1], targetDate]);
-
   useEffect(() => {
-    if (!animating) fetchSolar(simTime);
+    if (!animating) {
+      fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tzOffset}&simTime=${simTime}`)
+        .then(r => r.json())
+        .then(data => setSolarData(data))
+        .catch(() => {});
+    }
   }, [simTime, animating]);
 
   return (
@@ -116,7 +128,7 @@ export default function Home() {
               setAnimating={setAnimating}
               solarData={solarData}
               loading={loading}
-              tzOffset={TZ_OFFSET}
+              tzOffset={tzOffset}
             />
           )}
         </div>

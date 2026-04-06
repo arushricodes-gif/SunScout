@@ -7,18 +7,17 @@ export async function GET(req: NextRequest) {
 
   try {
     const r = await fetch(
-      `https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`
+      `https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`,
+      { signal: AbortSignal.timeout(3000) }
     );
     const data = await r.json();
     const tz = data.timeZone;
-
     const now = new Date();
     const utcStr   = now.toLocaleString('en-US', { timeZone: 'UTC' });
     const localStr = now.toLocaleString('en-US', { timeZone: tz });
     const offsetMinutes = Math.round(
       (new Date(localStr).getTime() - new Date(utcStr).getTime()) / 60000
     );
-
     return NextResponse.json({ tz, offsetMinutes });
   } catch {
     const offsetMinutes = Math.round(lon / 15) * 60;
