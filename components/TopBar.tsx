@@ -73,19 +73,6 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
       top: 0,
       zIndex: 100,
     }}>
-      {/* Top row: logo + search + gps + date + tabs */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '10px 20px',
-        flexWrap: 'wrap',
-      }}>
-        {/* Logo */}
-        <div style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: 28,
-          color: ORG,
           letterSpacing: 3,
           lineHeight: 1,
           whiteSpace: 'nowrap',
