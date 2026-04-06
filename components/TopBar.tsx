@@ -134,8 +134,6 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
         </div>
 
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
-        style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 150px' }}
-          />
         )}
 
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
