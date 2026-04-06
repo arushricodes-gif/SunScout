@@ -96,7 +96,7 @@ export default function Home() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
-        () => alert('GPS not available')
+        () => {}
       );
     }
   };
