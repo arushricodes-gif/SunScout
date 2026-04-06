@@ -35,11 +35,11 @@ export default function TabExplorer({
 }: TabExplorerProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('location');
   const [viewType, setViewType] = useState<ViewType>('3d');
-  const [datePreset, setDatePreset] = useState('Today');
+  const [datePreset, setDatePreset] = useState('Select Season');
   const [showCustomDate, setShowCustomDate] = useState(false);
   const YEAR = new Date().getFullYear();
   const CELESTIAL: Record<string, string | null> = {
-    'Today': null,
+    'Select Season': null,
     'Spring Equinox': `${YEAR}-03-20`,
     'Summer Solstice': `${YEAR}-06-21`,
     'Autumn Equinox': `${YEAR}-09-22`,
@@ -49,7 +49,7 @@ export default function TabExplorer({
   const handlePreset = (preset: string) => {
     setDatePreset(preset);
     if (preset === 'Custom Date') { setShowCustomDate(true); }
-    else if (preset === 'Today') {
+    else if (preset === 'Select Season') {
       setShowCustomDate(false);
       const now = new Date();
       setTargetDate(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`);
