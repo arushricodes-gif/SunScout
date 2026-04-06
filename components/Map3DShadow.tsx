@@ -155,7 +155,7 @@ function updateView(p){
 
 updateView({el:${mel},az:${maz},time:'${simTime}',iso:'${simIso}'});
 drawArc();
-map.on('change',function(){moveSun(curEl>-5?curEl:curEl,curAz);drawArc();});
+map.on('change',function(){moveSun(curEl,curAz);});
 
 // Internal animation loop
 var ai=${startIdx};
