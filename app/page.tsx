@@ -30,10 +30,14 @@ function getLocalDateStr() {
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 }
 
+function tzFromLon(lon: number): number {
+  return Math.round(lon / 15) * 60;
+}
+
 export default function Home() {
   const [activeTab, setActiveTab]   = useState(0);
   const [coords, setCoords]         = useState<[number, number]>([51.505, -0.09]);
-  const [tzOffset, setTzOffset]     = useState(0);
+  const [tzOffset, setTzOffset]     = useState(() => tzFromLon(-0.09));
   const [targetDate, setTargetDate] = useState(getLocalDateStr);
   const [simTime, setSimTime]       = useState(() => {
     const n = new Date();
@@ -53,30 +57,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const tz = tzFromLon(coords[1]);
+    setTzOffset(tz);
+
     let cancelled = false;
+    setLoading(true);
 
-    async function fetchAll() {
-      let tz = Math.round(coords[1] / 15) * 60;
-      try {
-        const r = await fetch(`/api/timezone?lat=${coords[0]}&lon=${coords[1]}`);
-        const d = await r.json();
-        if (typeof d.offsetMinutes === 'number') tz = d.offsetMinutes;
-      } catch {}
+    fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`)
+      .then(r => r.json())
+      .then(data => { if (!cancelled) setSolarData(data); })
+      .catch(e => console.error(e))
+      .finally(() => { if (!cancelled) setLoading(false); });
 
-      if (cancelled) return;
-      setTzOffset(tz);
-
-      setLoading(true);
-      try {
-        const url = `/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`;
-        const r   = await fetch(url);
-        const data = await r.json();
-        if (!cancelled) setSolarData(data);
-      } catch (e) { console.error(e); }
-      finally { if (!cancelled) setLoading(false); }
-    }
-
-    fetchAll();
     return () => { cancelled = true; };
   }, [coords[0], coords[1], targetDate]);
 
