@@ -75,16 +75,11 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     <button class="tile-btn on" id="bs" onclick="setT('s')">🗺 Street</button>
     <button class="tile-btn" id="bsat" onclick="setT('sat')">🛰 Satellite</button>
   </div>
-  <div class="hud" style="top:14px;right:14px;min-width:160px;">
-    <div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#4B5563;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05);">OSM Buildings</div>
-    🌅 Sunrise <b>${sunTimes.rise}</b><br>
-    🌇 Sunset &nbsp;<b>${sunTimes.set}</b><br>
-    ☀️ Elev &nbsp;&nbsp;&nbsp;<b id="hel">${mel}°</b><br>
-    🕐 Time &nbsp;&nbsp;&nbsp;<b id="htm">${simTime}</b>
-  </div>
   <div class="tbadge">☀️ &nbsp;<span id="stm">${simTime}</span></div>
   <div class="hint">🖱 Drag · Scroll zoom · ↔ rotate · ▲▼ tilt</div>
-  <div style="position:absolute;top:14px;right:170px;z-index:25;display:flex;flex-direction:column;gap:6px;align-items:center;background:rgba(255,255,255,0.95);border:2px solid rgba(224,123,0,0.25);border-radius:16px;padding:12px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+
+  <!-- View angle controls — top right -->
+  <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:6px;align-items:center;background:rgba(255,255,255,0.95);border:2px solid rgba(224,123,0,0.25);border-radius:16px;padding:12px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
     <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;">View angle</div>
     <button class="cb" onclick="aT(-10)">▲</button>
     <div style="display:flex;gap:5px;">
@@ -94,7 +89,9 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     </div>
     <button class="cb" onclick="aT(10)">▼</button>
   </div>
-  <div style="position:absolute;top:198px;right:176px;z-index:25;width:42px;height:42px;pointer-events:none;background:rgba(7,9,16,.88);border:1px solid rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+
+  <!-- Compass — below view angle box -->
+  <div style="position:absolute;top:198px;right:22px;z-index:25;width:42px;height:42px;pointer-events:none;background:rgba(7,9,16,.88);border:1px solid rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;">
     <svg id="cmp" width="34" height="34" viewBox="-20 -20 40 40" style="transition:transform .2s;">
       <polygon points="0,-12 3,0 0,3 -3,0" fill="#E74C3C"/>
       <polygon points="0,12 3,0 0,-3 -3,0" fill="#374151"/>
@@ -113,8 +110,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 <script>
 const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
-const _saved = (function(){try{const s=sessionStorage.getItem('osmCam');return s?JSON.parse(s):{rot:0,tilt:0};}catch(e){return {rot:0,tilt:0};}})();
-let curT='s',tL=null,curRot=_saved.rot,curTilt=_saved.tilt;
+let curT='s',tL=null,curRot=0,curTilt=0;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:17,minZoom:15,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date('${simIso}'));
@@ -123,11 +119,11 @@ map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}
 map.addGeoJSON(${obsGj});
 
 function setT(m){if(m===curT)return;curT=m;if(tL)map.remove(tL);tL=map.addMapTiles(TILES[m]);document.getElementById('bs').className='tile-btn'+(m==='s'?' on':'');document.getElementById('bsat').className='tile-btn'+(m==='sat'?' on':'');}
-function saveCamera(){try{sessionStorage.setItem('osmCam',JSON.stringify({rot:curRot,tilt:curTilt}));}catch(e){}}
-function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();saveCamera();}
-function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();saveCamera();}
-function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();saveCamera();}
-map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();saveCamera();}catch(e){}});
+function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}
+function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();}
+function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();}
+map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
+
 const allPts=${allPtsJs};
 const sunEl=document.getElementById('sun');
 let curEl=${mel},curAz=${maz};
