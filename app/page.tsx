@@ -44,20 +44,17 @@ export default function Home() {
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [loading, setLoading]     = useState(false);
 
-  const applyGps = (lat: number, lon: number) => {
-    setIsGpsCoords(true);
-    setCoords([lat, lon]);
-  };
-
-  // Try GPS on mount
+  // GPS on mount
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      pos => applyGps(pos.coords.latitude, pos.coords.longitude),
-      () => {}
-    );
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => { setCoords([pos.coords.latitude, pos.coords.longitude]); setIsGpsCoords(true); },
+        () => {}
+      );
+    }
   }, []);
 
-  // Fetch tz then solar when coords/date changes
+  // Fetch timezone then solar whenever coords/date changes
   useEffect(() => {
     let cancelled = false;
     async function fetchAll() {
@@ -86,6 +83,7 @@ export default function Home() {
     return () => { cancelled = true; };
   }, [coords[0], coords[1], targetDate, isGpsCoords]);
 
+  // Refetch simPos when paused and time changes
   useEffect(() => {
     if (!animating) {
       fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tzOffset}&simTime=${simTime}`)
@@ -94,13 +92,13 @@ export default function Home() {
   }, [simTime, animating]);
 
   const handleSetCoords = (c: [number, number]) => { setIsGpsCoords(false); setCoords(c); };
-
   const handleGps = () => {
-    navigator.geolocation.getCurrentPosition(
-      pos => applyGps(pos.coords.latitude, pos.coords.longitude),
-      err => console.error('GPS error', err.code, err.message),
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
+        () => alert('GPS not available')
+      );
+    }
   };
 
   return (

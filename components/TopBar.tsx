@@ -1,4 +1,5 @@
 'use client';
+// components/TopBar.tsx — full-width top bar replacing the sidebar
 
 import { useState } from 'react';
 
@@ -13,12 +14,12 @@ interface TopBarProps {
 }
 
 const CELESTIAL_DATES: Record<string, string | null> = {
-  'Today': null,
-  'Spring Equinox': `${new Date().getFullYear()}-03-20`,
-  'Summer Solstice': `${new Date().getFullYear()}-06-21`,
-  'Autumn Equinox': `${new Date().getFullYear()}-09-22`,
-  'Winter Solstice': `${new Date().getFullYear()}-12-21`,
-  'Custom Date': 'custom',
+  'Today':                           null,
+  '🌸 Spring Equinox':  `${new Date().getFullYear()}-03-20`,
+  '☀️ Summer Solstice': `${new Date().getFullYear()}-06-21`,
+  '🍂 Autumn Equinox':  `${new Date().getFullYear()}-09-22`,
+  '❄️ Winter Solstice': `${new Date().getFullYear()}-12-21`,
+  '📅 Custom Date':     'custom',
 };
 
 const ORG = '#E07B00';
@@ -30,8 +31,8 @@ const TEXT_SUB = '#888888';
 export default function TopBar({ coords, setCoords, targetDate, setTargetDate, onGpsClick, activeTab, setActiveTab }: TopBarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [datePreset, setDatePreset] = useState('Today');
+  const [searching, setSearching]     = useState(false);
+  const [datePreset, setDatePreset]   = useState('Today');
   const [showCustomDate, setShowCustomDate] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -50,7 +51,7 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
 
   const handlePreset = (preset: string) => {
     setDatePreset(preset);
-    if (preset === 'Custom Date') {
+    if (preset === 'custom' || preset === '📅 Custom Date') {
       setShowCustomDate(true);
     } else if (preset === 'Today') {
       setShowCustomDate(false);
@@ -63,56 +64,122 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
     }
   };
 
-  const SunLogo = () => (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="18" y1="2" x2="18" y2="8" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-      <line x1="18" y1="28" x2="18" y2="34" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-      <line x1="2" y1="18" x2="8" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-      <line x1="28" y1="18" x2="34" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-      <line x1="6.1" y1="6.1" x2="10.3" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="25.7" y1="6.1" x2="21.5" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="6.1" y1="29.9" x2="10.3" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="25.7" y1="29.9" x2="21.5" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-      <circle cx="18" cy="18" r="9" fill="#FFF3E0" stroke="#F39C12" strokeWidth="1.5"/>
-      <circle cx="18" cy="18" r="6.5" fill="#E07B00"/>
-      <circle cx="15.5" cy="15.5" r="2" fill="rgba(255,255,255,0.3)"/>
-    </svg>
-  );
-
   return (
-    <div style={{ background: WHITE, borderBottom: `2px solid ${ORG_LT}`, boxShadow: '0 2px 16px rgba(224,123,0,0.08)', position: 'sticky', top: 0, zIndex: 100 }}>
-      <div style={{ background: '#FFF8F0', borderBottom: '1px solid rgba(224,123,0,0.2)', padding: '4px 20px', fontSize: 12, fontWeight: 600, color: '#888', textAlign: 'center' }}>
-        💻 Best viewed on desktop — not suitable for mobile
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 20px', flexWrap: 'wrap' }}>
-        <div onClick={() => setActiveTab(0)} style={{ cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10, userSelect: 'none' }}>
-          <SunLogo />
-          <div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: ORG, letterSpacing: 3, lineHeight: 1 }}>SUN SCOUT</div>
-            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 9, fontWeight: 600, color: '#aaa', letterSpacing: 3, textTransform: 'uppercase' }}>Visualize the Light</div>
-          </div>
-        </div>
+    <div style={{
+      background: WHITE,
+      borderBottom: `2px solid ${ORG_LT}`,
+      boxShadow: '0 2px 16px rgba(224,123,0,0.08)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+    }}>
+      {/* Top row: logo + search + gps + date + tabs */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '10px 20px',
+        flexWrap: 'wrap',
+      }}>
+        {/* Logo */}
+        <div style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: 28,
+          color: ORG,
+          letterSpacing: 3,
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}>☀️ SUN SCOUT</div>
+
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
+
+        {/* Search */}
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: 6, alignItems: 'center', flex: '1 1 200px', minWidth: 180 }}>
-          <input className="input-field" placeholder="Search city..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ flex: 1, padding: '8px 12px', fontSize: 14 }} />
-          <button type="submit" className="btn-primary" disabled={searching} style={{ padding: '8px 14px', whiteSpace: 'nowrap', fontSize: 13 }}>{searching ? '...' : '🔍'}</button>
+          <input
+            className="input-field"
+            placeholder="Search city…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{ flex: 1, padding: '8px 12px', fontSize: 14 }}
+          />
+          <button type="submit" className="btn-primary" disabled={searching} style={{ padding: '8px 14px', whiteSpace: 'nowrap', fontSize: 13 }}>
+            {searching ? '…' : '🔍'}
+          </button>
           {searchError && <span style={{ color: '#c00', fontSize: 12 }}>{searchError}</span>}
         </form>
-        <button className="btn-primary" onClick={onGpsClick} style={{ padding: '8px 14px', fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0 }}>📍 My Location</button>
-        <div style={{ background: ORG_LT, border: '1px solid rgba(224,123,0,0.2)', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, color: TEXT_DARK, whiteSpace: 'nowrap', flexShrink: 0 }}>
+
+        {/* GPS */}
+        <button
+          className="btn-primary"
+          onClick={onGpsClick}
+          style={{ padding: '8px 14px', fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0 }}
+        >
+          📍 My Location
+        </button>
+
+        {/* Coords pill */}
+        <div style={{
+          background: ORG_LT,
+          border: `1px solid rgba(224,123,0,0.2)`,
+          borderRadius: 8,
+          padding: '6px 12px',
+          fontSize: 12,
+          fontWeight: 700,
+          color: TEXT_DARK,
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}>
           📌 {coords[0].toFixed(3)}°, {coords[1].toFixed(3)}°
         </div>
+
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
-        <select className="select-field" value={datePreset} onChange={e => handlePreset(e.target.value)} style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 160px', minWidth: 130 }}>
-          {Object.keys(CELESTIAL_DATES).map(k => <option key={k} value={k}>{k}</option>)}
+
+        {/* Date preset */}
+        <select
+          className="select-field"
+          value={datePreset}
+          onChange={e => handlePreset(e.target.value)}
+          style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 180px', minWidth: 140 }}
+        >
+          {Object.keys(CELESTIAL_DATES).map(k => (
+            <option key={k} value={k}>{k}</option>
+          ))}
         </select>
+
+        {/* Custom date input */}
         {showCustomDate && (
-          <input type="date" className="input-field" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 150px' }} />
+          <input
+            type="date"
+            className="input-field"
+            value={targetDate}
+            onChange={e => setTargetDate(e.target.value)}
+            style={{ padding: '8px 12px', fontSize: 13, flex: '0 1 150px' }}
+          />
         )}
+
         <div style={{ width: 1, height: 32, background: ORG_LT, flexShrink: 0 }} />
+
+        {/* Tab buttons */}
         <div style={{ display: 'flex', gap: 4, background: ORG_LT, borderRadius: 12, padding: 4, flexShrink: 0 }}>
           {['📖 Guide', '☀️ Sun Scout'].map((label, i) => (
-            <button key={i} onClick={() => setActiveTab(i)} style={{ background: activeTab === i ? ORG : 'transparent', color: activeTab === i ? WHITE : TEXT_SUB, border: 'none', borderRadius: 9, padding: '7px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: 'nowrap', transition: 'all .15s' }}>{label}</button>
+            <button
+              key={i}
+              onClick={() => setActiveTab(i)}
+              style={{
+                background: activeTab === i ? ORG : 'transparent',
+                color: activeTab === i ? WHITE : TEXT_SUB,
+                border: 'none',
+                borderRadius: 9,
+                padding: '7px 16px',
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: 'pointer',
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                whiteSpace: 'nowrap',
+                transition: 'all .15s',
+              }}
+            >{label}</button>
           ))}
         </div>
       </div>
