@@ -73,8 +73,6 @@ export default function TopBar({ coords, setCoords, targetDate, setTargetDate, o
       top: 0,
       zIndex: 100,
     }}>
-      <div style={{background:"#FFF8F0",borderBottom:"1px solid rgba(224,123,0,0.2)",padding:"5px 20px",fontSize:12,fontWeight:600,color:"#888",textAlign:"center"}}>💻 Best viewed on desktop — some features may not work on mobile</div>
-      <div style={{background:"#FFF8F0",borderBottom:"1px solid rgba(224,123,0,0.2)",padding:"5px 20px",fontSize:12,fontWeight:600,color:"#888",textAlign:"center"}}>💻 Best viewed on desktop - Not suitable for the mobile screen</div>
       {/* Top row: logo + search + gps + date + tabs */}
       <div style={{
         display: 'flex',
