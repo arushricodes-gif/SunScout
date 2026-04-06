@@ -108,6 +108,7 @@ export default function Home() {
         setCoords={handleSetCoords}
         targetDate={targetDate}
             setTargetDate={setTargetDate}
+            setTargetDate={setTargetDate}
         setTargetDate={setTargetDate}
         onGpsClick={handleGps}
         activeTab={activeTab}
@@ -120,6 +121,7 @@ export default function Home() {
             coords={coords}
             setCoords={handleSetCoords}
             targetDate={targetDate}
+            setTargetDate={setTargetDate}
             setTargetDate={setTargetDate}
             simTime={simTime}
             setSimTime={setSimTime}
