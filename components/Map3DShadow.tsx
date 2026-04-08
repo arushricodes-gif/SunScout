@@ -112,7 +112,7 @@ const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
 let curT='s',tL=null,curRot=0,curTilt=0;
 
-const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:17,minZoom:15,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
+const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:15,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date('${simIso}'));
 tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
