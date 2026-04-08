@@ -108,7 +108,6 @@ export default function Home() {
         setCoords={handleSetCoords}
         targetDate={targetDate}
             setTargetDate={setTargetDate}
-        setTargetDate={setTargetDate}
         onGpsClick={handleGps}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
