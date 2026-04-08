@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import TabGuide from '@/components/TabGuide';
 import TabExplorer from '@/components/TabExplorer';
 import TopBar from '@/components/TopBar';
@@ -43,9 +43,8 @@ export default function Home() {
   const [animating, setAnimating] = useState(true);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [loading, setLoading]     = useState(false);
-  const tzRef = useRef(tzOffset);
-  tzRef.current = tzOffset;
 
+  // GPS on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -55,6 +54,7 @@ export default function Home() {
     }
   }, []);
 
+  // Fetch timezone then solar whenever coords/date changes
   useEffect(() => {
     let cancelled = false;
     async function fetchAll() {
@@ -71,7 +71,6 @@ export default function Home() {
       }
       if (cancelled) return;
       setTzOffset(tz);
-      tzRef.current = tz;
       setLoading(true);
       try {
         const url = `/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`;
@@ -84,21 +83,22 @@ export default function Home() {
     return () => { cancelled = true; };
   }, [coords[0], coords[1], targetDate, isGpsCoords]);
 
+  // Refetch simPos when paused and time changes
   useEffect(() => {
     if (!animating) {
-      const tz = tzRef.current;
-      fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`)
+      fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tzOffset}&simTime=${simTime}`)
         .then(r => r.json()).then(data => setSolarData(data)).catch(() => {});
     }
   }, [simTime, animating]);
 
   const handleSetCoords = (c: [number, number]) => { setIsGpsCoords(false); setCoords(c); };
   const handleGps = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
-      () => {}
-    );
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
+        () => {}
+      );
+    }
   };
 
   return (
@@ -119,7 +119,6 @@ export default function Home() {
             coords={coords}
             setCoords={handleSetCoords}
             targetDate={targetDate}
-            setTargetDate={setTargetDate}
             simTime={simTime}
             setSimTime={setSimTime}
             animating={animating}
