@@ -11,10 +11,9 @@ interface Map3DShadowProps {
   simPos: { sunLat: number; sunLon: number; shadowLat: number; shadowLon: number; azimuth: number; elevation: number };
   sunTimes: { rise: string; set: string; noon: string };
   animating: boolean;
-  onLocationSelect?: (lat: number, lon: number) => void;
 }
 
-export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating, onLocationSelect }: Map3DShadowProps) {
+export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating }: Map3DShadowProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const html = useMemo(() => {
@@ -81,7 +80,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 
   <!-- View angle controls — top right -->
   <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:6px;align-items:center;background:rgba(255,255,255,0.95);border:2px solid rgba(224,123,0,0.25);border-radius:16px;padding:12px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
-    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;">View angle</div>
+    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;"> Set View angle</div>
     <button class="cb" onclick="aT(-10)">▲</button>
     <div style="display:flex;gap:5px;">
       <button class="cb" onclick="aR(-15)">◀</button>
@@ -179,16 +178,6 @@ window.addEventListener('message',function(e){
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0, 10) : '']);
-
-  useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (e.data?.type === 'map3d_click' && onLocationSelect) {
-        onLocationSelect(e.data.lat, e.data.lon);
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, [onLocationSelect]);
 
   useEffect(() => {
     iframeRef.current?.contentWindow?.postMessage({ type: 'setAnimating', value: animating }, '*');
