@@ -27,7 +27,6 @@ type ViewMode = 'sunpath' | 'year';
 type ViewType = '3d' | '2d';
 
 const ORG = '#E07B00', ORG_LT = '#FFF3E0', TEXT_DARK = '#1A1A1A', TEXT_SUB = '#888888', WHITE = '#FFFFFF';
-
 const YEAR = new Date().getFullYear();
 const CELESTIAL: Record<string, string | null> = {
   'Select Season': null,
@@ -43,9 +42,8 @@ export default function TabExplorer({
   animating, setAnimating, solarData, loading,
 }: TabExplorerProps) {
   const [viewMode, setViewMode]             = useState<ViewMode>('sunpath');
-  const [viewType, setViewType]             = useState<ViewType>('2d'); // start on 2D
-  const [locationSet, setLocationSet] = useState(false);
-  const [mapKey] = useState(() => Math.random().toString()); // stable — never changes
+  const [viewType, setViewType]             = useState<ViewType>('2d');
+  const [locationSet, setLocationSet]       = useState(false);
   const [datePreset, setDatePreset]         = useState('Select Season');
   const [showCustomDate, setShowCustomDate] = useState(false);
 
@@ -87,17 +85,16 @@ export default function TabExplorer({
     broadcastMsg({ type: 'setAnimating', value: next });
   };
 
-  // When user double-clicks to set location — switch to 3D automatically
   const handleLocationSelect = (la: number, lo: number) => {
     setCoords([la, lo]);
     setLocationSet(true);
-    setTimeout(() => setViewType('3d'), 100); // slight delay so data loads first
+    setTimeout(() => setViewType('3d'), 200);
   };
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
-      {/* View mode selector */}
+      {/* View mode */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         {([
           { id: 'sunpath', label: '🌞 Sun Path' },
@@ -109,8 +106,7 @@ export default function TabExplorer({
             border: `2px solid ${viewMode === v.id ? ORG : '#E5E7EB'}`,
             borderRadius: 12, padding: '8px 18px', cursor: 'pointer',
             fontWeight: 700, fontSize: 15,
-            color: viewMode === v.id ? ORG : TEXT_DARK,
-            transition: 'all .15s',
+            color: viewMode === v.id ? ORG : TEXT_DARK, transition: 'all .15s',
           }}>
             <input type="radio" style={{ display: 'none' }} checked={viewMode === v.id} onChange={() => setViewMode(v.id)} />
             {v.label}
@@ -118,18 +114,18 @@ export default function TabExplorer({
         ))}
       </div>
 
-      {/* Below-horizon warning */}
-      {el <= 0 && data && viewMode === 'sunpath' && (
+      {/* Below horizon warning */}
+      {el <= 0 && data && viewMode === 'sunpath' && locationSet && (
         <div style={{ background: '#FFF8F0', border: '1px solid rgba(224,123,0,0.3)', borderRadius: 12, padding: '12px 18px', marginBottom: 12, fontSize: 15 }}>
           🌙 Sun is below the horizon at {simTime} — sunrise {data.sunTimes.rise}, sunset {data.sunTimes.set}.
         </div>
       )}
 
-      {/* ── SUN PATH ── */}
+      {/* SUN PATH */}
       {viewMode === 'sunpath' && (
         <>
-          {/* Info + controls bar — only show after location is set */}
-          {data && (
+          {/* Controls bar — only after location set */}
+          {locationSet && data && (
             <div style={{ background: WHITE, border: `2px solid ${ORG_LT}`, borderRadius: 14, padding: '10px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', boxShadow: '0 2px 8px rgba(224,123,0,0.06)' }}>
 
               <select value={datePreset} onChange={e => handlePreset(e.target.value)}
@@ -186,26 +182,24 @@ export default function TabExplorer({
             </div>
           )}
 
-          {loading && <div style={{ textAlign: 'center', padding: 40, color: ORG, fontWeight: 700 }}>☀️ Computing sun path…</div>}
+          {loading && locationSet && <div style={{ textAlign: 'center', padding: 40, color: ORG, fontWeight: 700 }}>☀️ Computing sun path…</div>}
 
-          {/* 2D map — shown when viewType is 2d OR no location set yet */}
-          <div style={{display: (!locationSet || viewType === '2d') ? 'block' : 'none'}}>
-          {true && (
+          {/* 2D map — always mounted, hidden when 3D active */}
+          <div style={{ display: (!locationSet || viewType === '2d') ? 'block' : 'none' }}>
             <Map2D
               lat={lat} lon={lon}
-              pathData={!locationSet ? [] : (data?.pathData ?? [])}
-              simPos={!locationSet ? null : (data?.simPos ?? null)}
-              riseEdge={!locationSet ? null : (data?.riseEdge ?? null)}
-              setEdge={!locationSet ? null : (data?.setEdge ?? null)}
+              pathData={locationSet ? (data?.pathData ?? []) : []}
+              simPos={locationSet ? (data?.simPos ?? null) : null}
+              riseEdge={locationSet ? (data?.riseEdge ?? null) : null}
+              setEdge={locationSet ? (data?.setEdge ?? null) : null}
               animating={animating}
               locationSelectMode={true}
-              height={locationSet ? 560 : 620}
+              height={620}
               onLocationSelect={handleLocationSelect}
-            />)
-          }
+            />
           </div>
 
-          {/* 3D map — shown after location set and viewType is 3d */}
+          {/* 3D map */}
           {locationSet && viewType === '3d' && !loading && data && (
             <Map3DShadow
               lat={lat} lon={lon}
@@ -217,16 +211,14 @@ export default function TabExplorer({
             />
           )}
 
-          {/* Metrics — shown after location set */}
+          {/* Metrics */}
           {locationSet && !loading && data && (
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: ORG, fontFamily: "'Space Grotesk',sans-serif", marginBottom: 12 }}>
-                📊 Solar Data for Selected Time
-              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: ORG, fontFamily: "'Space Grotesk',sans-serif", marginBottom: 12 }}>📊 Solar Data for Selected Time</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 16 }}>
                 {[
-                  { label: '🕐 Time',      val: simTime },
-                  { label: '🧭 Azimuth',   val: `${az.toFixed(1)}°` },
+                  { label: '🕐 Time', val: simTime },
+                  { label: '🧭 Azimuth', val: `${az.toFixed(1)}°` },
                   { label: '☀️ Elevation', val: `${el.toFixed(1)}°` },
                   { label: '⚡ Radiation', val: `${data.radiation} W/m²` },
                 ].map(m => (
@@ -242,7 +234,7 @@ export default function TabExplorer({
         </>
       )}
 
-      {/* ── YEAR SUMMARY ── */}
+      {/* YEAR SUMMARY */}
       {viewMode === 'year' && (
         <>
           <div style={{ background: WHITE, border: `2px solid ${ORG_LT}`, borderRadius: 14, padding: '16px 24px', marginBottom: 14 }}>
