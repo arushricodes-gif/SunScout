@@ -11,9 +11,10 @@ interface Map3DShadowProps {
   simPos: { sunLat: number; sunLon: number; shadowLat: number; shadowLon: number; azimuth: number; elevation: number };
   sunTimes: { rise: string; set: string; noon: string };
   animating: boolean;
+  onLocationSelect?: (lat: number, lon: number) => void;
 }
 
-export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating }: Map3DShadowProps) {
+export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating, onLocationSelect }: Map3DShadowProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const html = useMemo(() => {
@@ -80,7 +81,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 
   <!-- View angle controls — top right -->
   <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:6px;align-items:center;background:rgba(255,255,255,0.95);border:2px solid rgba(224,123,0,0.25);border-radius:16px;padding:12px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
-    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;"> Set View angle</div>
+    <div style="font-size:10px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;white-space:nowrap;">View angle</div>
     <button class="cb" onclick="aT(-10)">▲</button>
     <div style="display:flex;gap:5px;">
       <button class="cb" onclick="aR(-15)">◀</button>
@@ -110,21 +111,18 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 <script>
 const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
-let curT='s',tL=null;
-var _cam=(function(){try{var s=window.parent.localStorage.getItem('osmCam');return s?JSON.parse(s):{rot:0,tilt:0};}catch(e){return{rot:0,tilt:0};}})();
-let curRot=_cam.rot||0,curTilt=_cam.tilt||0;
-function saveCamera(){try{window.parent.localStorage.setItem('osmCam',JSON.stringify({rot:curRot,tilt:curTilt}));}catch(e){}}
+let curT='s',tL=null,curRot=0,curTilt=0;
 
-const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:15,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
+const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:17,minZoom:15,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date('${simIso}'));
 tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 map.addGeoJSON(${obsGj});
 
 function setT(m){if(m===curT)return;curT=m;if(tL)map.remove(tL);tL=map.addMapTiles(TILES[m]);document.getElementById('bs').className='tile-btn'+(m==='s'?' on':'');document.getElementById('bsat').className='tile-btn'+(m==='sat'?' on':'');}
-function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();saveCamera();}
-function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();saveCamera();}
-function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();saveCamera();}
+function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}
+function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();}
+function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();}
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
 const allPts=${allPtsJs};
@@ -181,6 +179,16 @@ window.addEventListener('message',function(e){
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0, 10) : '']);
+
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'map3d_click' && onLocationSelect) {
+        onLocationSelect(e.data.lat, e.data.lon);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [onLocationSelect]);
 
   useEffect(() => {
     iframeRef.current?.contentWindow?.postMessage({ type: 'setAnimating', value: animating }, '*');
