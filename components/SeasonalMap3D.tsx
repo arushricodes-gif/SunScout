@@ -139,13 +139,13 @@ function addSunLabels(){
   var rpt=s0.pts[0],spt=s0.pts[s0.pts.length-1];
   var rae=latLonToAzEl(rpt.lat,rpt.lon),sae=latLonToAzEl(spt.lat,spt.lon);
   var rsc=projectToScreen(rae.az,rae.el),ssc=projectToScreen(sae.az,sae.el);
-  ['🌅 Sunrise','Sunset 🌇'].forEach(function(lbl,i){
+  ['🌅 SUNRISE','SUNSET 🌇'].forEach(function(lbl,i){
     var pt=i===0?rsc:ssc;
     var t=document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x',(pt[0]+(i===0?-12:12)).toFixed(1));
     t.setAttribute('y',(pt[1]+22).toFixed(1));
-    t.setAttribute('fill','#FFD06D');t.setAttribute('font-size','11');t.setAttribute('font-weight','700');
-    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor',i===0?'end':'start');t.setAttribute('opacity','0.9');
+    t.setAttribute('fill','#000');t.setAttribute('font-size','16');t.setAttribute('font-weight','800');
+    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor',i===0?'end':'start');t.setAttribute('opacity','1');
     t.textContent=lbl;arcSvg.appendChild(t);
   });
 }
