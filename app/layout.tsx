@@ -10,14 +10,14 @@ export const metadata: Metadata = {
     description: 'Drop a pin on any property. See real 3D building shadows, sun path animation, and seasonal comparison. Free, no login.',
     url: 'https://sun-scout.com',
     siteName: 'Sun Scout',
-    images: [{ url: 'https://sun-scout.com/og-image.png', width: 1200, height: 630, alt: 'Sun Scout — Solar path visualizer with 3D building shadows' }],
+    images: [{ url: 'https://sun-scout.com/og-image.jpg', width: 1200, height: 630, alt: 'Sun Scout — Solar path visualizer with 3D building shadows' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Sun Scout — Know Your Sunlight Before You Buy',
     description: 'Drop a pin on any property. See real 3D building shadows and sun path animation. Free.',
-    images: ['https://sun-scout.com/og-image.png'],
+    images: ['https://sun-scout.com/og-image.jpg'],
   },
 };
 
