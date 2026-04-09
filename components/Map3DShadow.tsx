@@ -162,21 +162,24 @@ function updateView(p){
 updateView({el:${mel},az:${maz},time:'${simTime}',iso:'${simIso}'});
 drawArc();
 
-// Click handler - ignore drags by tracking mouse movement
-var _moved=false, _mdx=0, _mdy=0;
-document.getElementById('map').addEventListener('mousedown',function(e){_mmoved=false;_mdx=e.clientX;_mdy=e.clientY;});
-document.getElementById('map').addEventListener('mousemove',function(e){if(Math.abs(e.clientX-_mdx)>5||Math.abs(e.clientY-_mdy)>5)_mmoved=true;});
-document.getElementById('map').addEventListener('click', function(e){
-  if(_moved)return;
-  try {
-    var rect = e.target.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
-    var pos = map.unproject(x, y);
-    if(pos && pos.latitude != null){
-      window.parent.postMessage({type:'map3d_click',lat:pos.latitude,lon:pos.longitude},'*');
-    }
-  } catch(err){}
+// Click + touch handler - ignore drags
+var _mmoved=false, _mdx=0, _mdy=0, _tsx=0, _tsy=0;
+var mapEl=document.getElementById('map');
+
+mapEl.addEventListener('mousedown',function(e){_mmoved=false;_mdx=e.clientX;_mdy=e.clientY;});
+mapEl.addEventListener('mousemove',function(e){if(Math.abs(e.clientX-_mdx)>5||Math.abs(e.clientY-_mdy)>5)_mmoved=true;});
+mapEl.addEventListener('click',function(e){
+  if(_mmoved)return;
+  try{var rect=mapEl.getBoundingClientRect();var pos=map.unproject(e.clientX-rect.left,e.clientY-rect.top);if(pos&&pos.latitude!=null)window.parent.postMessage({type:'map3d_click',lat:pos.latitude,lon:pos.longitude},'*');}catch(err){}
+});
+
+// Touch support for mobile
+mapEl.addEventListener('touchstart',function(e){_mmoved=false;_tsx=e.touches[0].clientX;_tsy=e.touches[0].clientY;},{passive:true});
+mapEl.addEventListener('touchmove',function(e){if(Math.abs(e.touches[0].clientX-_tsx)>8||Math.abs(e.touches[0].clientY-_tsy)>8)_mmoved=true;},{passive:true});
+mapEl.addEventListener('touchend',function(e){
+  if(_mmoved)return;
+  var touch=e.changedTouches[0];
+  try{var rect=mapEl.getBoundingClientRect();var pos=map.unproject(touch.clientX-rect.left,touch.clientY-rect.top);if(pos&&pos.latitude!=null)window.parent.postMessage({type:'map3d_click',lat:pos.latitude,lon:pos.longitude},'*');}catch(err){}
 });
 
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
