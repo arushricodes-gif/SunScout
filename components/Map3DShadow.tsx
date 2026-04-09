@@ -89,8 +89,8 @@ const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
 
 // Read persisted camera+zoom from parent localStorage
-var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{zoom:17};}catch(e){return{zoom:17};}})();
-var curRot=0, curTilt=0, initZoom=_cam.zoom||17;
+var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:17,set:false};}catch(e){return{rot:0,tilt:0,zoom:17,set:false};}})();
+var curRot=_cam.set?(_cam.rot||0):0, curTilt=_cam.set?(_cam.tilt||0):0, initZoom=_cam.zoom||17;
 var curT='s', tL=null;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
@@ -203,13 +203,6 @@ if(isAnimating)startAnim();
 window.addEventListener('message',function(e){
   if(!e.data)return;
   if(e.data.type==='setAnimating'){isAnimating=e.data.value;if(isAnimating)startAnim();else stopAnim();}
-  if(e.data.type==='newDate'){
-    try{osmb.date(new Date(e.data.iso));}catch(ex){}
-    allPts=e.data.pts;
-    ai=0;
-    if(allPts[0])updateView(allPts[0]);
-    drawArc();
-  }
   if(e.data.type==='seekTime'&&!isAnimating){
     var parts=e.data.time.split(':'),mins=parseInt(parts[0])*60+parseInt(parts[1]),best=0,bd=99999;
     for(var j=0;j<allPts.length;j++){var t=allPts[j].time.split(':'),d=Math.abs(parseInt(t[0])*60+parseInt(t[1])-mins);if(d<bd){bd=d;best=j;}}
@@ -218,7 +211,7 @@ window.addEventListener('message',function(e){
 });
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lon]); // only rebuild on location change, not date
+  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '']);
 
   useEffect(() => {
     const handler = (e: MessageEvent) => {
