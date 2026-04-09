@@ -53,7 +53,7 @@ export default function Map2D({
     <button class="tile-btn on" id="bs" onclick="setTile('s')">Street</button>
     <button class="tile-btn" id="bsat" onclick="setTile('sat')">Satellite</button>
   </div>
-  ${!locationSelectMode && hasPath ? `
+  ${hasPath ? `
   <div style="position:absolute;bottom:48px;left:14px;z-index:9999;background:rgba(255,255,255,0.97);border:2px solid rgba(224,123,0,0.2);border-radius:14px;padding:12px 16px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
     <div style="font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Legend</div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:28px;height:4px;background:#E74C3C;display:inline-block;border-radius:2px;"></span><span style="font-size:12px;font-weight:700;color:#E74C3C;">Sunrise</span></div>
