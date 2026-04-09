@@ -87,7 +87,15 @@ export default function Home() {
       setLoading(true);
       try {
         const d = await fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`).then(r => r.json());
-        if (!cancelled) setSolarData(d);
+        if (!cancelled) {
+          setSolarData(d);
+          if (d.pathData && d.pathData[0]) {
+            const iso = d.pathData[0].iso.slice(0,10) + 'T12:00:00';
+            document.querySelectorAll('iframe').forEach(f => {
+              try { (f as HTMLIFrameElement).contentWindow?.postMessage({type:'updateDate',iso}, '*'); } catch {}
+            });
+          }
+        }
       } catch {} finally { if (!cancelled) setLoading(false); }
     }
     go();
