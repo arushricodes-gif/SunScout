@@ -133,7 +133,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <Divider />
 
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
-          <input className="input-field" placeholder="Search for a place..." value={searchQuery}
+          <input className="input-field" placeholder="Search for a location..." value={searchQuery}
             onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'7px 11px', fontSize:13 }} />
           <button type="submit" className="btn-primary" disabled={searching}
             style={{ padding:'7px 13px', fontSize:13 }}>{searching ? '…' : '🔍'}</button>
