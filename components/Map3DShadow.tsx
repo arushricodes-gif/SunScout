@@ -44,7 +44,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 .tbadge{position:absolute;top:14px;left:14px;z-index:25;background:rgba(7,9,16,0.92);border:1px solid rgba(243,156,18,.25);border-radius:10px;padding:7px 14px;color:#F39C12;font-size:13px;font-weight:600;font-family:monospace;pointer-events:none;}
 .hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:25;color:rgba(255,255,255,.3);font-size:10px;pointer-events:none;font-family:monospace;background:rgba(7,9,16,.7);padding:4px 14px;border-radius:20px;white-space:nowrap;}
 .tile-row{position:absolute;top:14px;left:110px;z-index:25;display:flex;gap:6px;}
-.tile-btn{background:rgba(7,9,16,.92);border:1px solid rgba(255,255,255,.07);color:#6B7280;font-size:11px;font-weight:600;font-family:monospace;padding:5px 11px;border-radius:8px;cursor:pointer;}
+.tile-btn{background:rgba(7,9,16,.92);border:1px solid rgba(255,255,255,.07);color:#6B7280;font-size:13px;font-weight:600;font-family:monospace;padding:7px 16px;border-radius:9px;cursor:pointer;}
 .tile-btn.on{border-color:rgba(243,156,18,.4);color:#F39C12;background:rgba(243,156,18,.08);}
 .cb{background:#fff;border:1.5px solid #E5E7EB;color:#555;font-size:13px;font-weight:700;padding:7px 11px;border-radius:9px;cursor:pointer;line-height:1;}
 .cb:hover{border-color:#E07B00;color:#E07B00;background:#FFF3E0;}
