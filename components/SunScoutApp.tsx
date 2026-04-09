@@ -7,7 +7,8 @@ import type { SolarData } from '@/app/page';
 
 const Map3DShadow = dynamic(() => import('./Map3DShadow'), { ssr: false });
 const Map2D       = dynamic(() => import('./Map2D'),       { ssr: false });
-const SeasonalMap = dynamic(() => import('./SeasonalMap'), { ssr: false });
+const SeasonalMap   = dynamic(() => import('./SeasonalMap'),   { ssr: false });
+const SeasonalMap3D = dynamic(() => import('./SeasonalMap3D'), { ssr: false });
 
 interface Props {
   coords: [number, number]; setCoords: (c: [number, number]) => void;
@@ -292,17 +293,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               {data ? (
                 <>
                   {yearMapView === '2d' && <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />}
-                  {yearMapView === '3d' && (
-                    <Map3DShadow
-                      lat={lat} lon={lon}
-                      pathData={data.pathData}
-                      simTime={simTime}
-                      simPos={data.simPos}
-                      sunTimes={data.sunTimes}
-                      animating={animating}
-                      onLocationSelect={(la, lo) => setCoords([la, lo])}
-                    />
-                  )}
+                  {yearMapView === '3d' && <SeasonalMap3D lat={lat} lon={lon} seasonal={data.seasonal} />}
                   <div style={{ display:'flex', justifyContent:'center', gap:20, flexWrap:'wrap', background:WHITE, padding:'10px 20px', borderRadius:10, marginTop:10, border:'1px solid rgba(224,123,0,0.15)' }}>
                     {[{label:'Summer',color:'#FF4444'},{label:'Autumn',color:'#FF8C00'},{label:'Spring',color:'#C8A800'},{label:'Winter',color:'#5BAED8'}].map(s => (
                       <div key={s.label} style={{ display:'flex', alignItems:'center', gap:7 }}>
