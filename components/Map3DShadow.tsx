@@ -203,6 +203,7 @@ if(isAnimating)startAnim();
 window.addEventListener('message',function(e){
   if(!e.data)return;
   if(e.data.type==='setAnimating'){isAnimating=e.data.value;if(isAnimating)startAnim();else stopAnim();}
+  if(e.data.type==='newDate'){try{osmb.date(new Date(e.data.iso));}catch(e){} allPts=e.data.pts; ai=0; updateView(allPts[0]);}
   if(e.data.type==='seekTime'&&!isAnimating){
     var parts=e.data.time.split(':'),mins=parseInt(parts[0])*60+parseInt(parts[1]),best=0,bd=99999;
     for(var j=0;j<allPts.length;j++){var t=allPts[j].time.split(':'),d=Math.abs(parseInt(t[0])*60+parseInt(t[1])-mins);if(d<bd){bd=d;best=j;}}
@@ -211,7 +212,7 @@ window.addEventListener('message',function(e){
 });
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '']);
+  }, [lat, lon]); // only rebuild on location change, not date
 
   useEffect(() => {
     const handler = (e: MessageEvent) => {
