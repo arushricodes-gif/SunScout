@@ -95,15 +95,11 @@ var curT='s', tL=null;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date('${simIso}'));
-console.log('OSMBuildings map keys:', Object.keys(map));
-console.log('map.position:', map.position);
-console.log('map.getZoom:', map.getZoom);
-console.log('map.zoom:', map.zoom);
 tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 map.addGeoJSON(${obsGj});
 
-function saveCamera(){try{var z=map.position?map.position.zoom:initZoom;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z||initZoom,set:true}));}catch(e){}}
+function saveCamera(){try{var z=map.zoom||initZoom;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z,set:true}));}catch(e){}}
 function setT(m){if(m===curT)return;curT=m;if(tL)map.remove(tL);tL=map.addMapTiles(TILES[m]);document.getElementById('bs').className='tile-btn'+(m==='s'?' on':'');document.getElementById('bsat').className='tile-btn'+(m==='sat'?' on':'');}
 
 // Click to move pin
@@ -191,7 +187,7 @@ map.on('change',function(){try{var z=map.position?map.position.zoom:initZoom;if(
 document.getElementById('map').addEventListener('wheel', function(){
   setTimeout(function(){
     try{
-      var z = map.position ? map.position.zoom : initZoom;
+      var z = map.zoom || initZoom;
       if(z && z !== initZoom){
         initZoom = z;
         window.parent.localStorage.setItem('ss_cam', JSON.stringify({rot:curRot,tilt:curTilt,zoom:z,set:true}));
