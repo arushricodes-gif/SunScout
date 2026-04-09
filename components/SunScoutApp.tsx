@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import SolarChart from './SolarChart';
 import type { SolarData } from '@/app/page';
@@ -48,13 +48,15 @@ const SunLogo = () => (
 const Divider = () => <div style={{ width:1, height:30, background:'rgba(224,123,0,0.2)', flexShrink:0 }} />;
 
 export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDate, simTime, setSimTime, animating, setAnimating, solarData, loading, onGpsClick, onHome }: Props) {
-  const [view, setView]           = useState<'3d'|'2d'|'year'>('3d');
-  const [searchQuery, setSearch]  = useState('');
-  const [searching, setSearching] = useState(false);
-  const [season, setSeason]       = useState('Today');
-  const [showCustom, setShowCustom] = useState(false);
-  const [showData, setShowData]   = useState(false);
-  const [copied, setCopied]       = useState(false);
+  const [view, setView]               = useState<'3d'|'2d'|'year'>('3d');
+  const [prevView, setPrevView]       = useState<'3d'|'2d'>('3d');
+  const [yearMapView, setYearMapView] = useState<'3d'|'2d'>('3d');
+  const [searchQuery, setSearch]      = useState('');
+  const [searching, setSearching]     = useState(false);
+  const [season, setSeason]           = useState('Today');
+  const [showCustom, setShowCustom]   = useState(false);
+  const [showData, setShowData]       = useState(false);
+  const [copied, setCopied]           = useState(false);
 
   const [lat, lon] = coords;
   const data = solarData;
@@ -71,6 +73,12 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const setSimHM = (h: number, m: number) => {
     const t = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
     setSimTime(t); broadcast({ type:'seekTime', time:t });
+  };
+
+  const switchView = (v: '3d'|'2d'|'year') => {
+    if (v !== 'year') setPrevView(v as '3d'|'2d');
+    if (v === 'year') setYearMapView(prevView);
+    setView(v);
   };
 
   const toggleAnim = () => {
@@ -109,13 +117,14 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
     });
   };
 
-  // Update URL when coords change
-  if (typeof window !== 'undefined') {
-    const url = new URL(window.location.href);
-    url.searchParams.set('lat', lat.toFixed(5));
-    url.searchParams.set('lon', lon.toFixed(5));
-    window.history.replaceState({}, '', url.toString());
-  }
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lat', lat.toFixed(5));
+      url.searchParams.set('lon', lon.toFixed(5));
+      window.history.replaceState({}, '', url.toString());
+    } catch {}
+  }, [lat, lon]);
 
   const defaultSimPos = { sunLat:lat+0.001, sunLon:lon+0.001, shadowLat:lat-0.001, shadowLon:lon-0.001, azimuth:90, elevation:30 };
 
@@ -133,7 +142,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <Divider />
 
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
-          <input className="input-field" placeholder="Search for a place..." value={searchQuery}
+          <input className="input-field" placeholder="Search for a location..." value={searchQuery}
             onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'7px 11px', fontSize:13 }} />
           <button type="submit" className="btn-primary" disabled={searching}
             style={{ padding:'7px 13px', fontSize:13 }}>{searching ? '…' : '🔍'}</button>
@@ -191,7 +200,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           {(['3d','2d','year'] as const).map(id => {
             const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year Summary' };
             return (
-              <button key={id} onClick={() => setView(id)} style={{
+              <button key={id} onClick={() => switchView(id)} style={{
                 background: view===id ? ORG : WHITE,
                 color: view===id ? '#fff' : TEXT_DARK,
                 border: `1px solid ${view===id ? ORG : 'rgba(224,123,0,0.2)'}`,
@@ -220,7 +229,6 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
       {/* MAP + DATA ROW */}
       <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
 
-        {/* MAP */}
         <div style={{ flex:1, position:'relative', overflow:'hidden' }}>
 
           {loading && (
@@ -248,24 +256,53 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           )}
 
           {view === '2d' && (
-            <Map2D
-              lat={lat} lon={lon}
-              pathData={data?.pathData ?? []}
-              simPos={data?.simPos ?? null}
-              riseEdge={data?.riseEdge ?? null}
-              setEdge={data?.setEdge ?? null}
-              animating={animating}
-              locationSelectMode={true}
-              height={typeof window !== 'undefined' ? window.innerHeight - 62 : 700}
-              onLocationSelect={(la, lo) => setCoords([la, lo])}
-            />
+            <>
+              <button onClick={() => switchView('3d')} style={{position:'absolute',top:14,left:14,zIndex:999,background:'rgba(255,255,255,0.95)',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:13,cursor:'pointer',color:'#E07B00'}}>
+                {'← 3D'}
+              </button>
+              <Map2D
+                lat={lat} lon={lon}
+                pathData={data?.pathData ?? []}
+                simPos={data?.simPos ?? null}
+                riseEdge={data?.riseEdge ?? null}
+                setEdge={data?.setEdge ?? null}
+                animating={animating}
+                locationSelectMode={true}
+                height={typeof window !== 'undefined' ? window.innerHeight - 62 : 700}
+                onLocationSelect={(la, lo) => setCoords([la, lo])}
+              />
+            </>
           )}
 
           {view === 'year' && (
             <div style={{ height:'100%', overflowY:'auto', padding:16 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+                <button onClick={() => switchView(prevView)} style={{background:'#FFF3E0',border:'1px solid #E07B00',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:12,cursor:'pointer',color:'#E07B00'}}>
+                  {'← Back'}
+                </button>
+                <div style={{ display:'flex', gap:4 }}>
+                  {(['3d','2d'] as const).map(v => (
+                    <button key={v} onClick={() => setYearMapView(v)} style={{background:yearMapView===v?'#E07B00':'#fff',color:yearMapView===v?'#fff':'#1A1A1A',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 12px',fontWeight:700,fontSize:12,cursor:'pointer'}}>
+                      {v === '3d' ? '🏙 3D' : '🗺 2D'}
+                    </button>
+                  ))}
+                </div>
+                <span style={{fontSize:12,color:'#888'}}>Seasonal sun paths for your location</span>
+              </div>
               {data ? (
                 <>
-                  <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />
+                  {yearMapView === '2d' && <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />}
+                  {yearMapView === '3d' && (
+                    <Map3DShadow
+                      lat={lat} lon={lon}
+                      pathData={data.pathData}
+                      simTime={simTime}
+                      simPos={data.simPos}
+                      sunTimes={data.sunTimes}
+                      animating={animating}
+                      onLocationSelect={(la, lo) => setCoords([la, lo])}
+                    />
+                  )}
                   <div style={{ display:'flex', justifyContent:'center', gap:20, flexWrap:'wrap', background:WHITE, padding:'10px 20px', borderRadius:10, marginTop:10, border:'1px solid rgba(224,123,0,0.15)' }}>
                     {[{label:'Summer',color:'#FF4444'},{label:'Autumn',color:'#FF8C00'},{label:'Spring',color:'#C8A800'},{label:'Winter',color:'#5BAED8'}].map(s => (
                       <div key={s.label} style={{ display:'flex', alignItems:'center', gap:7 }}>
@@ -280,7 +317,6 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           )}
         </div>
 
-        {/* DATA PANEL — right side */}
         {showData && data && (
           <div style={{ width:260, background:WHITE, borderLeft:'1px solid rgba(224,123,0,0.15)', padding:'16px', flexShrink:0, overflowY:'auto', display:'flex', flexDirection:'column', gap:12 }}>
             <div style={{ fontSize:11, fontWeight:700, color:ORG, textTransform:'uppercase', letterSpacing:'.08em' }}>Solar Data</div>
