@@ -25,6 +25,13 @@ function getLocalDateStr() {
 }
 
 export default function Home() {
+  const [isFromUrl, setIsFromUrl]      = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      return p.has('lat') && p.has('lon');
+    }
+    return false;
+  });
   const [entered, setEntered]         = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search);
@@ -66,7 +73,7 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false;
     async function go() {
-      let tz = isGpsCoords ? -new Date().getTimezoneOffset() : Math.round(coords[1] / 15) * 60;
+      let tz = (isGpsCoords && !isFromUrl) ? -new Date().getTimezoneOffset() : Math.round(coords[1] / 15) * 60;
       if (!isGpsCoords) {
         try {
           const r = await fetch(`/api/timezone?lat=${coords[0]}&lon=${coords[1]}`);
