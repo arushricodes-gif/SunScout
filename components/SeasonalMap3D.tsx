@@ -58,12 +58,11 @@ export default function SeasonalMap3D({ lat, lon, seasonal }: Props) {
 </div>
 <script>
 const D2R=Math.PI/180;
-var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{zoom:15};}catch(e){return{zoom:15};}})();
-var curRot=0,curTilt=0,initZoom=_cam.zoom||15;
+var curRot=0,curTilt=0,initZoom=15;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:0,rotation:0,effects:['shadows'],attribution:''});
 map.setDate(new Date());
-map.addMapTiles('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png');
+map.addMapTiles('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 map.addGeoJSON(${obsGj});
 
