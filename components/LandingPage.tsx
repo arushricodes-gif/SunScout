@@ -1,57 +1,104 @@
 'use client';
 
+import { useState } from 'react';
+
 export default function LandingPage({ onEnter }: { onEnter: () => void }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <div style={{ minHeight:'100vh', background:'#FFFBF5', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 24px', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-      <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:40 }}>
-        <svg width="48" height="48" viewBox="0 0 36 36" fill="none">
-          <line x1="18" y1="2" x2="18" y2="8" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="18" y1="28" x2="18" y2="34" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="2" y1="18" x2="8" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="28" y1="18" x2="34" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="6.1" y1="6.1" x2="10.3" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-          <line x1="25.7" y1="6.1" x2="21.5" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-          <line x1="6.1" y1="29.9" x2="10.3" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-          <line x1="25.7" y1="29.9" x2="21.5" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="18" cy="18" r="9" fill="#FFF3E0" stroke="#F39C12" strokeWidth="1.5"/>
-          <circle cx="18" cy="18" r="6.5" fill="#E07B00"/>
-          <circle cx="15.5" cy="15.5" r="2" fill="rgba(255,255,255,0.3)"/>
-        </svg>
-        <div>
-          <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:36, color:'#E07B00', letterSpacing:4, lineHeight:1 }}>SUN SCOUT</div>
-          <div style={{ fontSize:10, fontWeight:600, color:'#bbb', letterSpacing:4, textTransform:'uppercase' }}>Visualize the Light</div>
+    <div style={{ minHeight:'100vh', background:'#0F0E0B', fontFamily:"'Plus Jakarta Sans',sans-serif", color:'#fff', display:'flex', flexDirection:'column', alignItems:'center', overflow:'hidden' }}>
+
+      <div style={{ width:'100%', maxWidth:1100, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'24px 40px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+            <line x1="18" y1="2" x2="18" y2="8" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="18" y1="28" x2="18" y2="34" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="2" y1="18" x2="8" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="28" y1="18" x2="34" y2="18" stroke="#E07B00" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="6.1" y1="6.1" x2="10.3" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="25.7" y1="6.1" x2="21.5" y2="10.3" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="6.1" y1="29.9" x2="10.3" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="25.7" y1="29.9" x2="21.5" y2="25.7" stroke="#E07B00" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="18" cy="18" r="9" fill="rgba(255,243,224,0.15)" stroke="#F39C12" strokeWidth="1.5"/>
+            <circle cx="18" cy="18" r="6.5" fill="#E07B00"/>
+            <circle cx="15.5" cy="15.5" r="2" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+          <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:'#E07B00', letterSpacing:3 }}>SUN SCOUT</span>
         </div>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.3)', letterSpacing:'.05em' }}>Free · No login required</div>
       </div>
-      <div style={{ textAlign:'center', maxWidth:560, marginBottom:36 }}>
-        <h1 style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:'clamp(1.8rem,4vw,3rem)', fontWeight:700, color:'#1A1A1A', lineHeight:1.15, marginBottom:16 }}>
+
+      <div style={{ maxWidth:820, textAlign:'center', padding:'48px 40px 0' }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(224,123,0,0.12)', border:'1px solid rgba(224,123,0,0.25)', borderRadius:100, padding:'6px 16px', marginBottom:32, fontSize:12, color:'#F39C12', fontWeight:600, letterSpacing:'.04em' }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:'#F39C12', display:'inline-block' }}/>
+          Real 3D building shadows · NOAA solar algorithm
+        </div>
+        <h1 style={{ fontSize:'clamp(2.8rem,6vw,5rem)', fontWeight:800, lineHeight:1.05, marginBottom:24, fontFamily:"'Space Grotesk',sans-serif", letterSpacing:'-.02em' }}>
           Know your <span style={{ color:'#E07B00' }}>sunlight</span><br/>before you buy.
         </h1>
-        <p style={{ fontSize:15, color:'#666', lineHeight:1.75 }}>
-          Drop a pin on any property. See exactly where sunlight falls — hour by hour, season by season, with real 3D building shadows.
+        <p style={{ fontSize:18, color:'rgba(255,255,255,0.5)', lineHeight:1.7, maxWidth:560, margin:'0 auto 44px' }}>
+          That "south-facing, lots of natural light" listing? Drop a pin and see exactly when sunlight hits it — hour by hour, season by season.
         </p>
+        <button onClick={onEnter} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+          style={{ background:hovered?'#FF8C00':'#E07B00', color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", transition:'all .2s', transform:hovered?'translateY(-2px)':'none', boxShadow:hovered?'0 12px 40px rgba(224,123,0,0.4)':'0 4px 20px rgba(224,123,0,0.25)', marginBottom:16 }}>
+          ☀️ &nbsp; Enter Sun Scout →
+        </button>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.2)', marginBottom:64 }}>Works anywhere in the world</div>
       </div>
-      <div style={{ background:'#fff', border:'1px solid rgba(224,123,0,0.15)', borderRadius:16, padding:'20px 28px', marginBottom:32, maxWidth:400, width:'100%' }}>
-        <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.1em', marginBottom:14 }}>How it works</div>
-        {[['1','Click anywhere on the 3D map to drop a pin'],['2','Sun path + building shadows appear instantly'],['3','Click anywhere again to change location']].map(([n,text]) => (
-          <div key={n} style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
-            <div style={{ width:24, height:24, borderRadius:'50%', background:'#E07B00', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, flexShrink:0 }}>{n}</div>
-            <span style={{ fontSize:13, color:'#444', lineHeight:1.5 }}>{text}</span>
+
+      <div style={{ width:'100%', maxWidth:900, padding:'0 40px', position:'relative' }}>
+        <div style={{ background:'#1A1D24', borderRadius:'20px 20px 0 0', border:'1px solid rgba(255,255,255,0.06)', borderBottom:'none', overflow:'hidden', position:'relative', height:300 }}>
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg,#1e2530 25%,#252d3a 25%,#252d3a 50%,#1e2530 50%,#1e2530 75%,#252d3a 75%)', backgroundSize:'40px 40px', opacity:.5 }}/>
+          <div style={{ position:'absolute', top:'42%', left:0, right:0, height:2, background:'rgba(255,255,255,0.05)' }}/>
+          <div style={{ position:'absolute', top:'68%', left:0, right:0, height:1, background:'rgba(255,255,255,0.04)' }}/>
+          <div style={{ position:'absolute', left:'33%', top:0, bottom:0, width:2, background:'rgba(255,255,255,0.04)' }}/>
+          <div style={{ position:'absolute', left:'62%', top:0, bottom:0, width:1, background:'rgba(255,255,255,0.03)' }}/>
+          {[[80,70,65,85],[190,85,55,70],[290,75,70,80],[410,90,50,65],[530,80,60,75],[650,85,45,80],[750,72,75,68],[90,185,85,58],[240,195,58,52],[370,180,72,68],[495,190,48,62],[615,185,68,58],[745,195,52,72]].map(([x,y,w,h],i) => (
+            <div key={i} style={{ position:'absolute', left:x, top:y, width:w, height:h, background:i%2===0?'#2a3142':'#252d3a', borderRadius:3, border:'1px solid rgba(255,255,255,0.04)' }}/>
+          ))}
+          <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} viewBox="0 0 900 300">
+            <path d="M 60 265 Q 450 -40 840 265" fill="none" stroke="rgba(243,156,18,0.12)" strokeWidth="22" strokeLinecap="round"/>
+            <path d="M 60 265 Q 450 -40 840 265" fill="none" stroke="#F39C12" strokeWidth="2.5" strokeDasharray="8 10" opacity=".85"/>
+            <circle cx="60" cy="265" r="5" fill="#F39C12"/>
+            <circle cx="840" cy="265" r="5" fill="#F39C12"/>
+            <text x="48" y="254" fill="#FFD06D" fontSize="11" fontFamily="monospace" fontWeight="600" textAnchor="end">🌅 Rise</text>
+            <text x="852" y="254" fill="#FFD06D" fontSize="11" fontFamily="monospace" fontWeight="600">Set 🌇</text>
+            <text x="450" y="80" fontSize="28" textAnchor="middle">☀️</text>
+            <line x1="450" y1="265" x2="415" y2="295" stroke="#8B9AB0" strokeWidth="3" strokeDasharray="5 7" opacity=".5"/>
+          </svg>
+          <div style={{ position:'absolute', left:'calc(50% - 10px)', top:'82%', fontSize:22 }}>📍</div>
+          <div style={{ position:'absolute', top:14, left:14, background:'rgba(7,9,16,0.92)', border:'1px solid rgba(243,156,18,.25)', borderRadius:8, padding:'5px 12px', fontSize:12, fontWeight:600, fontFamily:'monospace', color:'#F39C12' }}>☀️ 09:32</div>
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:100, background:'linear-gradient(to top, #0F0E0B, transparent)' }}/>
+        </div>
+      </div>
+
+      <div style={{ width:'100%', maxWidth:900, padding:'48px 40px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:48 }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.12em', marginBottom:20 }}>How it works</div>
+          {[['Click anywhere on the map','Drop a pin on any property or location'],['Sun path appears instantly','See the arc, building shadows, and animation'],['Click again to change location','Move the pin anywhere, anytime']].map(([title,body],i) => (
+            <div key={i} style={{ display:'flex', gap:14, marginBottom:22 }}>
+              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(224,123,0,0.15)', border:'1px solid rgba(224,123,0,0.3)', color:'#E07B00', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, flexShrink:0, marginTop:2 }}>{i+1}</div>
+              <div>
+                <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.85)', marginBottom:3 }}>{title}</div>
+                <div style={{ fontSize:13, color:'rgba(255,255,255,0.3)', lineHeight:1.5 }}>{body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.12em', marginBottom:20 }}>Who uses it</div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+            {[['🏡','House hunters','Check sunlight before signing'],['🌿','Gardeners','Plan full-sun spots'],['⚡','Solar owners','Find peak hours'],['📸','Photographers','Scout golden hour']].map(([icon,title,body]) => (
+              <div key={String(title)} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:'14px' }}>
+                <div style={{ fontSize:20, marginBottom:6 }}>{icon}</div>
+                <div style={{ fontSize:12, fontWeight:700, color:'rgba(255,255,255,0.7)', marginBottom:3 }}>{title}</div>
+                <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', lineHeight:1.5 }}>{body}</div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-      <button onClick={onEnter} style={{ background:'#E07B00', color:'#fff', border:'none', borderRadius:12, padding:'15px 44px', fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", marginBottom:32 }}>
-        ☀️ &nbsp;Enter Sun Scout →
-      </button>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, maxWidth:560, width:'100%' }}>
-        {[['🏡','House hunters','Verify sunlight before signing'],['🌿','Gardeners','Plan sun vs shade spots'],['⚡','Solar owners','Find peak radiation hours'],['📸','Photographers','Scout the golden hour']].map(([icon,title,body]) => (
-          <div key={String(title)} style={{ background:'#fff', border:'1px solid rgba(224,123,0,0.12)', borderRadius:12, padding:'14px 12px', textAlign:'center' }}>
-            <div style={{ fontSize:22, marginBottom:6 }}>{icon}</div>
-            <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', marginBottom:4, textTransform:'uppercase', letterSpacing:'.04em' }}>{title}</div>
-            <div style={{ fontSize:11, color:'#888', lineHeight:1.5 }}>{body}</div>
-          </div>
-        ))}
-      </div>
-      <p style={{ fontSize:11, color:'#ccc', marginTop:24 }}>Free · No login · Works anywhere in the world</p>
+
     </div>
   );
 }
