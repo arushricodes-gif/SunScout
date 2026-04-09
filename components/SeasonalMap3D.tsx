@@ -58,7 +58,8 @@ export default function SeasonalMap3D({ lat, lon, seasonal }: Props) {
 </div>
 <script>
 const D2R=Math.PI/180;
-var curRot=0,curTilt=0,initZoom=15;
+var _yc=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:15};}catch(e){return{rot:0,tilt:0,zoom:15};}})();
+var curRot=_yc.rot||0,curTilt=_yc.tilt||0,initZoom=_yc.zoom||15;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:0,rotation:0,effects:['shadows'],attribution:''});
 map.setDate(new Date());
@@ -126,6 +127,7 @@ function drawArcs(){
   });
 }
 
+if(curRot||curTilt){map.setRotation(curRot);map.setTilt(curTilt);}
 setTimeout(drawArcs,300);
 
 // Add static SUNRISE/SUNSET labels based on first season
