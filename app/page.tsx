@@ -62,6 +62,7 @@ export default function Home() {
   tzRef.current = tzOffset;
 
   useEffect(() => {
+    if (isFromUrl) return; // don't override URL coords with GPS
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => { setCoords([pos.coords.latitude, pos.coords.longitude]); setIsGpsCoords(true); },
