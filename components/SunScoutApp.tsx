@@ -21,7 +21,7 @@ interface Props {
 const ORG='#E07B00', ORG_LT='#FFF3E0', TEXT_DARK='#1A1A1A', TEXT_SUB='#777', WHITE='#FFFFFF';
 const YEAR = new Date().getFullYear();
 const SEASONS: Record<string,string|null> = {
-  'Today': null,
+  'Select Season': null,
   'Spring equinox': `${YEAR}-03-20`,
   'Summer solstice': `${YEAR}-06-21`,
   'Autumn equinox': `${YEAR}-10-15`,
@@ -93,7 +93,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
     setSeason(s);
     if (s === 'Custom date') { setShowCustom(true); return; }
     setShowCustom(false);
-    if (s === 'Today') {
+    if (s === 'Select Season') {
       const now = new Date();
       setTargetDate(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`);
     } else {
@@ -189,7 +189,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
         <div style={{ display:'flex', gap:4, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
-            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Seasons' };
+            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year Summary' };
             return (
               <button key={id} onClick={() => setView(id)} style={{
                 background: view===id ? ORG : WHITE,
