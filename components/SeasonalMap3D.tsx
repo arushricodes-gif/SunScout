@@ -104,12 +104,12 @@ function drawArcs(){
     // glow
     var g=document.createElementNS('http://www.w3.org/2000/svg','polyline');
     g.setAttribute('points',sc.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
-    g.setAttribute('fill','none');g.setAttribute('stroke',s.color);g.setAttribute('stroke-width','10');g.setAttribute('opacity','0.15');g.setAttribute('stroke-linecap','round');
+    g.setAttribute('fill','none');g.setAttribute('stroke',s.color);g.setAttribute('stroke-width','18');g.setAttribute('opacity','0.15');g.setAttribute('stroke-linecap','round');
     arcSvg.appendChild(g);
     // main arc
     var arc=document.createElementNS('http://www.w3.org/2000/svg','polyline');
     arc.setAttribute('points',sc.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
-    arc.setAttribute('fill','none');arc.setAttribute('stroke',s.color);arc.setAttribute('stroke-width','2.5');arc.setAttribute('opacity','0.9');arc.setAttribute('stroke-linecap','round');
+    arc.setAttribute('fill','none');arc.setAttribute('stroke',s.color);arc.setAttribute('stroke-width','4');arc.setAttribute('opacity','0.9');arc.setAttribute('stroke-linecap','round');
     arcSvg.appendChild(arc);
     // label at midpoint
     var mid=sc[Math.floor(sc.length/2)];
