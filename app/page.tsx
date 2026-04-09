@@ -1,18 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import TabGuide from '@/components/TabGuide';
-import TabExplorer from '@/components/TabExplorer';
-import TopBar from '@/components/TopBar';
+import { useState, useEffect, useRef } from 'react';
+import LandingPage from '@/components/LandingPage';
+import SunScoutApp from '@/components/SunScoutApp';
 
 export interface SolarData {
   sunTimes: { rise: string; set: string; noon: string };
   pathData: PathPoint[];
-  simPos: {
-    sunLat: number; sunLon: number;
-    shadowLat: number; shadowLon: number;
-    azimuth: number; elevation: number;
-  };
+  simPos: { sunLat: number; sunLon: number; shadowLat: number; shadowLon: number; azimuth: number; elevation: number };
   riseEdge: [number, number];
   setEdge: [number, number];
   radiation: number;
@@ -20,8 +15,7 @@ export interface SolarData {
 }
 
 export interface PathPoint {
-  lat: number; lon: number;
-  shlat: number; shlon: number;
+  lat: number; lon: number; shlat: number; shlon: number;
   time: string; el: number; az: number; iso: string;
 }
 
@@ -31,20 +25,21 @@ function getLocalDateStr() {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab]     = useState(0);
-  const [coords, setCoords]           = useState<[number, number]>([51.505, -0.09]);
-  const [tzOffset, setTzOffset]       = useState(0);
+  const [entered, setEntered]         = useState(false);
+  const [coords, setCoords]           = useState<[number, number]>([12.97, 77.59]);
+  const [tzOffset, setTzOffset]       = useState(330);
   const [isGpsCoords, setIsGpsCoords] = useState(false);
   const [targetDate, setTargetDate]   = useState(getLocalDateStr);
   const [simTime, setSimTime]         = useState(() => {
     const n = new Date();
     return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
   });
-  const [animating, setAnimating] = useState(true);
-  const [solarData, setSolarData] = useState<SolarData | null>(null);
-  const [loading, setLoading]     = useState(false);
+  const [animating, setAnimating]     = useState(true);
+  const [solarData, setSolarData]     = useState<SolarData | null>(null);
+  const [loading, setLoading]         = useState(false);
+  const tzRef = useRef(tzOffset);
+  tzRef.current = tzOffset;
 
-  // GPS on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -54,15 +49,11 @@ export default function Home() {
     }
   }, []);
 
-  // Fetch timezone then solar whenever coords/date changes
   useEffect(() => {
     let cancelled = false;
-    async function fetchAll() {
-      let tz: number;
-      if (isGpsCoords) {
-        tz = -new Date().getTimezoneOffset();
-      } else {
-        tz = Math.round(coords[1] / 15) * 60;
+    async function go() {
+      let tz = isGpsCoords ? -new Date().getTimezoneOffset() : Math.round(coords[1] / 15) * 60;
+      if (!isGpsCoords) {
         try {
           const r = await fetch(`/api/timezone?lat=${coords[0]}&lon=${coords[1]}`);
           const d = await r.json();
@@ -70,66 +61,44 @@ export default function Home() {
         } catch {}
       }
       if (cancelled) return;
-      setTzOffset(tz);
+      setTzOffset(tz); tzRef.current = tz;
       setLoading(true);
       try {
-        const url = `/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`;
-        const data = await fetch(url).then(r => r.json());
-        if (!cancelled) setSolarData(data);
-      } catch (e) { console.error(e); }
-      finally { if (!cancelled) setLoading(false); }
+        const d = await fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tz}&simTime=${simTime}`).then(r => r.json());
+        if (!cancelled) setSolarData(d);
+      } catch {} finally { if (!cancelled) setLoading(false); }
     }
-    fetchAll();
+    go();
     return () => { cancelled = true; };
   }, [coords[0], coords[1], targetDate, isGpsCoords]);
 
-  // Refetch simPos when paused and time changes
   useEffect(() => {
     if (!animating) {
-      fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tzOffset}&simTime=${simTime}`)
-        .then(r => r.json()).then(data => setSolarData(data)).catch(() => {});
+      fetch(`/api/solar?lat=${coords[0]}&lon=${coords[1]}&date=${targetDate}&tzOffset=${tzRef.current}&simTime=${simTime}`)
+        .then(r => r.json()).then(d => setSolarData(d)).catch(() => {});
     }
   }, [simTime, animating]);
 
   const handleSetCoords = (c: [number, number]) => { setIsGpsCoords(false); setCoords(c); };
   const handleGps = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
-        () => {}
-      );
-    }
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
+      () => {}
+    );
   };
 
+  if (!entered) return <LandingPage onEnter={() => setEntered(true)} />;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
-      <TopBar
-        coords={coords}
-        setCoords={handleSetCoords}
-        targetDate={targetDate}
-            setTargetDate={setTargetDate}
-        onGpsClick={handleGps}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-      <div style={{ flex: 1, overflow: 'auto', padding: '20px 24px' }}>
-        {activeTab === 0 && <TabGuide onEnter={() => setActiveTab(1)} />}
-        {activeTab === 1 && (
-          <TabExplorer
-            coords={coords}
-            setCoords={handleSetCoords}
-            targetDate={targetDate}
-            setTargetDate={setTargetDate}
-            simTime={simTime}
-            setSimTime={setSimTime}
-            animating={animating}
-            setAnimating={setAnimating}
-            solarData={solarData}
-            loading={loading}
-            tzOffset={tzOffset}
-          />
-        )}
-      </div>
-    </div>
+    <SunScoutApp
+      coords={coords} setCoords={handleSetCoords}
+      targetDate={targetDate} setTargetDate={setTargetDate}
+      simTime={simTime} setSimTime={setSimTime}
+      animating={animating} setAnimating={setAnimating}
+      solarData={solarData} loading={loading}
+      tzOffset={tzOffset} onGpsClick={handleGps}
+      onHome={() => setEntered(false)}
+    />
   );
 }

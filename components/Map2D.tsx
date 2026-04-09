@@ -84,7 +84,7 @@ ${hasPath ? `L.polyline(pd.map(function(p){return[p.lat,p.lon];}),{color:'#F39C1
 ${riseEdge ? `L.polyline([[${lat},${lon}],${riseJs}],{color:'#E74C3C',weight:5,opacity:.85}).addTo(map);` : ''}
 ${setEdge  ? `L.polyline([[${lat},${lon}],${setJs}],{color:'#3498DB',weight:5,opacity:.85}).addTo(map);` : ''}
 
-${!locationSelectMode && hasPath ? `
+${hasPath ? `
 var sunIco=L.divIcon({html:'<div style="text-align:center;line-height:1;"><div style="font-size:28pt;filter:drop-shadow(0 0 10px rgba(255,200,0,.9));">☀️</div><div id="stl" style="background:linear-gradient(135deg,#F39C12,#E67E22);color:#000;padding:3px 9px;border-radius:7px;font-weight:700;font-size:11px;font-family:monospace;margin-top:2px;">--:--</div></div>',iconSize:[60,60],iconAnchor:[30,22],className:''});
 var sunM=L.marker([pd[0].lat,pd[0].lon],{icon:sunIco}).addTo(map);
 var shad=L.polyline([[${lat},${lon}],[pd[0].shlat,pd[0].shlon]],{color:'#8B9AB0',weight:5,dashArray:'6,10',opacity:.80}).addTo(map);
