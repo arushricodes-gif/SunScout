@@ -91,7 +91,7 @@ const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https:
 
 // Read persisted camera+zoom from parent localStorage
 var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:17};}catch(e){return{rot:0,tilt:0,zoom:17};}})();
-var curRot=_cam.rot!=null?_cam.rot:0, curTilt=_cam.tilt!=null?_cam.tilt:0, initZoom=_cam.zoom||17;
+var curRot=0, curTilt=0, initZoom=_cam.zoom||17;
 var curT='s', tL=null;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
