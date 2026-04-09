@@ -54,12 +54,12 @@ export default function Map2D({
     <button class="tile-btn" id="bsat" onclick="setTile('sat')">Satellite</button>
   </div>
   ${hasPath ? `
-  <div style="position:absolute;bottom:48px;left:14px;z-index:9999;background:rgba(255,255,255,0.97);border:2px solid rgba(224,123,0,0.2);border-radius:14px;padding:12px 16px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
-    <div style="font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Legend</div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:28px;height:4px;background:#E74C3C;display:inline-block;border-radius:2px;"></span><span style="font-size:12px;font-weight:700;color:#E74C3C;">Sunrise</span></div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:28px;height:4px;background:#3498DB;display:inline-block;border-radius:2px;"></span><span style="font-size:12px;font-weight:700;color:#3498DB;">Sunset</span></div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:28px;height:0;border-top:3px dashed #8B9AB0;display:inline-block;"></span><span style="font-size:12px;font-weight:700;color:#8B9AB0;">Shadow</span></div>
-    <div style="display:flex;align-items:center;gap:8px;"><span style="width:28px;height:0;border-top:3px dashed #E07B00;display:inline-block;"></span><span style="font-size:12px;font-weight:700;color:#E07B00;">Sun path</span></div>
+  <div style="position:absolute;top:14px;right:14px;z-index:9999;background:rgba(255,255,255,0.97);border:2px solid rgba(224,123,0,0.2);border-radius:14px;padding:14px 20px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    <div style="font-size:12px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Legend</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:32px;height:5px;background:#E74C3C;display:inline-block;border-radius:2px;"></span><span style="font-size:14px;font-weight:700;color:#E74C3C;">Sunrise</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:32px;height:5px;background:#3498DB;display:inline-block;border-radius:2px;"></span><span style="font-size:14px;font-weight:700;color:#3498DB;">Sunset</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:32px;height:0;border-top:4px dashed #8B9AB0;display:inline-block;"></span><span style="font-size:14px;font-weight:700;color:#8B9AB0;">Shadow</span></div>
+    <div style="display:flex;align-items:center;gap:8px;"><span style="width:32px;height:0;border-top:4px dashed #E07B00;display:inline-block;"></span><span style="font-size:14px;font-weight:700;color:#E07B00;">Sun path</span></div>
   </div>` : ''}
   <div class="hint">${locationSelectMode ? '🖱 Click to set location' : '🖱 Drag · Scroll zoom'}</div>
   <div id="click-hint">📍 Location set!</div>
