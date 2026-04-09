@@ -127,6 +127,27 @@ function drawArcs(){
 }
 
 setTimeout(drawArcs,300);
+
+// Add static SUNRISE/SUNSET labels based on first season
+function addSunLabels(){
+  if(!seasons.length||!seasons[0].pts.length)return;
+  var W=document.getElementById('map').clientWidth||800,H=window.innerHeight||600;
+  arcSvg.setAttribute('viewBox','0 0 '+W+' '+H);
+  var s0=seasons[0];
+  var rpt=s0.pts[0],spt=s0.pts[s0.pts.length-1];
+  var rae=latLonToAzEl(rpt.lat,rpt.lon),sae=latLonToAzEl(spt.lat,spt.lon);
+  var rsc=projectToScreen(rae.az,rae.el),ssc=projectToScreen(sae.az,sae.el);
+  ['🌅 Sunrise','Sunset 🌇'].forEach(function(lbl,i){
+    var pt=i===0?rsc:ssc;
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',(pt[0]+(i===0?-12:12)).toFixed(1));
+    t.setAttribute('y',(pt[1]+22).toFixed(1));
+    t.setAttribute('fill','#FFD06D');t.setAttribute('font-size','11');t.setAttribute('font-weight','700');
+    t.setAttribute('font-family','monospace');t.setAttribute('text-anchor',i===0?'end':'start');t.setAttribute('opacity','0.9');
+    t.textContent=lbl;arcSvg.appendChild(t);
+  });
+}
+setTimeout(addSunLabels,400);
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lat, lon, JSON.stringify(seasonal)]);
