@@ -89,8 +89,8 @@ const D2R=Math.PI/180;
 const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
 
 // Read persisted camera+zoom from parent localStorage
-var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:17,set:false};}catch(e){return{rot:0,tilt:0,zoom:17,set:false};}})();
-var curRot=_cam.set?(_cam.rot||0):0, curTilt=_cam.set?(_cam.tilt||0):0, initZoom=_cam.zoom||17;
+var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{zoom:17};}catch(e){return{zoom:17};}})();
+var curRot=0, curTilt=0, initZoom=_cam.zoom||17;
 var curT='s', tL=null;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
