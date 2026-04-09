@@ -95,6 +95,10 @@ var curT='s', tL=null;
 
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date('${simIso}'));
+console.log('OSMBuildings map keys:', Object.keys(map));
+console.log('map.position:', map.position);
+console.log('map.getZoom:', map.getZoom);
+console.log('map.zoom:', map.zoom);
 tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 map.addGeoJSON(${obsGj});
