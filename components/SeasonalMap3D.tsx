@@ -27,9 +27,8 @@ L.circleMarker(${JSON.stringify(coords[coords.length-1])},{radius:6,color:'rgba(
     }).join('\n');
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.osmbuildings.org/3.1.0/OSMBuildings-Leaflet.js"></script>
+<link href="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.css" rel="stylesheet"/>
+<script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}html,body{overflow:hidden;}
 #map{width:100%;height:100vh;}
@@ -43,6 +42,7 @@ L.circleMarker(${JSON.stringify(coords[coords.length-1])},{radius:6,color:'rgba(
 </style></head><body>
 <div style="position:relative;width:100%;height:100vh;">
   <div id="map"></div>
+  <svg id="arc-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:18;overflow:visible;"></svg>
   <div class="hint">Seasonal sun path arcs · ${lat.toFixed(4)}, ${lon.toFixed(4)}</div>
   <div style="position:absolute;top:14px;right:14px;z-index:1000;display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(255,255,255,0.97);border:1.5px solid rgba(224,123,0,0.2);border-radius:14px;padding:10px 9px;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
     <div style="font-size:9px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px;">View Angle</div>
@@ -56,33 +56,57 @@ L.circleMarker(${JSON.stringify(coords[coords.length-1])},{radius:6,color:'rgba(
   </div>
 </div>
 <script>
-var map = L.map('map',{center:[${lat},${lon}],zoom:15,zoomControl:false,attributionControl:false,doubleClickZoom:false});
-L.control.zoom({position:'bottomright'}).addTo(map);
+var map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:15,minZoom:13,maxZoom:20,tilt:0,rotation:0,effects:['shadows'],attribution:''});
+map.setDate(new Date());
+map.addMapTiles('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png');
+map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 
-var osmb = new OSMBuildings(map);
-osmb.date(new Date());
-osmb.load('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
-
-L.tileLayer('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png').addTo(map);
-
-// Create pane above OSMBuildings
-map.createPane('arcPane');
-map.getPane('arcPane').style.zIndex = 650;
-
-// Observer pin
-L.circleMarker([${lat},${lon}],{radius:9,color:'#fff',weight:3,fillColor:'#E07B00',fillOpacity:1,pane:'arcPane'}).addTo(map);
-
-// Draw all 4 seasonal arcs
-${pathsJs}
+// Observer pin ring
+var rd=0.000035,ring=[];
+for(var i=0;i<=20;i++){var a=2*Math.PI*i/20;ring.push([${lon}+rd*Math.cos(a)/Math.cos(${lat}*Math.PI/180),${lat}+rd*Math.sin(a)]);}
+map.addGeoJSON({type:'FeatureCollection',features:[{type:'Feature',properties:{color:'#E07B00',height:1,minHeight:0},geometry:{type:'Polygon',coordinates:[ring]}}]});
 
 // Camera controls
 var curRot=0,curTilt=0;
-function applyCamera(){try{osmb.rotation(curRot);osmb.tilt(curTilt);}catch(e){}}
+function applyCamera(){map.setRotation(curRot);map.setTilt(curTilt);}
 document.getElementById('btn-up').onclick    = function(){curTilt=Math.max(0,curTilt-10);applyCamera();};
 document.getElementById('btn-down').onclick  = function(){curTilt=Math.min(70,curTilt+10);applyCamera();};
 document.getElementById('btn-left').onclick  = function(){curRot=(curRot-15+360)%360;applyCamera();};
 document.getElementById('btn-right').onclick = function(){curRot=(curRot+15)%360;applyCamera();};
 document.getElementById('btn-n').onclick     = function(){curRot=0;curTilt=0;applyCamera();};
+
+var COLORS={Summer:'#FF4444',Autumn:'#FF8C00',Spring:'#C8A800',Winter:'#5BAED8'};
+// Draw seasonal arcs as SVG overlay (screen-space, same as main 3D map)
+var D2R=Math.PI/180;
+var allSeasons=${JSON.stringify(Object.entries(seasonal).map(([sid,coords])=>({sid,coords,color:COLORS[sid]})))};
+var arcSvg=document.getElementById('arc-svg');
+
+function projectToScreen(lat,lon){
+  var W=document.getElementById('map').clientWidth||800,H=window.innerHeight||600;
+  var pos=map.project(lat,lon);
+  return pos?[pos.x,pos.y]:[W/2,H/2];
+}
+
+function drawSeasonalArcs(){
+  var W=document.getElementById('map').clientWidth||800,H=window.innerHeight||600;
+  arcSvg.setAttribute('viewBox','0 0 '+W+' '+H);
+  while(arcSvg.firstChild)arcSvg.removeChild(arcSvg.firstChild);
+  allSeasons.forEach(function(s){
+    if(!s.coords.length)return;
+    var sc=s.coords.map(function(c){return projectToScreen(c[0],c[1]);});
+    var line=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points',sc.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
+    line.setAttribute('fill','none');line.setAttribute('stroke',s.color);line.setAttribute('stroke-width','3');line.setAttribute('opacity','0.9');
+    arcSvg.appendChild(line);
+    var mid=sc[Math.floor(sc.length/2)];
+    var txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',mid[0].toFixed(1));txt.setAttribute('y',(mid[1]-10).toFixed(1));
+    txt.setAttribute('fill',s.color);txt.setAttribute('font-size','12');txt.setAttribute('font-weight','700');txt.setAttribute('font-family','monospace');txt.setAttribute('text-anchor','middle');
+    txt.textContent=s.sid;arcSvg.appendChild(txt);
+  });
+}
+map.on('change',drawSeasonalArcs);
+setTimeout(drawSeasonalArcs,500);
 </script></body></html>`;
   }, [lat, lon, JSON.stringify(seasonal)]);
 
