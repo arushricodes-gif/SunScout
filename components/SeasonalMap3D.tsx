@@ -61,7 +61,7 @@ const D2R=Math.PI/180;
 var _yc=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:15,set:false};}catch(e){return{rot:0,tilt:0,zoom:15,set:false};}})();
 var curRot=_yc.set?(_yc.rot||0):0, curTilt=_yc.set?(_yc.tilt||0):0, initZoom=_yc.zoom||15;
 
-const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:0,rotation:0,effects:['shadows'],attribution:''});
+const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
 map.setDate(new Date());
 map.addMapTiles('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
