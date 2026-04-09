@@ -31,14 +31,14 @@ export default function SeasonalMap3D({ lat, lon, seasonal }: Props) {
 <script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}html,body{background:#0A0C10;overflow:hidden;}
-#map{width:100%;height:580px;}
+#map{width:100%;height:100vh;}
 .cb{background:#fff;border:1.5px solid #E5E7EB;color:#555;font-size:13px;font-weight:700;padding:7px 11px;border-radius:9px;cursor:pointer;line-height:1;}
 .cb:hover{border-color:#E07B00;color:#E07B00;background:#FFF3E0;}
 .cb.N{border-color:rgba(224,123,0,.4);color:#E07B00;font-size:10px;font-weight:800;}
 .leaflet-control-attribution,.osmb-attribution{display:none!important;}
 .hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:25;color:rgba(255,255,255,.3);font-size:10px;pointer-events:none;font-family:monospace;background:rgba(7,9,16,.7);padding:4px 14px;border-radius:20px;white-space:nowrap;}
 </style></head><body>
-<div style="position:relative;width:100%;height:580px;">
+<div style="position:relative;width:100%;height:100vh;">
   <div id="map"></div>
   <div class="hint">Seasonal sun paths · click to move pin · drag · scroll zoom</div>
   <svg id="arc-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:18;overflow:visible;"></svg>
@@ -134,7 +134,7 @@ setTimeout(drawArcs,300);
   return (
     <iframe
       srcDoc={html}
-      style={{ width:'100%', height:'600px', border:'none', display:'block' }}
+      style={{ width:'100%', height:'100%', border:'none', display:'block' }}
       sandbox="allow-scripts allow-same-origin"
     />
   );
