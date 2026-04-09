@@ -99,7 +99,7 @@ tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
 map.addGeoJSON(${obsGj});
 
-function saveCamera(){try{var z=map.getZoom?map.getZoom():initZoom;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z,set:true}));}catch(e){}}
+function saveCamera(){try{var z=map.position?map.position.zoom:initZoom;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z||initZoom,set:true}));}catch(e){}}
 function setT(m){if(m===curT)return;curT=m;if(tL)map.remove(tL);tL=map.addMapTiles(TILES[m]);document.getElementById('bs').className='tile-btn'+(m==='s'?' on':'');document.getElementById('bsat').className='tile-btn'+(m==='sat'?' on':'');}
 
 // Click to move pin
@@ -182,6 +182,7 @@ mapEl.addEventListener('touchend',function(e){
   try{var rect=mapEl.getBoundingClientRect();var pos=map.unproject(touch.clientX-rect.left,touch.clientY-rect.top);if(pos&&pos.latitude!=null)window.parent.postMessage({type:'map3d_click',lat:pos.latitude,lon:pos.longitude},'*');}catch(err){}
 });
 
+map.on('change',function(){try{var z=map.position?map.position.zoom:initZoom;if(z)initZoom=z;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z||initZoom,set:true}));}catch(e){}});
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
 // Camera buttons
