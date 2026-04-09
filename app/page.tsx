@@ -25,8 +25,22 @@ function getLocalDateStr() {
 }
 
 export default function Home() {
-  const [entered, setEntered]         = useState(false);
-  const [coords, setCoords]           = useState<[number, number]>([12.97, 77.59]);
+  const [entered, setEntered]         = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      return p.has('lat') && p.has('lon');
+    }
+    return false;
+  });
+  const [coords, setCoords]           = useState<[number, number]>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const lat = parseFloat(p.get('lat') || '');
+      const lon = parseFloat(p.get('lon') || '');
+      if (!isNaN(lat) && !isNaN(lon)) return [lat, lon];
+    }
+    return [12.97, 77.59];
+  });
   const [tzOffset, setTzOffset]       = useState(330);
   const [isGpsCoords, setIsGpsCoords] = useState(false);
   const [targetDate, setTargetDate]   = useState(getLocalDateStr);

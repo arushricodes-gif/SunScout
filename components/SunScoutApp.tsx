@@ -54,6 +54,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [season, setSeason]       = useState('Today');
   const [showCustom, setShowCustom] = useState(false);
   const [showData, setShowData]   = useState(false);
+  const [copied, setCopied]       = useState(false);
 
   const [lat, lon] = coords;
   const data = solarData;
@@ -99,6 +100,22 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
       const d = SEASONS[s]; if (d) setTargetDate(d);
     }
   };
+
+  const handleShare = () => {
+    const url = `https://sun-scout.com/?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  // Update URL when coords change
+  if (typeof window !== 'undefined') {
+    const url = new URL(window.location.href);
+    url.searchParams.set('lat', lat.toFixed(5));
+    url.searchParams.set('lon', lon.toFixed(5));
+    window.history.replaceState({}, '', url.toString());
+  }
 
   const defaultSimPos = { sunLat:lat+0.001, sunLon:lon+0.001, shadowLat:lat-0.001, shadowLon:lon-0.001, azimuth:90, elevation:30 };
 
@@ -190,6 +207,13 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
         }}>📊 Data</button>
+
+        <button onClick={handleShare} style={{
+          background: copied ? '#22c55e' : WHITE,
+          color: copied ? '#fff' : TEXT_DARK,
+          border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`,
+          borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s',
+        }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
 
       </div>
 
