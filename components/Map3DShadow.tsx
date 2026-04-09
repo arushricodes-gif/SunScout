@@ -53,7 +53,6 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 </style></head><body>
 <div style="position:relative;width:100%;height:100vh;">
   <div id="map"></div>
-  <div class="tbadge">☀️ <span id="stm">${simTime}</span></div>
   <div class="tile-row">
     <button class="tile-btn on" id="bs" onclick="setT('s')">Street</button>
     <button class="tile-btn" id="bsat" onclick="setT('sat')">Satellite</button>
@@ -80,7 +79,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     </svg>
   </div>
   <svg id="arc-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:18;overflow:visible;"></svg>
-  <div id="sun" style="font-size:32px;line-height:1;pointer-events:none;position:absolute;transform:translate(-50%,-50%);display:none;filter:drop-shadow(0 0 18px rgba(255,200,0,.95));text-align:center;">☀️<div id="sun-time" style="font-size:11px;font-weight:700;font-family:monospace;background:#F39C12;color:#000;border-radius:5px;padding:1px 6px;margin-top:2px;white-space:nowrap;">--:--</div></div>
+  <div id="sun" style="font-size:32px;line-height:1;pointer-events:none;position:absolute;transform:translate(-50%,-50%);display:none;filter:drop-shadow(0 0 18px rgba(255,200,0,.95));text-align:center;">☀️<div id="sun-time" style="font-size:13px;font-weight:700;font-family:monospace;background:#F39C12;color:#000;border-radius:7px;padding:3px 10px;margin-top:4px;white-space:nowrap;">--:--</div></div>
   <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:22;">
     <div style="width:14px;height:14px;border-radius:50%;background:#E07B00;border:3px solid #fff;box-shadow:0 0 0 3px rgba(224,123,0,0.45);"></div>
   </div>
