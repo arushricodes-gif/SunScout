@@ -244,11 +244,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               sunTimes={data?.sunTimes ?? { rise:'--:--', set:'--:--', noon:'--:--' }}
               animating={animating}
               onLocationSelect={(la, lo) => setCoords([la, lo])}
-            /></>)
-          }
+            />
+          )}
 
           {view === '2d' && (
-            <>{<button onClick={()=>setView('3d')} style={{position:'absolute',top:14,left:14,zIndex:999,background:'rgba(255,255,255,0.95)',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:13,cursor:'pointer',color:'#E07B00'}}>← Back to 3D</button>}
             <Map2D
               lat={lat} lon={lon}
               pathData={data?.pathData ?? []}
@@ -259,13 +258,11 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               locationSelectMode={true}
               height={typeof window !== 'undefined' ? window.innerHeight - 62 : 700}
               onLocationSelect={(la, lo) => setCoords([la, lo])}
-            /></>)
-          }
+            />
+          )}
 
           {view === 'year' && (
-            <div style={{ height:'100%', overflowY:'auto', padding:16, position:'relative' }}>
-              {<button onClick={()=>setView('3d')} style={{position:'absolute',top:14,left:14,zIndex:999,background:'rgba(255,255,255,0.95)',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:13,cursor:'pointer',color:'#E07B00'}}>← Back to 3D</button>}
-              <div style={{height:48}}/>
+            <div style={{ height:'100%', overflowY:'auto', padding:16 }}>
               {data ? (
                 <>
                   <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />
