@@ -121,7 +121,8 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
         <button onClick={()=>setShowData(!showData)} style={{background:showData?ORG_LT:WHITE,border:'1px solid rgba(224,123,0,0.2)',borderRadius:8,padding:'8px 14px',fontWeight:700,fontSize:13,cursor:'pointer',flexShrink:0,color:TEXT_DARK}}>📊 Data</button>
       </div>
 
-      {/* MAP */}
+      {/* MAP + DATA ROW */}
+      <div style={{flex:1,display:'flex',overflow:'hidden'}}>
       <div style={{flex:1,position:'relative',overflow:'hidden'}}>
         {loading&&<div style={{position:'absolute',top:14,left:'50%',transform:'translateX(-50%)',zIndex:999,background:'rgba(224,123,0,0.92)',color:'#fff',borderRadius:10,padding:'7px 18px',fontWeight:700,fontSize:13,pointerEvents:'none'}}>☀️ Computing sun path…</div>}
         {el<=0&&data&&view!=='year'&&<div style={{position:'absolute',top:14,left:'50%',transform:'translateX(-50%)',zIndex:999,background:'rgba(10,12,22,0.9)',color:'#F39C12',borderRadius:10,padding:'7px 18px',fontWeight:600,fontSize:12,whiteSpace:'nowrap',pointerEvents:'none'}}>🌙 Sun below horizon · Rise {data.sunTimes.rise} · Set {data.sunTimes.set}</div>}
@@ -148,9 +149,10 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
         </div>}
       </div>
 
-      {/* DATA PANEL */}
-      {showData&&data&&<div style={{background:WHITE,borderTop:'1px solid rgba(224,123,0,0.15)',padding:'10px 16px',flexShrink:0,maxHeight:'32vh',overflowY:'auto'}}>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:10}}>
+      </div>
+      {/* DATA PANEL - right side */}
+      {showData&&data&&<div style={{width:280,background:WHITE,borderLeft:'1px solid rgba(224,123,0,0.15)',padding:'16px',flexShrink:0,overflowY:'auto',display:'flex',flexDirection:'column',gap:10}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:10}}>
           {[{label:'Time',val:simTime},{label:'Azimuth',val:`${az.toFixed(1)}°`},{label:'Elevation',val:`${el.toFixed(1)}°`},{label:'Radiation',val:`${data.radiation} W/m²`}].map(m=>(
             <div key={m.label} style={{background:'#FFF8F0',borderRadius:8,padding:'8px 12px',textAlign:'center'}}>
               <div style={{fontSize:10,color:TEXT_SUB,marginBottom:3,textTransform:'uppercase',letterSpacing:'.05em'}}>{m.label}</div>
@@ -160,6 +162,7 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
         </div>
         <SolarChart pathData={data.pathData} simTime={simTime}/>
       </div>}
+      </div>
     </div>
   );
 }
