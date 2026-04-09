@@ -111,12 +111,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
   // Update URL when coords change
   if (typeof window !== 'undefined') {
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('lat', lat.toFixed(5));
-      url.searchParams.set('lon', lon.toFixed(5));
-      window.history.replaceState({}, '', url.toString());
-    } catch {}
+    const url = new URL(window.location.href);
+    url.searchParams.set('lat', lat.toFixed(5));
+    url.searchParams.set('lon', lon.toFixed(5));
+    window.history.replaceState({}, '', url.toString());
   }
 
   const defaultSimPos = { sunLat:lat+0.001, sunLon:lon+0.001, shadowLat:lat-0.001, shadowLon:lon-0.001, azimuth:90, elevation:30 };
@@ -247,13 +245,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               animating={animating}
               onLocationSelect={(la, lo) => setCoords([la, lo])}
             />
-            </>
           )}
 
           {view === '2d' && (
-            <>
-              <button onClick={()=>setView('3d')} style={{position:'absolute',top:14,left:14,zIndex:999,background:'rgba(255,255,255,0.95)',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:13,cursor:'pointer',color:'#E07B00'}}>← Back to 3D</button>
-              <Map2D
+            <Map2D
               lat={lat} lon={lon}
               pathData={data?.pathData ?? []}
               simPos={data?.simPos ?? null}
@@ -264,12 +259,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               height={typeof window !== 'undefined' ? window.innerHeight - 62 : 700}
               onLocationSelect={(la, lo) => setCoords([la, lo])}
             />
-            </>
           )}
 
           {view === 'year' && (
-            <div style={{ height:'100%', overflowY:'auto', padding:16, position:'relative' }}>
-              <button onClick={()=>setView('3d')} style={{marginBottom:12,background:'rgba(255,255,255,0.95)',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:13,cursor:'pointer',color:'#E07B00',display:'block'}}>← Back to 3D</button>
+            <div style={{ height:'100%', overflowY:'auto', padding:16 }}>
               {data ? (
                 <>
                   <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />
