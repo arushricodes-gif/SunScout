@@ -183,6 +183,19 @@ mapEl.addEventListener('touchend',function(e){
 });
 
 map.on('change',function(){try{var z=map.position?map.position.zoom:initZoom;if(z)initZoom=z;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z||initZoom,set:true}));}catch(e){}});
+// Track zoom via wheel since OSMBuildings has no getZoom API
+document.getElementById('map').addEventListener('wheel', function(){
+  setTimeout(function(){
+    try{
+      var z = map.position ? map.position.zoom : initZoom;
+      if(z && z !== initZoom){
+        initZoom = z;
+        window.parent.localStorage.setItem('ss_cam', JSON.stringify({rot:curRot,tilt:curTilt,zoom:z,set:true}));
+      }
+    }catch(e){}
+  }, 300);
+}, {passive:true});
+
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
 // Camera buttons
