@@ -203,7 +203,13 @@ if(isAnimating)startAnim();
 window.addEventListener('message',function(e){
   if(!e.data)return;
   if(e.data.type==='setAnimating'){isAnimating=e.data.value;if(isAnimating)startAnim();else stopAnim();}
-  if(e.data.type==='newDate'){try{osmb.date(new Date(e.data.iso));}catch(e){} allPts=e.data.pts; ai=0; updateView(allPts[0]);}
+  if(e.data.type==='newDate'){
+    try{osmb.date(new Date(e.data.iso));}catch(ex){}
+    allPts=e.data.pts;
+    ai=0;
+    if(allPts[0])updateView(allPts[0]);
+    drawArc();
+  }
   if(e.data.type==='seekTime'&&!isAnimating){
     var parts=e.data.time.split(':'),mins=parseInt(parts[0])*60+parseInt(parts[1]),best=0,bd=99999;
     for(var j=0;j<allPts.length;j++){var t=allPts[j].time.split(':'),d=Math.abs(parseInt(t[0])*60+parseInt(t[1])-mins);if(d<bd){bd=d;best=j;}}
