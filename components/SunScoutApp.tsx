@@ -44,13 +44,13 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
 
   const handleSeason=(s:string)=>{ setSeason(s); if(s==='Custom date'){setShowCustom(true);return;} setShowCustom(false); if(s==='Today'){const now=new Date();setTargetDate(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`);}else{const d=SEASONS[s];if(d)setTargetDate(d);} };
 
-  const div=<div style={{width:1,height:26,background:'rgba(224,123,0,0.2)',flexShrink:0}}/>;
+  const div=<div style={{width:1,height:32,background:'rgba(224,123,0,0.2)',flexShrink:0}}/>;
 
   return (
     <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden',background:'#F9F9F7'}}>
 
       {/* TOPBAR */}
-      <div style={{background:WHITE,borderBottom:'1px solid rgba(224,123,0,0.15)',padding:'7px 14px',display:'flex',alignItems:'center',gap:8,flexShrink:0,flexWrap:'wrap'}}>
+      <div style={{background:WHITE,borderBottom:'1px solid rgba(224,123,0,0.15)',padding:'12px 20px',display:'flex',alignItems:'center',gap:12,flexShrink:0,flexWrap:'wrap'}}>
 
         <div onClick={onHome} style={{display:'flex',alignItems:'center',gap:7,cursor:'pointer',flexShrink:0,userSelect:'none'}}>
           <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
@@ -66,47 +66,47 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
             <circle cx="18" cy="18" r="6.5" fill="#E07B00"/>
             <circle cx="15.5" cy="15.5" r="2" fill="rgba(255,255,255,0.3)"/>
           </svg>
-          <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,color:ORG,letterSpacing:2}}>SUN SCOUT</span>
+          <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:ORG,letterSpacing:2}}>SUN SCOUT</span>
         </div>
 
         {div}
 
         <form onSubmit={handleSearch} style={{display:'flex',gap:5,flex:'1 1 160px',minWidth:140}}>
-          <input className="input-field" placeholder="Search for a place..." value={searchQuery} onChange={e=>setSearch(e.target.value)} style={{flex:1,padding:'5px 9px',fontSize:12}}/>
-          <button type="submit" className="btn-primary" disabled={searching} style={{padding:'5px 10px',fontSize:12}}>{searching?'…':'🔍'}</button>
+          <input className="input-field" placeholder="Search for a place..." value={searchQuery} onChange={e=>setSearch(e.target.value)} style={{flex:1,padding:'8px 12px',fontSize:13}}/>
+          <button type="submit" className="btn-primary" disabled={searching} style={{padding:'8px 14px',fontSize:13}}>{searching?'…':'🔍'}</button>
         </form>
 
-        <button className="btn-primary" onClick={onGpsClick} style={{padding:'5px 10px',fontSize:12,whiteSpace:'nowrap',flexShrink:0}}>📍 My location</button>
+        <button className="btn-primary" onClick={onGpsClick} style={{padding:'8px 14px',fontSize:13,whiteSpace:'nowrap',flexShrink:0}}>📍 My location</button>
 
-        <div style={{background:ORG_LT,borderRadius:7,padding:'4px 9px',fontSize:11,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap',flexShrink:0}}>{lat.toFixed(3)}°, {lon.toFixed(3)}°</div>
+        <div style={{background:ORG_LT,borderRadius:7,padding:'4px 9px',fontSize:13,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap',flexShrink:0}}>{lat.toFixed(3)}°, {lon.toFixed(3)}°</div>
 
         {div}
 
-        <select value={season} onChange={e=>handleSeason(e.target.value)} style={{padding:'5px 8px',fontSize:12,borderRadius:7,border:'1px solid rgba(224,123,0,0.25)',background:WHITE,color:TEXT_DARK,cursor:'pointer',flexShrink:0}}>
+        <select value={season} onChange={e=>handleSeason(e.target.value)} style={{padding:'8px 12px',fontSize:13,borderRadius:8,border:'1px solid rgba(224,123,0,0.25)',background:WHITE,color:TEXT_DARK,cursor:'pointer',flexShrink:0}}>
           {Object.keys(SEASONS).map(k=><option key={k} value={k}>{k}</option>)}
         </select>
-        {showCustom&&<input type="date" value={targetDate} onChange={e=>setTargetDate(e.target.value)} style={{padding:'5px 8px',fontSize:12,borderRadius:7,border:'1px solid rgba(224,123,0,0.25)',background:WHITE,color:TEXT_DARK}}/>}
+        {showCustom&&<input type="date" value={targetDate} onChange={e=>setTargetDate(e.target.value)} style={{padding:'8px 12px',fontSize:13,borderRadius:8,border:'1px solid rgba(224,123,0,0.25)',background:WHITE,color:TEXT_DARK}}/>}
 
         {div}
 
         {data&&<>
-          <span style={{fontSize:11,color:TEXT_SUB,whiteSpace:'nowrap'}}>🌅 <b style={{color:ORG}}>{data.sunTimes.rise}</b></span>
-          <span style={{fontSize:11,color:TEXT_SUB,whiteSpace:'nowrap'}}>🌇 <b style={{color:ORG}}>{data.sunTimes.set}</b></span>
-          <span style={{fontSize:11,color:TEXT_SUB,whiteSpace:'nowrap'}}>☀️ noon <b style={{color:ORG}}>{data.sunTimes.noon}</b></span>
+          <span style={{fontSize:13,color:TEXT_SUB,whiteSpace:'nowrap'}}>🌅 <b style={{color:ORG}}>{data.sunTimes.rise}</b></span>
+          <span style={{fontSize:13,color:TEXT_SUB,whiteSpace:'nowrap'}}>🌇 <b style={{color:ORG}}>{data.sunTimes.set}</b></span>
+          <span style={{fontSize:13,color:TEXT_SUB,whiteSpace:'nowrap'}}>☀️ noon <b style={{color:ORG}}>{data.sunTimes.noon}</b></span>
         </>}
 
         <div style={{flex:1}}/>
 
-        <div style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',fontSize:12,fontWeight:700,whiteSpace:'nowrap'}} onClick={toggleAnim}>
-          <div style={{width:34,height:19,borderRadius:10,background:animating?ORG:'#D1D5DB',position:'relative',transition:'background .2s',flexShrink:0}}>
-            <div style={{width:13,height:13,borderRadius:'50%',background:'#fff',position:'absolute',top:3,left:animating?18:3,transition:'left .2s'}}/>
+        <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:14,fontWeight:700,whiteSpace:'nowrap'}} onClick={toggleAnim}>
+          <div style={{width:40,height:22,borderRadius:11,background:animating?ORG:'#D1D5DB',position:'relative',transition:'background .2s',flexShrink:0}}>
+            <div style={{width:16,height:16,borderRadius:'50%',background:'#fff',position:'absolute',top:3,left:animating?21:3,transition:'left .2s'}}/>
           </div>
           {animating?'⏸ Pause':'▶ Play'}
         </div>
 
         {!animating&&<div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <label style={{display:'flex',alignItems:'center',gap:4,fontSize:11,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap'}}>Hr {simH}<input type="range" min={0} max={23} value={simH} onChange={e=>setSimHM(+e.target.value,simM)} style={{width:65,accentColor:ORG}}/></label>
-          <label style={{display:'flex',alignItems:'center',gap:4,fontSize:11,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap'}}>Min {simM}<input type="range" min={0} max={55} step={5} value={simM} onChange={e=>setSimHM(simH,+e.target.value)} style={{width:65,accentColor:ORG}}/></label>
+          <label style={{display:'flex',alignItems:'center',gap:4,fontSize:13,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap'}}>Hr {simH}<input type="range" min={0} max={23} value={simH} onChange={e=>setSimHM(+e.target.value,simM)} style={{width:80,accentColor:ORG}}/></label>
+          <label style={{display:'flex',alignItems:'center',gap:4,fontSize:13,fontWeight:700,color:TEXT_DARK,whiteSpace:'nowrap'}}>Min {simM}<input type="range" min={0} max={55} step={5} value={simM} onChange={e=>setSimHM(simH,+e.target.value)} style={{width:80,accentColor:ORG}}/></label>
         </div>}
 
         {div}
@@ -114,11 +114,11 @@ export default function SunScoutApp({ coords,setCoords,targetDate,setTargetDate,
         <div style={{display:'flex',gap:3,flexShrink:0}}>
           {(['3d','2d','year'] as const).map((id)=>{
             const labels:Record<string,string>={'3d':'🏙 3D','2d':'🗺 2D','year':'🔄 Seasons'};
-            return <button key={id} onClick={()=>setView(id)} style={{background:view===id?ORG:WHITE,color:view===id?'#fff':TEXT_DARK,border:`1px solid ${view===id?ORG:'rgba(224,123,0,0.2)'}`,borderRadius:7,padding:'5px 9px',fontWeight:700,fontSize:11,cursor:'pointer',whiteSpace:'nowrap'}}>{labels[id]}</button>;
+            return <button key={id} onClick={()=>setView(id)} style={{background:view===id?ORG:WHITE,color:view===id?'#fff':TEXT_DARK,border:`1px solid ${view===id?ORG:'rgba(224,123,0,0.2)'}`,borderRadius:8,padding:'8px 14px',fontWeight:700,fontSize:13,cursor:'pointer',whiteSpace:'nowrap'}}>{labels[id]}</button>;
           })}
         </div>
 
-        <button onClick={()=>setShowData(!showData)} style={{background:showData?ORG_LT:WHITE,border:'1px solid rgba(224,123,0,0.2)',borderRadius:7,padding:'5px 9px',fontWeight:700,fontSize:11,cursor:'pointer',flexShrink:0,color:TEXT_DARK}}>📊 Data</button>
+        <button onClick={()=>setShowData(!showData)} style={{background:showData?ORG_LT:WHITE,border:'1px solid rgba(224,123,0,0.2)',borderRadius:8,padding:'8px 14px',fontWeight:700,fontSize:13,cursor:'pointer',flexShrink:0,color:TEXT_DARK}}>📊 Data</button>
       </div>
 
       {/* MAP */}
