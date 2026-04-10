@@ -58,6 +58,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [showCustom, setShowCustom]   = useState(false);
   const [showData, setShowData]       = useState(false);
   const [copied, setCopied]           = useState(false);
+  const [showAbout, setShowAbout]     = useState(false);
+  const [feedback, setFeedback]       = useState('');
+  const [fbName, setFbName]           = useState('');
+  const [fbSent, setFbSent]           = useState(false);
 
   const [lat, lon] = coords;
   const data = solarData;
@@ -108,6 +112,19 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
     } else {
       const d = SEASONS[s]; if (d) setTargetDate(d);
     }
+  };
+
+  const handleFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch('https://formspree.io/f/mqegvpwb', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name:fbName, message:feedback})
+      });
+      setFbSent(true);
+      setFeedback(''); setFbName('');
+    } catch {}
   };
 
   const handleShare = () => {
@@ -225,6 +242,13 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s',
         }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
 
+        <button onClick={() => setShowAbout(!showAbout)} style={{
+          background: showAbout ? '#1A1A1A' : WHITE,
+          color: showAbout ? '#fff' : TEXT_DARK,
+          border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`,
+          borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
+        }}>ℹ️ About</button>
+
       </div>
 
       {/* MAP + DATA ROW */}
@@ -307,6 +331,33 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
             </div>
           )}
         </div>
+
+        {showAbout && (
+          <div style={{ width:300, background:WHITE, borderLeft:'1px solid rgba(224,123,0,0.15)', padding:'20px', flexShrink:0, overflowY:'auto', display:'flex', flexDirection:'column', gap:16 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.08em' }}>About</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ background:'#FFF8F0', borderRadius:10, padding:'14px' }}>
+                <div style={{ fontSize:13, fontWeight:800, color:'#1A1A1A', marginBottom:4 }}>Sun Scout ☀️</div>
+                <div style={{ fontSize:12, color:'#666', lineHeight:1.6 }}>A free solar path visualizer that shows exactly how sunlight falls on any property — hour by hour, season by season, with real 3D building shadows.</div>
+              </div>
+              <a href="https://www.linkedin.com/in/arushri-gangji-056108381/" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:10, background:'#0A66C2', borderRadius:10, padding:'12px 16px', textDecoration:'none' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <span style={{ color:'white', fontWeight:700, fontSize:13 }}>Connect on LinkedIn</span>
+              </a>
+            </div>
+            <div style={{ width:'100%', height:1, background:'rgba(224,123,0,0.15)' }}/>
+            <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.08em' }}>Feedback</div>
+            {fbSent ? (
+              <div style={{ background:'#f0fdf4', borderRadius:10, padding:'14px', fontSize:13, color:'#166534', fontWeight:600 }}>✓ Thanks for your feedback!</div>
+            ) : (
+              <form onSubmit={handleFeedback} style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                <input value={fbName} onChange={e=>setFbName(e.target.value)} placeholder="Your name (optional)" style={{ padding:'8px 10px', fontSize:12, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:'#FFFBF5' }}/>
+                <textarea value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Share your thoughts, bugs, or ideas..." required rows={4} style={{ padding:'8px 10px', fontSize:12, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:'#FFFBF5', resize:'vertical', fontFamily:'inherit' }}/>
+                <button type="submit" style={{ background:'#E07B00', color:'#fff', border:'none', borderRadius:8, padding:'9px', fontWeight:700, fontSize:13, cursor:'pointer' }}>Send Feedback</button>
+              </form>
+            )}
+          </div>
+        )}
 
         {showData && data && (
           <div style={{ width:260, background:WHITE, borderLeft:'1px solid rgba(224,123,0,0.15)', padding:'16px', flexShrink:0, overflowY:'auto', display:'flex', flexDirection:'column', gap:12 }}>
