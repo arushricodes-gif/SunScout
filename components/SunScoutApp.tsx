@@ -59,6 +59,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [showData, setShowData]       = useState(false);
   const [copied, setCopied]           = useState(false);
   const [showAbout, setShowAbout]     = useState(false);
+  const [views, setViews]             = useState<number|null>(null);
   const [feedback, setFeedback]       = useState('');
   const [fbName, setFbName]           = useState('');
   const [fbSent, setFbSent]           = useState(false);
@@ -113,6 +114,13 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
       const d = SEASONS[s]; if (d) setTargetDate(d);
     }
   };
+
+  useEffect(() => {
+    fetch('https://api.countapi.xyz/hit/sun-scout.com/visits')
+      .then(r => r.json())
+      .then(d => setViews(d.value))
+      .catch(() => {});
+  }, []);
 
   const handleFeedback = async (e: React.FormEvent) => {
     e.preventDefault();
