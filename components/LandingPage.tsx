@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 export default function LandingPage({ onEnter }: { onEnter: () => void }) {
   const [hovered, setHovered] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [fbName, setFbName] = useState('');
   const [fbSent, setFbSent] = useState(false);
@@ -22,7 +23,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
   };
 
   return (
-    <div style={{ minHeight:'100vh', background:'#FFFBF5', fontFamily:"'Plus Jakarta Sans',sans-serif", color:'#1A1A1A', display:'flex', flexDirection:'column', alignItems:'center', overflow:'hidden' }}>
+    <div style={{ minHeight:'100vh', position:'relative', background:'#FFFBF5', fontFamily:"'Plus Jakarta Sans',sans-serif", color:'#1A1A1A', display:'flex', flexDirection:'column', alignItems:'center', overflow:'hidden' }}>
 
       <div style={{ width:'100%', maxWidth:1100, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'24px 40px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
