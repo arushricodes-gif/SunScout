@@ -59,7 +59,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
   </div>
   <div class="hint">Click map to move pin · Drag · Scroll zoom · Use buttons to tilt/rotate</div>
   <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(255,255,255,0.97);border:1.5px solid rgba(224,123,0,0.2);border-radius:14px;padding:10px 9px;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
-    <div style="font-size:9px;font-weight:800;color:#E07B00;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1px;white-space:nowrap;">Set View Angle</div>
+    <div style="font-size:16px;font-weight:800;color:#e23744;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;white-space:nowrap;line-height:1.3;">SET VIEW ANGLE<br/><span style="font-size:11px;font-weight:500;color:#e23744;text-transform:none;letter-spacing:0;opacity:0.8;">e.g. Select your Balcony viewing angle</span></div>
     <button class="cb" id="btn-up">▲</button>
     <div style="display:flex;gap:4px;">
       <button class="cb" id="btn-left">◀</button>
