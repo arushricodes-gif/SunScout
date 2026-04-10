@@ -50,7 +50,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 .cb:hover{border-color:#E07B00;color:#E07B00;background:#FFF3E0;}
 .cb.N{border-color:rgba(224,123,0,.4);color:#E07B00;font-size:10px;font-weight:800;}
 .leaflet-control-attribution,.osmb-attribution{display:none!important;}
-</style></head><body>
+@media(max-width:768px){.view-controls{display:none!important;}}</style></head><body>
 <div style="position:relative;width:100%;height:100vh;">
   <div id="map"></div>
   <div class="tile-row">
@@ -58,7 +58,7 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     <button class="tile-btn" id="bsat" onclick="setT('sat')">Satellite</button>
   </div>
   <div class="hint">Click map to move pin · Drag · Scroll zoom · Use buttons to tilt/rotate</div>
-  <div style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(255,255,255,0.97);border:1.5px solid rgba(224,123,0,0.2);border-radius:14px;padding:10px 9px;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+  <div class="view-controls" style="position:absolute;top:14px;right:14px;z-index:25;display:flex;flex-direction:column;gap:5px;align-items:center;background:rgba(255,255,255,0.97);border:1.5px solid rgba(224,123,0,0.2);border-radius:14px;padding:10px 9px;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
     <div style="font-size:16px;font-weight:800;color:#e23744;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;white-space:nowrap;line-height:1.3;">SET VIEW ANGLE<br/><span style="font-size:11px;font-weight:500;color:#e23744;text-transform:none;letter-spacing:0;opacity:0.8;">e.g. Select your Balcony viewing angle</span></div>
     <button class="cb" id="btn-up">▲</button>
     <div style="display:flex;gap:4px;">
