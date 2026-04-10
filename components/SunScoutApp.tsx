@@ -253,7 +253,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           color: showAbout ? '#fff' : TEXT_DARK,
           border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
-        }}>ℹ️</button>
+        }}>info</button>
 
       </div>
 
