@@ -4,6 +4,22 @@ import { useState } from 'react';
 
 export default function LandingPage({ onEnter }: { onEnter: () => void }) {
   const [hovered, setHovered] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [fbName, setFbName] = useState('');
+  const [fbSent, setFbSent] = useState(false);
+
+  const handleFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch('https://formspree.io/f/mqegvpwb', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name:fbName, message:feedback})
+      });
+      setFbSent(true);
+      setFeedback(''); setFbName('');
+    } catch {}
+  };
 
   return (
     <div style={{ minHeight:'100vh', background:'#FFFBF5', fontFamily:"'Plus Jakarta Sans',sans-serif", color:'#1A1A1A', display:'flex', flexDirection:'column', alignItems:'center', overflow:'hidden' }}>
