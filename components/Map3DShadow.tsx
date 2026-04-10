@@ -139,7 +139,8 @@ function drawArc(){
   // Dots
   ab.forEach(function(p,i){if(i%3!==0)return;const s=projectToScreen(p.az,p.el);const d=document.createElementNS('http://www.w3.org/2000/svg','circle');d.setAttribute('cx',s[0].toFixed(1));d.setAttribute('cy',s[1].toFixed(1));d.setAttribute('r','2.5');d.setAttribute('fill','#FFD06D');d.setAttribute('opacity','0.85');arcSvg.appendChild(d);});
   // Rise/Set labels
-  [{pt:sc[0],txt:'🌅 Rise',anchor:'end'},{pt:sc[sc.length-1],txt:'Set 🌇',anchor:'start'}].forEach(function(lbl){
+  var riseLabel='🌅 Rise ' + '${sunTimes.rise}', setLabel='Set 🌇 ' + '${sunTimes.set}';
+  [{pt:sc[0],txt:riseLabel,anchor:'end'},{pt:sc[sc.length-1],txt:setLabel,anchor:'start'}].forEach(function(lbl){
     const ci=document.createElementNS('http://www.w3.org/2000/svg','circle');ci.setAttribute('cx',lbl.pt[0].toFixed(1));ci.setAttribute('cy',lbl.pt[1].toFixed(1));ci.setAttribute('r','4.5');ci.setAttribute('fill','#F39C12');arcSvg.appendChild(ci);
     const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',(lbl.pt[0]+(lbl.anchor==='end'?-10:10)).toFixed(1));t.setAttribute('y',(lbl.pt[1]-8).toFixed(1));t.setAttribute('fill','#FFD06D');t.setAttribute('font-size','11');t.setAttribute('font-family','monospace');t.setAttribute('font-weight','600');t.setAttribute('text-anchor',lbl.anchor);t.setAttribute('opacity','0.9');t.textContent=lbl.txt;arcSvg.appendChild(t);
   });

@@ -116,9 +116,9 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   };
 
   useEffect(() => {
-    fetch('https://api.countapi.xyz/hit/sun-scout.com/visits')
+    fetch('/api/views')
       .then(r => r.json())
-      .then(d => setViews(d.value))
+      .then(d => setViews(d.views))
       .catch(() => {});
   }, []);
 
@@ -194,11 +194,9 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
         <Divider />
 
-        {data && <>
-          <span style={{ fontSize:13, color:TEXT_SUB, whiteSpace:'nowrap' }}>🌅 <b style={{ color:ORG }}>{data.sunTimes.rise}</b></span>
-          <span style={{ fontSize:13, color:TEXT_SUB, whiteSpace:'nowrap' }}>🌇 <b style={{ color:ORG }}>{data.sunTimes.set}</b></span>
-          <span style={{ fontSize:13, color:TEXT_SUB, whiteSpace:'nowrap' }}>☀️ <b style={{ color:ORG }}>{data.sunTimes.noon}</b></span>
-        </>}
+        <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
+          📅 {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
+        </div>
 
         <div style={{ flex:1 }} />
 
@@ -222,15 +220,15 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
         <Divider />
 
-        <div style={{ display:'flex', gap:4, flexShrink:0 }}>
+        <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
             const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year Summary' };
             return (
               <button key={id} onClick={() => switchView(id)} style={{
-                background: view===id ? ORG : WHITE,
-                color: view===id ? '#fff' : TEXT_DARK,
-                border: `1px solid ${view===id ? ORG : 'rgba(224,123,0,0.2)'}`,
-                borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap',
+                background: view===id ? ORG : 'transparent',
+                color: view===id ? '#fff' : TEXT_SUB,
+                border: 'none',
+                borderRadius:8, padding:'6px 12px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap', transition:'all .15s',
               }}>{labels[id]}</button>
             );
           })}
@@ -372,12 +370,13 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           <div style={{ width:260, background:WHITE, borderLeft:'1px solid rgba(224,123,0,0.15)', padding:'16px', flexShrink:0, overflowY:'auto', display:'flex', flexDirection:'column', gap:12 }}>
             <div style={{ fontSize:11, fontWeight:700, color:ORG, textTransform:'uppercase', letterSpacing:'.08em' }}>Solar Data</div>
             {[
-              { label:'Time', val:simTime },
-              { label:'Azimuth', val:`${az.toFixed(1)}°` },
-              { label:'Elevation', val:`${el.toFixed(1)}°` },
-              { label:'Radiation', val:`${data.radiation} W/m²` },
+              { label:'Time', val:simTime, icon:'🕐' },
+              { label:'Azimuth', val:`${az.toFixed(1)}°`, icon:'🧭' },
+              { label:'Elevation', val:`${el.toFixed(1)}°`, icon:'☀️' },
+              { label:'Radiation', val:`${data.radiation} W/m²`, icon:'⚡' },
             ].map(m => (
               <div key={m.label} style={{ background:'#FFF8F0', borderRadius:10, padding:'12px 14px' }}>
+                <div style={{ fontSize:16, marginBottom:4 }}>{m.icon}</div>
                 <div style={{ fontSize:10, color:TEXT_SUB, marginBottom:4, textTransform:'uppercase', letterSpacing:'.06em' }}>{m.label}</div>
                 <div style={{ fontSize:20, fontWeight:800, color:ORG }}>{m.val}</div>
               </div>
