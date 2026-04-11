@@ -168,7 +168,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <Divider />
 
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
-          <input className="input-field" placeholder="Search for a location..." value={searchQuery}
+          <input className="input-field" placeholder="Search for landmarks" value={searchQuery}
             onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'7px 11px', fontSize:13 }} />
           <button type="submit" className="btn-primary" disabled={searching}
             style={{ padding:'7px 13px', fontSize:13 }}>{searching ? '…' : '🔍'}</button>
@@ -323,7 +323,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               {data ? (
                 <>
                   {yearMapView === '2d' && <SeasonalMap lat={lat} lon={lon} seasonal={data.seasonal} />}
-                  {yearMapView === '3d' && <SeasonalMap3D lat={lat} lon={lon} seasonal={data.seasonal} />}
+                  
                   <div style={{ display:'flex', justifyContent:'center', gap:20, flexWrap:'wrap', background:WHITE, padding:'10px 20px', borderRadius:10, marginTop:10, border:'1px solid rgba(224,123,0,0.15)' }}>
                     {[{label:'Summer',color:'#FF4444'},{label:'Autumn',color:'#FF8C00'},{label:'Spring',color:'#C8A800'},{label:'Winter',color:'#5BAED8'}].map(s => (
                       <div key={s.label} style={{ display:'flex', alignItems:'center', gap:7 }}>
@@ -343,10 +343,10 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
             <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.08em' }}>About</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               <div style={{ background:'#FFF8F0', borderRadius:10, padding:'14px' }}>
-                <div style={{ fontSize:13, fontWeight:800, color:'#1A1A1A', marginBottom:4 }}>Sun Scout ☀️</div>
-                <div style={{ fontSize:12, color:'#666', lineHeight:1.6 }}>A free solar path visualizer that shows exactly how sunlight falls on any property — hour by hour, season by season, with real 3D building shadows.</div>
+                <div style={{ fontSize:13, fontWeight:800, color:'#1A1A1A', marginBottom:4 }}>Arushri Gangji</div>
+                <div style={{ fontSize:12, color:'#666', lineHeight:1.6 }}>Freshman at BITS Pilani Dubai Campus. I build tools that solve real problems — Sun Scout is my attempt at making property research more honest. Into design, data, and figuring out how things work.</div>
               </div>
-              <div style={{ fontSize:12, color:'#888' }}>Built by <b style={{color:'#1A1A1A'}}>Arushri Gangji</b><br/>Freshman, BITS Pilani Dubai Campus</div>
+              
               <a href="https://www.linkedin.com/in/arushri-gangji-056108381/" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:10, background:'#0A66C2', borderRadius:10, padding:'12px 16px', textDecoration:'none' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                 <span style={{ color:'white', fontWeight:700, fontSize:13 }}>Connect on LinkedIn</span>
