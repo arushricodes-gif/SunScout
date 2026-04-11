@@ -239,21 +239,21 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           color: showData ? '#fff' : TEXT_DARK,
           border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
-        }} className="hide-mobile">📊 Data</button>
+        }}>📊 Data</button>
 
         <button onClick={handleShare} style={{
           background: copied ? '#22c55e' : WHITE,
           color: copied ? '#fff' : TEXT_DARK,
           border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s',
-        }} className="hide-mobile">{copied ? '✓ Copied!' : '🔗 Share'}</button>
+        }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
 
         <button onClick={() => setShowAbout(!showAbout)} style={{
           background: showAbout ? '#1A1A1A' : WHITE,
           color: showAbout ? '#fff' : TEXT_DARK,
           border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
-        }} className="hide-mobile">About</button>
+        }}>About</button>
 
       </div>
 
