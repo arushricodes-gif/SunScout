@@ -82,7 +82,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   };
 
   const switchView = (v: '3d'|'2d'|'year') => {
-    if (v !== 'year') setPrevView(v as '3d'|'2d');
+    if (v !== 'year' && v !== '3d') setPrevView(v);
     if (v === 'year') setYearMapView(prevView);
     setView(v);
   };
