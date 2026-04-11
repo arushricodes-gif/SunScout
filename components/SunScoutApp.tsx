@@ -49,7 +49,7 @@ const SunLogo = () => (
 const Divider = () => <div style={{ width:1, height:30, background:'rgba(224,123,0,0.2)', flexShrink:0 }} />;
 
 export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDate, simTime, setSimTime, animating, setAnimating, solarData, loading, onGpsClick, onHome }: Props) {
-  const [view, setView]               = useState<'3d'|'2d'|'year'>('2d');
+  const [view, setView]               = useState<'3d'|'2d'|'year'>('3d');
   const [prevView, setPrevView]       = useState<'2d'>('2d');
   const [yearMapView, setYearMapView] = useState<'2d'>('2d');
   const [searchQuery, setSearch]      = useState('');
