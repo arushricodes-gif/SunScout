@@ -336,9 +336,13 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
             <div style={{ fontSize:11, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.08em' }}>About</div>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               <div style={{ background:'#FFF8F0', borderRadius:10, padding:'14px' }}>
-                <div style={{ fontSize:13, fontWeight:800, color:'#1A1A1A', marginBottom:6 }}>Built by Arushri Gangji.</div><div style={{ fontSize:11, color:'#888', lineHeight:1.7 }}>
-Freshman at BITS Pilani, Dubai. Classical dancer. Painter. Cyclist. Perpetually bothered by problems that don't have good solutions yet.
-SunScout is my attempt at making property research more honest. I care about design, data, and understanding how things actually work — not just on the surface, but all the way down.</div>
+                <div style={{ fontSize:13, fontWeight:800, color:'#1A1A1A', marginBottom:8 }}>Built by Arushri Gangji.</div>
+                <div style={{ fontSize:11, color:'#888', lineHeight:1.7, marginBottom:6 }}>Freshman at BITS Pilani, Dubai. Classical dancer, painter, cyclist.</div>
+                <div style={{ fontSize:11, color:'#888', lineHeight:1.7, marginBottom:6 }}>Perpetually bothered by problems without good solutions. SunScout is my attempt to make property research more honest.</div>
+                <div style={{ fontSize:11, color:'#888', lineHeight:1.7 }}>I care about design, data, and understanding how things actually work—not just on the surface, but all the way down.</div>
+
+
+
               </div>
               
               <a href="https://www.linkedin.com/in/arushri-gangji-056108381/" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:10, background:'#0A66C2', borderRadius:10, padding:'12px 16px', textDecoration:'none' }}>
