@@ -222,7 +222,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
         <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
-            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year Summary' };
+            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 2D Year Summary' };
             return (
               <button key={id} onClick={() => switchView(id)} style={{
                 background: view===id ? ORG : 'transparent',
