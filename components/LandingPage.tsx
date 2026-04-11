@@ -54,7 +54,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           Know your <span style={{ color:'#E07B00' }}>sunlight</span><br/>before you buy.
         </h1>
         <p style={{ fontSize:18, color:'#666', lineHeight:1.7, maxWidth:560, margin:'0 auto 44px' }}>
-          That "south-facing, lots of natural light" listing? Drop a pin and see exactly when sunlight hits it — hour by hour, season by season.
+          When buying a home, sunlight is as important as square footage. The sun's path shifts with the seasons, meaning that a balcony glowing with golden light in June might sit in cool shade come December. Drop a pin on your location to track sunlight hour-by-hour, see how it changes across equinoxes and solstices, and visualize shadow lines to understand how light plays through your space year-round.
         </p>
         <button onClick={onEnter} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
           style={{ background:hovered?'#FF8C00':'#E07B00', color:'#1A1A1A', border:'none', borderRadius:14, padding:'16px 48px', fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif", transition:'all .2s', transform:hovered?'translateY(-2px)':'none', boxShadow:hovered?'0 12px 40px rgba(224,123,0,0.4)':'0 4px 20px rgba(224,123,0,0.25)', marginBottom:16 }}>
