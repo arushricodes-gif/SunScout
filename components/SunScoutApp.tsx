@@ -49,9 +49,9 @@ const SunLogo = () => (
 const Divider = () => <div style={{ width:1, height:30, background:'rgba(224,123,0,0.2)', flexShrink:0 }} />;
 
 export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDate, simTime, setSimTime, animating, setAnimating, solarData, loading, onGpsClick, onHome }: Props) {
-  const [view, setView]               = useState<'3d'|'2d'|'year'>('3d');
-  const [prevView, setPrevView]       = useState<'3d'|'2d'>('3d');
-  const [yearMapView, setYearMapView] = useState<'3d'|'2d'>('3d');
+  const [view, setView]               = useState<'3d'|'2d'|'year'>('2d');
+  const [prevView, setPrevView]       = useState<'2d'>('2d');
+  const [yearMapView, setYearMapView] = useState<'2d'>('2d');
   const [searchQuery, setSearch]      = useState('');
   const [searching, setSearching]     = useState(false);
   const [season, setSeason]           = useState('Today');
@@ -311,13 +311,6 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
                 <button onClick={() => switchView(prevView)} style={{background:'#FFF3E0',border:'1px solid #E07B00',borderRadius:8,padding:'6px 14px',fontWeight:700,fontSize:12,cursor:'pointer',color:'#E07B00'}}>
                   {'← Back'}
                 </button>
-                <div style={{ display:'flex', gap:4 }}>
-                  {(['3d','2d'] as const).map(v => (
-                    <button key={v} onClick={() => setYearMapView(v)} style={{background:yearMapView===v?'#E07B00':'#fff',color:yearMapView===v?'#fff':'#1A1A1A',border:'1px solid rgba(224,123,0,0.3)',borderRadius:8,padding:'6px 12px',fontWeight:700,fontSize:12,cursor:'pointer'}}>
-                      {v === '3d' ? '🏙 3D' : '🗺 2D'}
-                    </button>
-                  ))}
-                </div>
                 <span style={{fontSize:12,color:'#888'}}>Seasonal sun paths for your location</span>
               </div>
               {data ? (
