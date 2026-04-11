@@ -177,3 +177,8 @@ h1, h2, h3 {
 @media (max-width: 640px) {
   .steps-row { grid-template-columns: 1fr !important; }
 }
+@media (max-width: 768px) { .hide-mobile { display: none !important; } .input-field { font-size: 16px !important; } }
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .input-field { font-size: 16px !important; }
+}

@@ -222,7 +222,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
         <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
-            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 2D Year Summary' };
+            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year' };
             return (
               <button key={id} onClick={() => switchView(id)} style={{
                 background: view===id ? ORG : 'transparent',
@@ -239,21 +239,21 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           color: showData ? '#fff' : TEXT_DARK,
           border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
-        }}>📊 Data</button>
+        }} className="hide-mobile">📊 Data</button>
 
         <button onClick={handleShare} style={{
           background: copied ? '#22c55e' : WHITE,
           color: copied ? '#fff' : TEXT_DARK,
           border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s',
-        }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
+        }} className="hide-mobile">{copied ? '✓ Copied!' : '🔗 Share'}</button>
 
         <button onClick={() => setShowAbout(!showAbout)} style={{
           background: showAbout ? '#1A1A1A' : WHITE,
           color: showAbout ? '#fff' : TEXT_DARK,
           border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`,
           borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0,
-        }}>About</button>
+        }} className="hide-mobile">About</button>
 
       </div>
 
