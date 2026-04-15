@@ -52,6 +52,7 @@ export default function Map2D({
   <div class="tile-row">
     <button class="tile-btn on" id="bs" onclick="setTile('s')">Street</button>
     <button class="tile-btn" id="bsat" onclick="setTile('sat')">Satellite</button>
+    <button class="tile-btn" id="bwind" onclick="toggleWind()">🌬️ Wind</button>
   </div>
   ${hasPath ? `
   <div style="position:absolute;top:14px;right:14px;z-index:9999;background:rgba(255,255,255,0.97);border:2px solid rgba(224,123,0,0.2);border-radius:14px;padding:14px 20px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
@@ -127,6 +128,77 @@ window.addEventListener('message',function(e){
   }
 });
 ` : ''}
+
+// ── WIND OVERLAY ──
+var windCanvas = document.createElement('canvas');
+windCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:19;';
+document.querySelector('#map').parentElement.appendChild(windCanvas);
+var wCtx = windCanvas.getContext('2d');
+var windOn = false;
+var windParticles = [];
+var windSpeed = 0, windDir = 0, windAnimId = null;
+
+function toggleWind() {
+  windOn = !windOn;
+  document.getElementById('bwind').className = 'tile-btn' + (windOn ? ' on' : '');
+  if (windOn) { fetchWind(); }
+  else { cancelAnimationFrame(windAnimId); wCtx.clearRect(0,0,windCanvas.width,windCanvas.height); windParticles=[]; }
+}
+
+function fetchWind() {
+  var lat = map.getCenter().lat, lon = map.getCenter().lng;
+  var h = new Date().getHours();
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&hourly=windspeed_10m,winddirection_10m&forecast_days=1')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      windSpeed = d.hourly.windspeed_10m[h];
+      windDir = d.hourly.winddirection_10m[h];
+      initParticles();
+      animateWind();
+    });
+}
+
+function initParticles() {
+  windParticles = [];
+  var w = windCanvas.width, h = windCanvas.height;
+  for (var i = 0; i < 80; i++) {
+    windParticles.push({ x: Math.random()*w, y: Math.random()*h, age: Math.random()*100 });
+  }
+}
+
+function animateWind() {
+  if (!windOn) return;
+  var w = windCanvas.offsetWidth, h = windCanvas.offsetHeight;
+  windCanvas.width = w; windCanvas.height = h;
+  wCtx.clearRect(0,0,w,h);
+  var rad = (windDir - 180) * Math.PI / 180;
+  var speed = (windSpeed / 30) * 3 + 0.5;
+  var dx = Math.sin(rad) * speed, dy = -Math.cos(rad) * speed;
+  wCtx.strokeStyle = 'rgba(37,99,235,0.55)';
+  wCtx.lineWidth = 1.5;
+  windParticles.forEach(function(p) {
+    var tail = 12;
+    wCtx.beginPath();
+    wCtx.moveTo(p.x - dx*tail, p.y - dy*tail);
+    wCtx.lineTo(p.x, p.y);
+    wCtx.stroke();
+    // arrowhead
+    wCtx.beginPath();
+    wCtx.arc(p.x, p.y, 2, 0, Math.PI*2);
+    wCtx.fillStyle = 'rgba(37,99,235,0.8)';
+    wCtx.fill();
+    p.x += dx * 1.5; p.y += dy * 1.5; p.age++;
+    if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+    if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+  });
+  // wind label
+  wCtx.fillStyle = 'rgba(37,99,235,0.9)';
+  wCtx.font = 'bold 11px monospace';
+  wCtx.fillText('💨 ' + windSpeed.toFixed(1) + ' km/h  ' + windDir + '°', 12, h - 14);
+  windAnimId = requestAnimationFrame(animateWind);
+}
+
+map.on('move', function() { if(windOn) fetchWind(); });
 </script></body></html>`;
   // Only rebuild when actual data changes, NOT animating toggle
   // eslint-disable-next-line react-hooks/exhaustive-deps
