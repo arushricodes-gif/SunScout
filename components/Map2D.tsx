@@ -132,7 +132,7 @@ window.addEventListener('message',function(e){
 // ── WIND OVERLAY ──
 var windCanvas = document.createElement('canvas');
 windCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:19;';
-document.querySelector('#map').parentElement.appendChild(windCanvas);
+document.querySelector('#map').parentElement.insertBefore(windCanvas, document.querySelector('#map').nextSibling);
 var wCtx = windCanvas.getContext('2d');
 var windOn = false;
 var windParticles = [];
@@ -146,7 +146,7 @@ function toggleWind() {
 }
 
 function fetchWind() {
-  var lat = map.getCenter().lat, lon = map.getCenter().lng;
+  var lat = ${lat}, lon = ${lon};
   var h = new Date().getHours();
   fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&hourly=windspeed_10m,winddirection_10m&forecast_days=1')
     .then(function(r){return r.json();})
@@ -202,7 +202,7 @@ map.on('move', function() { if(windOn) fetchWind(); });
 </script></body></html>`;
   // Only rebuild when actual data changes, NOT animating toggle
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '', JSON.stringify(riseEdge), JSON.stringify(setEdge), locationSelectMode, height, 'v2']);
+  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '', JSON.stringify(riseEdge), JSON.stringify(setEdge), locationSelectMode, height, 'v4']);
 
   // Communicate animating changes via postMessage — no iframe reload
   useEffect(() => {
