@@ -202,7 +202,7 @@ map.on('move', function() { if(windOn) fetchWind(); });
 </script></body></html>`;
   // Only rebuild when actual data changes, NOT animating toggle
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '', JSON.stringify(riseEdge), JSON.stringify(setEdge), locationSelectMode, height, 'v4']);
+  }, [lat, lon, pathData.length > 0 ? pathData[0].iso.slice(0,10) : '', JSON.stringify(riseEdge), JSON.stringify(setEdge), locationSelectMode, height, 'v5']);
 
   // Communicate animating changes via postMessage — no iframe reload
   useEffect(() => {
@@ -231,7 +231,7 @@ map.on('move', function() { if(windOn) fetchWind(); });
       ref={iframeRef}
       srcDoc={html}
       style={{ width: '100%', height: height + 20, border: 'none', borderRadius: 16 }}
-      sandbox="allow-scripts allow-same-origin"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
     />
   );
 }
