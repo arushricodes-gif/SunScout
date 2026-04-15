@@ -42,8 +42,8 @@ export default function Map2D({
 #map{height:${height}px;width:100%;border-radius:16px;border:1px solid rgba(243,156,18,.1);cursor:${locationSelectMode?'crosshair':'default'};}
 .leaflet-control-attribution{display:none!important;}
 .tile-row{position:absolute;top:14px;left:14px;z-index:20;display:flex;gap:6px;}
-.tile-btn{background:rgba(7,9,16,.92);border:1px solid rgba(255,255,255,.07);color:#6B7280;font-size:11px;font-weight:600;font-family:monospace;padding:6px 13px;border-radius:9px;cursor:pointer;}
-.tile-btn.on{border-color:rgba(243,156,18,.35);color:#F39C12;background:rgba(243,156,18,.07);}
+.tile-btn{background:rgba(255,255,255,0.95);border:1.5px solid rgba(224,123,0,0.3);color:#555;font-size:11px;font-weight:600;font-family:monospace;padding:6px 13px;border-radius:9px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.12);}
+.tile-btn.on{border-color:#E07B00;color:#fff;background:#E07B00;}
 .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:20;color:rgba(255,255,255,.25);font-size:10px;pointer-events:none;font-family:monospace;background:rgba(7,9,16,.65);padding:5px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.04);white-space:nowrap;}
 #click-hint{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);z-index:25;background:rgba(7,9,16,.88);border:1px solid rgba(243,156,18,.3);border-radius:10px;padding:7px 18px;color:#F39C12;font-size:11px;font-weight:600;font-family:monospace;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .4s;}
 </style></head><body>
