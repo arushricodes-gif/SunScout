@@ -63,8 +63,25 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [feedback, setFeedback]       = useState('');
   const [fbName, setFbName]           = useState('');
   const [fbSent, setFbSent]           = useState(false);
+  const [windData, setWindData]       = useState<{speed:number,dir:number,gust:number}|null>(null);
 
   const [lat, lon] = coords;
+
+  useEffect(() => {
+    const fetchWind = async () => {
+      try {
+        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=windspeed_10m,winddirection_10m,windgusts_10m&forecast_days=1`);
+        const d = await r.json();
+        const h = new Date().getHours();
+        setWindData({
+          speed: d.hourly.windspeed_10m[h],
+          dir: d.hourly.winddirection_10m[h],
+          gust: d.hourly.windgusts_10m[h]
+        });
+      } catch(e) {}
+    };
+    fetchWind();
+  }, [lat, lon]);
   const data = solarData;
   const [simH, simM] = simTime.split(':').map(Number);
   const el = data?.simPos.elevation ?? 0;
@@ -379,6 +396,20 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
                 <div style={{ fontSize:20, fontWeight:800, color:ORG }}>{m.val}</div>
               </div>
             ))}
+            {windData && (<>
+              <div style={{ fontSize:11, fontWeight:700, color:ORG, textTransform:'uppercase', letterSpacing:'.08em', marginTop:4 }}>Wind Data</div>
+              {[
+                { label:'Speed', val:`${windData.speed} km/h`, icon:'💨' },
+                { label:'Direction', val:`${windData.dir}°`, icon:'🧭' },
+                { label:'Gusts', val:`${windData.gust} km/h`, icon:'🌬️' },
+              ].map(m => (
+                <div key={m.label} style={{ background:'#F0F7FF', borderRadius:10, padding:'12px 14px' }}>
+                  <div style={{ fontSize:16, marginBottom:4 }}>{m.icon}</div>
+                  <div style={{ fontSize:10, color:TEXT_SUB, marginBottom:4, textTransform:'uppercase', letterSpacing:'.06em' }}>{m.label}</div>
+                  <div style={{ fontSize:20, fontWeight:800, color:'#2563EB' }}>{m.val}</div>
+                </div>
+              ))}
+            </>)}
             <SolarChart pathData={data.pathData} simTime={simTime} />
           </div>
         )}
