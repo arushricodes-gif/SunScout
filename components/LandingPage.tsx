@@ -294,10 +294,10 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
         ))}
 
         {/* Feature chips reveal */}
-        <div style={{ height: '50vh', display: 'flex', alignItems: 'center', padding: '0 8vw' }}>
+        <div style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', padding: '60px 8vw' }}>
           <div style={{ ...op(2000, 3000), width: '100%' }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 28 }}>What you get</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 720 }}>
+            <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 720 }}>
               {[
                 { icon: '☀️', label: 'Hour-by-hour animation', sub: 'Watch the sun move in real time' },
                 { icon: '🏗', label: '3D building shadows', sub: 'Real OpenStreetMap geometry' },
@@ -476,6 +476,8 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           [style*="padding: 100px 48px"] { padding:60px 20px!important; }
           [style*="grid-template-columns: repeat(2"],[style*="grid-template-columns: repeat(3"] { grid-template-columns:1fr!important; }
           [style*="padding: 0 8vw"] { padding:0 20px!important; }
+          [style*="padding: 60px 8vw"] { padding:40px 20px!important; }
+          .features-grid { grid-template-columns: repeat(2,1fr)!important; }
         }
       `}</style>
     </div>
