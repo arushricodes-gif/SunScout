@@ -230,7 +230,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
         </div>
 
         {/* Floating data chips */}
-        <div style={{ position: 'absolute', top: '50%', right: '6vw', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: 10, opacity: loaded ? 1 : 0, transition: 'opacity 1s ease 0.5s' }}>
+        <div className="hide-mobile" style={{ position: 'absolute', top: '50%', right: '6vw', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: 10, opacity: loaded ? 1 : 0, transition: 'opacity 1s ease 0.5s' }}>
           {[
             { label: '☀️ Elevation', value: '52°', sub: '14:32' },
             { label: '🌅 Sunrise', value: '06:12', sub: 'today' },
