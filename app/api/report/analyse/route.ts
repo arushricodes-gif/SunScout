@@ -90,7 +90,7 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
 
     const contents = [{ role: 'user', parts: [{ text: `${prompt}\n\nImage order:\n${labelLine}` }, ...imageParts] }];
 
-    async function callGemini(msgContents: any[]) {
+    const callGemini = async (msgContents: any[]) => {
       const res = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,7 +105,7 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
         return null;
       }
       return res.json();
-    }
+    };
 
     let data = await callGemini(contents);
     if (!data) {

@@ -312,14 +312,14 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           )}
           {view === '3d' && (
             <Map3DShadow
-              onReady={(fn) => { captureRef.current = fn; console.log('[SunScoutApp] Map3DShadow onReady fired, captureRef set'); }}
+              onReady={(fn: (label: string, time: string, date: string) => void) => { captureRef.current = fn; console.log('[SunScoutApp] Map3DShadow onReady fired, captureRef set'); }}
               lat={lat} lon={lon}
               pathData={data?.pathData ?? []}
               simTime={simTime}
               simPos={data?.simPos ?? defaultSimPos}
               sunTimes={data?.sunTimes ?? { rise:'--:--', set:'--:--', noon:'--:--' }}
               animating={animating}
-              onLocationSelect={(la, lo) => setCoords([la, lo])}
+              onLocationSelect={(la: number, lo: number) => setCoords([la, lo])}
             />
           )}
           {view === '2d' && (
