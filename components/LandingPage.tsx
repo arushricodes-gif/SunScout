@@ -240,7 +240,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ position: 'relative', zIndex: 10, height: '100vh', display: 'flex', alignItems: 'center', padding: '0 8vw', pointerEvents: 'none' }}>
+      <section style={{ position: 'relative', zIndex: 10, height: '100vh', display: 'flex', alignItems: 'center', padding: '0 8vw' }}>
         <div style={{ maxWidth: 600, opacity: Math.max(0, Math.min(1, 1 - scrollY / 350)), transform: `translateY(${scrollY * 0.15}px)`, transition: 'none' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(224,123,0,0.1)', border: '1px solid rgba(224,123,0,0.22)', borderRadius: 100, padding: '5px 14px', marginBottom: 28 }}>
             <span style={{ width: 5, height: 5, background: '#E07B00', borderRadius: '50%', animation: 'pulse 2s ease-in-out infinite', display: 'inline-block' }}/>
@@ -434,7 +434,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
         Open SunScout
       </button>
 
-      <style>{`
+      <style suppressHydrationWarning>{`
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.55)} }
         @keyframes drip { 0%{opacity:1;transform:scaleY(1) translateY(0)} 80%{opacity:0;transform:scaleY(0.4) translateY(14px)} 100%{opacity:0} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }

@@ -11,10 +11,20 @@ interface Map3DShadowProps {
   sunTimes: { rise: string; set: string; noon: string };
   animating: boolean;
   onLocationSelect?: (lat: number, lon: number) => void;
+  onScreenshot?: (label: string, data: string | null) => void;
+  onReady?: (capture: (label: string, time: string, date: string) => void) => void;
 }
 
-export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating, onLocationSelect }: Map3DShadowProps) {
+export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTimes, animating, onLocationSelect, onScreenshot, onReady }: Map3DShadowProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (onReady) {
+      onReady((label: string, time: string, date: string) => {
+        iframeRef.current?.contentWindow?.postMessage({ type: 'captureScreenshot', label, time, date }, '*');
+      });
+    }
+  }, [onReady]);
 
   const html = useMemo(() => {
     const allPtsJs = JSON.stringify(pathData.map(p => ({
@@ -29,12 +39,10 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
     let startIdx=0, bd=99999;
     for(let i=0;i<pathData.length;i++){const[h,m]=pathData[i].time.split(':').map(Number);const d=Math.abs(h*60+m-nowMins);if(d<bd){bd=d;startIdx=i;}}
 
-    // Observer pin ring
     const steps=20, rd=0.000035, ring:number[][]=[];
     for(let i=0;i<=steps;i++){const a=2*Math.PI*i/steps;ring.push([lon+rd*Math.cos(a)/Math.cos(lat*Math.PI/180),lat+rd*Math.sin(a)]);}
     const obsGj = JSON.stringify({type:'FeatureCollection',features:[{type:'Feature',properties:{color:'#F39C12',height:0.6,minHeight:0},geometry:{type:'Polygon',coordinates:[ring]}}]});
 
-    // Read persisted camera from parent localStorage
     return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <link href="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.css" rel="stylesheet"/>
 <script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
@@ -50,7 +58,15 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
 .cb:hover{border-color:#E07B00;color:#E07B00;background:#FFF3E0;}
 .cb.N{border-color:rgba(224,123,0,.4);color:#E07B00;font-size:10px;font-weight:800;}
 .leaflet-control-attribution,.osmb-attribution{display:none!important;}
+.sdk-error{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0A0C10;color:#F39C12;font-family:monospace;text-align:center;padding:24px;}
+.sdk-error.show{display:flex;}
+.sdk-error button{background:#E07B00;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
 @media(max-width:768px){.view-controls{display:none!important;}}</style></head><body>
+<div id="sdk-error" class="sdk-error">
+  <div style="font-size:32px;">🌐</div>
+  <div style="font-size:14px;max-width:320px;line-height:1.6;">The 3D map library didn't load — this is usually a slow or blocked connection to the map CDN, not a bug in your data.</div>
+  <button onclick="window.location.reload()">↻ Retry</button>
+</div>
 <div style="position:relative;width:100%;height:100vh;">
   <div id="map"></div>
   <div class="tile-row">
@@ -85,15 +101,50 @@ export default function Map3DShadow({ lat, lon, pathData, simTime, simPos, sunTi
   </div>
 </div>
 <script>
-const D2R=Math.PI/180;
-const TILES={s:'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'};
+// Watchdog: if the OSMBuildings CDN script failed to load/execute (blocked
+// network, slow CDN, WebGL unavailable, etc.) everything below throws or
+// simply never runs, and the page was previously left as a silent black
+// screen with no explanation — indistinguishable from "still loading". Catch
+// that here and show a retry affordance instead.
+window.onerror = function(){
+  try{ var el=document.getElementById('sdk-error'); if(el) el.classList.add('show'); }catch(e){}
+  return false;
+};
+setTimeout(function(){
+  try{
+    var hasCanvas = document.querySelector('#map canvas');
+    if(!hasCanvas){ var el=document.getElementById('sdk-error'); if(el) el.classList.add('show'); }
+  }catch(e){}
+}, 9000);
 
-// Read persisted camera+zoom from parent localStorage
+const D2R=Math.PI/180;
+// NOTE: tile-a/b/c.openstreetmap.fr all resolve to the same single backend
+// service (confirmed on OSM France's own forum) — round-robining across them
+// gives no real parallelism, so we stick to the one documented-working host.
+// The real reliability gap is that this is a small community server with
+// occasional 502s; app/api/tile-proxy/route.ts now retries and falls back to
+// a second provider instead, which is where that gets fixed.
+const TILES={
+  s:'/api/tile-proxy?url=https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  sat:'/api/tile-proxy?url=https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+};
+
 var _cam=(function(){try{var s=window.parent.localStorage.getItem('ss_cam');return s?JSON.parse(s):{rot:0,tilt:0,zoom:17,set:false};}catch(e){return{rot:0,tilt:0,zoom:17,set:false};}})();
 var curRot=_cam.set?(_cam.rot||0):0, curTilt=_cam.set?(_cam.tilt||0):0, initZoom=_cam.zoom||17;
 var curT='s', tL=null;
 
+// OSMBuildings 4.1.1 doesn't forward a preserveDrawingBuffer option to its WebGL
+// context, so without this patch the drawing buffer is cleared between frames and
+// screenshot capture below reads back a blank canvas even though the map is visibly
+// rendered on screen.
+var _origGetContext=HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext=function(type,attrs){
+  if(type==='webgl'||type==='experimental-webgl'){attrs=Object.assign({},attrs,{preserveDrawingBuffer:true});}
+  return _origGetContext.call(this,type,attrs);
+};
+
 const map=new OSMBuildings({container:'map',position:{latitude:${lat},longitude:${lon}},zoom:initZoom,minZoom:13,maxZoom:20,tilt:curTilt,rotation:curRot,effects:['shadows'],attribution:''});
+HTMLCanvasElement.prototype.getContext=_origGetContext;
 map.setDate(new Date('${simIso}'));
 tL=map.addMapTiles(TILES.s);
 map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
@@ -102,10 +153,6 @@ map.addGeoJSON(${obsGj});
 function saveCamera(){try{var z=map.zoom||initZoom;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z,set:true}));}catch(e){}}
 function setT(m){if(m===curT)return;curT=m;if(tL)map.remove(tL);tL=map.addMapTiles(TILES[m]);document.getElementById('bs').className='tile-btn'+(m==='s'?' on':'');document.getElementById('bsat').className='tile-btn'+(m==='sat'?' on':'');}
 
-// Click to move pin
-
-
-// Arc overlay
 const allPts=${allPtsJs};
 const sunEl=document.getElementById('sun');
 const arcSvg=document.getElementById('arc-svg');
@@ -124,21 +171,17 @@ function drawArc(){
   const ab=allPts.filter(function(p){return p.el>=0;});
   if(ab.length<2)return;
   const sc=ab.map(function(p){return projectToScreen(p.az,p.el);});
-  // Glow
   [['rgba(255,180,0,0.15)',14],['rgba(255,200,80,0.25)',6]].forEach(function(c){
     const g=document.createElementNS('http://www.w3.org/2000/svg','polyline');
     g.setAttribute('points',sc.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
     g.setAttribute('fill','none');g.setAttribute('stroke',c[0]);g.setAttribute('stroke-width',c[1]);g.setAttribute('stroke-linecap','round');
     arcSvg.appendChild(g);
   });
-  // Main arc
   const arc=document.createElementNS('http://www.w3.org/2000/svg','polyline');
   arc.setAttribute('points',sc.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' '));
   arc.setAttribute('fill','none');arc.setAttribute('stroke','#F39C12');arc.setAttribute('stroke-width','2.5');arc.setAttribute('stroke-dasharray','6 9');arc.setAttribute('opacity','0.92');
   arcSvg.appendChild(arc);
-  // Dots
   ab.forEach(function(p,i){if(i%3!==0)return;const s=projectToScreen(p.az,p.el);const d=document.createElementNS('http://www.w3.org/2000/svg','circle');d.setAttribute('cx',s[0].toFixed(1));d.setAttribute('cy',s[1].toFixed(1));d.setAttribute('r','2.5');d.setAttribute('fill','#FFD06D');d.setAttribute('opacity','0.85');arcSvg.appendChild(d);});
-  // Rise/Set labels
   var riseLabel='🌅 Rise ' + '${sunTimes.rise}', setLabel='Set 🌇 ' + '${sunTimes.set}';
   [{pt:sc[0],txt:riseLabel,anchor:'end'},{pt:sc[sc.length-1],txt:setLabel,anchor:'start'}].forEach(function(lbl){
     const ci=document.createElementNS('http://www.w3.org/2000/svg','circle');ci.setAttribute('cx',lbl.pt[0].toFixed(1));ci.setAttribute('cy',lbl.pt[1].toFixed(1));ci.setAttribute('r','4.5');ci.setAttribute('fill','#F39C12');arcSvg.appendChild(ci);
@@ -163,7 +206,6 @@ function updateView(p){
 updateView({el:${mel},az:${maz},time:'${simTime}',iso:'${simIso}'});
 drawArc();
 
-// Click + touch handler - ignore drags
 var _mmoved=false, _mdx=0, _mdy=0, _tsx=0, _tsy=0;
 var mapEl=document.getElementById('map');
 
@@ -174,7 +216,6 @@ mapEl.addEventListener('click',function(e){
   try{var rect=mapEl.getBoundingClientRect();var pos=map.unproject(e.clientX-rect.left,e.clientY-rect.top);if(pos&&pos.latitude!=null)window.parent.postMessage({type:'map3d_click',lat:pos.latitude,lon:pos.longitude},'*');}catch(err){}
 });
 
-// Touch support for mobile
 mapEl.addEventListener('touchstart',function(e){_mmoved=false;_tsx=e.touches[0].clientX;_tsy=e.touches[0].clientY;},{passive:true});
 mapEl.addEventListener('touchmove',function(e){if(Math.abs(e.touches[0].clientX-_tsx)>8||Math.abs(e.touches[0].clientY-_tsy)>8)_mmoved=true;},{passive:true});
 mapEl.addEventListener('touchend',function(e){
@@ -184,7 +225,6 @@ mapEl.addEventListener('touchend',function(e){
 });
 
 map.on('change',function(){try{var z=map.position?map.position.zoom:initZoom;if(z)initZoom=z;window.parent.localStorage.setItem('ss_cam',JSON.stringify({rot:curRot,tilt:curTilt,zoom:z||initZoom,set:true}));}catch(e){}});
-// Track zoom via wheel since OSMBuildings has no getZoom API
 document.getElementById('map').addEventListener('wheel', function(){
   setTimeout(function(){
     try{
@@ -199,7 +239,6 @@ document.getElementById('map').addEventListener('wheel', function(){
 
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
-// Camera buttons
 function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();saveCamera();}
 function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();saveCamera();}
 function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();saveCamera();}
@@ -209,7 +248,6 @@ document.getElementById('btn-left').onclick=function(){aR(-15);};
 document.getElementById('btn-right').onclick=function(){aR(15);};
 document.getElementById('btn-n').onclick=function(){rst();};
 
-// Animation
 var ai=${startIdx},isAnimating=${animating?'true':'false'},animInterval=null;
 function startAnim(){if(animInterval)return;animInterval=setInterval(function(){updateView(allPts[ai]);drawArc();ai=(ai+1)%allPts.length;},150);}
 function stopAnim(){if(animInterval){clearInterval(animInterval);animInterval=null;}}
@@ -223,6 +261,82 @@ window.addEventListener('message',function(e){
     for(var j=0;j<allPts.length;j++){var t=allPts[j].time.split(':'),d=Math.abs(parseInt(t[0])*60+parseInt(t[1])-mins);if(d<bd){bd=d;best=j;}}
     ai=best;updateView(allPts[best]);drawArc();
   }
+  if(e.data.type==='captureScreenshot'){
+    var lbl=e.data.label;
+    var capTime=e.data.time;
+    var capDate=e.data.date;
+    isAnimating=false;
+    if(animInterval){clearInterval(animInterval);animInterval=null;}
+    if(capDate){
+      try{ map.setDate(new Date(capDate+'T'+capTime+':00')); }catch(err){}
+    }
+    var parts2=capTime.split(':'),mins2=parseInt(parts2[0])*60+parseInt(parts2[1]),best2=0,bd2=99999;
+    for(var k=0;k<allPts.length;k++){var t2=allPts[k].time.split(':'),d2=Math.abs(parseInt(t2[0])*60+parseInt(t2[1])-mins2);if(d2<bd2){bd2=d2;best2=k;}}
+    ai=best2;updateView(allPts[best2]);drawArc();
+    if(!allPts||allPts.length===0){window.parent.postMessage({type:'screenshotReady',label:lbl,data:null},'*');return;}
+
+    // Wait for tiles/shadows to render, then composite into a FIXED output size
+    // so every screenshot in the report is identical dimensions regardless of
+    // the live iframe's viewport at capture time.
+    setTimeout(function(){
+      try{
+        var liveW=window.innerWidth, liveH=window.innerHeight;
+        var CAP_W=960, CAP_H=640;
+
+        var raw=document.createElement('canvas');
+        raw.width=liveW; raw.height=liveH;
+        var rctx=raw.getContext('2d');
+        rctx.fillStyle='#0A0C10';
+        rctx.fillRect(0,0,liveW,liveH);
+        try{
+          var glCanvas=document.querySelector('#map canvas');
+          if(glCanvas) rctx.drawImage(glCanvas,0,0,liveW,liveH);
+        }catch(err){}
+
+        var svgEl=document.getElementById('arc-svg');
+        var svgData=new XMLSerializer().serializeToString(svgEl);
+        var svgBlob=new Blob([svgData],{type:'image/svg+xml'});
+        var svgUrl=URL.createObjectURL(svgBlob);
+        var svgImg=new Image();
+
+        function finish(){
+          var out=document.createElement('canvas');
+          out.width=CAP_W; out.height=CAP_H;
+          var octx=out.getContext('2d');
+          octx.drawImage(raw,0,0,liveW,liveH,0,0,CAP_W,CAP_H);
+          try{
+            var dataUrl=out.toDataURL('image/jpeg',0.85);
+            window.parent.postMessage({type:'screenshotReady',label:lbl,data:dataUrl},'*');
+          }catch(err){
+            window.parent.postMessage({type:'screenshotReady',label:lbl,data:null,error:'tainted_canvas'},'*');
+          }
+        }
+
+        svgImg.onload=function(){
+          rctx.drawImage(svgImg,0,0,liveW,liveH);
+          URL.revokeObjectURL(svgUrl);
+          var sunDiv=document.getElementById('sun');
+          if(sunDiv&&sunDiv.style.display!=='none'){
+            rctx.font='32px serif';
+            rctx.fillText('☀️',parseFloat(sunDiv.style.left||'0')-16,parseFloat(sunDiv.style.top||'0')+8);
+          }
+          rctx.fillStyle='rgba(243,156,18,0.9)';
+          rctx.font='bold 16px monospace';
+          rctx.fillText(lbl,20,40);
+          finish();
+        };
+        svgImg.onerror=function(){
+          rctx.fillStyle='rgba(243,156,18,0.9)';
+          rctx.font='bold 20px monospace';
+          rctx.fillText(lbl+' — map render unavailable',40,liveH/2);
+          finish();
+        };
+        svgImg.src=svgUrl;
+      }catch(err){
+        window.parent.postMessage({type:'screenshotReady',label:lbl,data:null},'*');
+      }
+    },4200);
+  }
 });
 </script></body></html>`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,10 +345,11 @@ window.addEventListener('message',function(e){
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if(e.data?.type==='map3d_click' && onLocationSelect) onLocationSelect(e.data.lat, e.data.lon);
+      if(e.data?.type==='screenshotReady' && onScreenshot) onScreenshot(e.data.label, e.data.data);
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [onLocationSelect]);
+  }, [onLocationSelect, onScreenshot]);
 
   useEffect(() => {
     iframeRef.current?.contentWindow?.postMessage({type:'setAnimating',value:animating},'*');
