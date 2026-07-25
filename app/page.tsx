@@ -50,6 +50,11 @@ export default function Home() {
   });
   const [tzOffset, setTzOffset]       = useState(330);
   const [isGpsCoords, setIsGpsCoords] = useState(false);
+  // True once coords reflect a real, deliberate location — from the URL, a GPS fix,
+  // or a search/pin-drop. False for the raw [12.97, 77.59] placeholder default, so
+  // things like the AsliVastu cross-tool popup don't fire for a location the user
+  // never actually chose.
+  const [hasRealLocation, setHasRealLocation] = useState(isFromUrl);
   const [targetDate, setTargetDate]   = useState(getLocalDateStr);
   const [simTime, setSimTime]         = useState(() => {
     const n = new Date();
@@ -65,7 +70,7 @@ export default function Home() {
     if (isFromUrl) return; // don't override URL coords with GPS
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => { setCoords([pos.coords.latitude, pos.coords.longitude]); setIsGpsCoords(true); },
+        pos => { setCoords([pos.coords.latitude, pos.coords.longitude]); setIsGpsCoords(true); setHasRealLocation(true); },
         () => {}
       );
     }
@@ -101,11 +106,11 @@ export default function Home() {
     }
   }, [simTime, animating]);
 
-  const handleSetCoords = (c: [number, number]) => { setIsGpsCoords(false); setCoords(c); };
+  const handleSetCoords = (c: [number, number]) => { setIsGpsCoords(false); setCoords(c); setHasRealLocation(true); };
   const handleGps = () => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-      pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); },
+      pos => { setIsGpsCoords(true); setCoords([pos.coords.latitude, pos.coords.longitude]); setHasRealLocation(true); },
       () => {}
     );
   };
@@ -121,6 +126,7 @@ export default function Home() {
       solarData={solarData} loading={loading}
       tzOffset={tzOffset} onGpsClick={handleGps}
       onHome={() => setEntered(false)}
+      hasRealLocation={hasRealLocation}
     />
   );
 }
