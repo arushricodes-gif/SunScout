@@ -30,9 +30,7 @@ export const MONTHS = [
     { name: 'December',  date: '2025-12-21' },
   ];
   
-  const TIME_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
   const SEASONAL_SLOTS = ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00'];
-  const KEY_MONTHS = [0, 2, 5, 8, 11]; // Jan, Mar, Jun, Sep, Dec
   const REPORT_RADIUS_M = 250; // matches app/api/solar/route.ts
 
   /** Convert a local date+time+tzOffset into the UTC instant lib/solar.ts expects. */
@@ -115,7 +113,7 @@ export const MONTHS = [
    * fix requires fetching building footprint/height data (e.g. via Overpass)
    * and doing an actual ray-cast — flag to the user if they want that built.
    */
-  function floorClearanceTime(timeSlotData: {el: number, az: number, time: string}[], floor: number, facing: string): string {
+  function floorClearanceTime(pathData: {el: number, az: number, time: string}[], floor: number, facing: string): string {
     const floorHeight = floor * 3;
   
     let clearanceElevation = 0;
@@ -135,7 +133,7 @@ export const MONTHS = [
     };
     const targetAz = facingAngle[facing] ?? 180;
   
-    const validPoints = timeSlotData.filter(p => {
+    const validPoints = pathData.filter(p => {
       if (p.el <= 0) return false;
       let diff = Math.abs(p.az - targetAz);
       if (diff > 180) diff = 360 - diff;
@@ -199,27 +197,9 @@ export const MONTHS = [
       }))};
     });
   
-    const keyMonthSlots = KEY_MONTHS.map(idx => {
-      const m = MONTHS[idx];
-      const slots = TIME_SLOTS.map(t => computeSimPos(lat, lon, m.date, t, tzOffset));
-      return { idx, slots: slots.map((d, i) => ({
-        time: TIME_SLOTS[i],
-        el: d.elevation || 0,
-        az: d.azimuth || 0,
-      }))};
-    });
-  
-    const getKeySlots = (monthIdx: number) => {
-      const nearest = KEY_MONTHS.reduce((prev, curr) =>
-        Math.abs(curr - monthIdx) < Math.abs(prev - monthIdx) ? curr : prev
-      );
-      return keyMonthSlots.find(k => k.idx === nearest)?.slots || [];
-    };
-  
     const monthlySummary: MonthlySummary[] = MONTHS.map((m, i) => {
       const base = monthlyRaw[i];
       const pathData = base.pathData || [];
-      const timeSlotData = getKeySlots(i);
       return {
         month: m.name,
         sunrise: base.sunTimes?.rise || 'N/A',
@@ -228,7 +208,7 @@ export const MONTHS = [
         noonAzimuth: Math.round(base.simPos?.azimuth || 0),
         usableHours: usableHoursForUnit(pathData, floor, facing),
         peakWindow: peakWindow(pathData),
-        floorClearance: floorClearanceTime(timeSlotData, floor, facing),
+        floorClearance: floorClearanceTime(pathData, floor, facing),
       };
     });
   
