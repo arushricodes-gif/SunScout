@@ -309,30 +309,26 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
 
       {/* TOPBAR — MOBILE (purpose-built layout, not a squeezed version of desktop) */}
       <div className="topbar-mobile" style={{ flexDirection:'column', background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', flexShrink:0 }}>
-        {/* Row 1: logo + coords + season (compact) + more menu toggle */}
+        {/* Row 1: logo + season (compact) + more menu toggle */}
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 10px' }}>
           <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none', flexShrink:0 }}>
             <SunLogo />
             <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:ORG, letterSpacing:1 }}>SUN SCOUT</span>
           </div>
           <div style={{ flex:1 }} />
-          <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'5px 6px', fontSize:11, borderRadius:7, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:92, flexShrink:1 }}>
+          <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'5px 6px', fontSize:11, borderRadius:7, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:110, flexShrink:1 }}>
             {Object.keys(SEASONS).map(k => <option key={k} value={k}>{k}</option>)}
           </select>
-          <div style={{ background:ORG_LT, borderRadius:7, padding:'5px 7px', fontSize:10.5, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
-            {lat.toFixed(2)}°,{lon.toFixed(2)}°
-          </div>
           <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:7, width:28, height:28, fontSize:14, fontWeight:700, cursor:'pointer', flexShrink:0 }}>⋯</button>
         </div>
 
-        {/* Row 2: search + GPS + AI Report (icon-sized), one compact row */}
+        {/* Row 2: search + GPS + AI Report (with label) */}
         <div style={{ display:'flex', gap:5, padding:'0 10px 7px' }}>
-          <form onSubmit={handleSearch} style={{ display:'flex', gap:5, flex:1, minWidth:0 }}>
+          <form onSubmit={handleSearch} style={{ display:'flex', flex:1, minWidth:0 }}>
             <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, minWidth:0, padding:'7px 10px', fontSize:13 }} />
-            <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'7px 10px', fontSize:13, flexShrink:0 }}>{searching ? '…' : '🔍'}</button>
           </form>
           <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'7px 10px', fontSize:14, flexShrink:0 }}>📍</button>
-          <button onClick={() => setShowReport(true)} aria-label="AI Report" style={{ background:ORG, color:'#fff', border:'none', borderRadius:8, padding:'7px 10px', fontWeight:700, fontSize:14, cursor:'pointer', flexShrink:0 }}>📄</button>
+          <button onClick={() => setShowReport(true)} style={{ background:ORG, color:'#fff', border:'none', borderRadius:8, padding:'7px 11px', fontWeight:700, fontSize:12.5, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>AI Report</button>
         </div>
 
         {/* Collapsible "More" drawer — view switch, play/pause, date, data, share, about */}
