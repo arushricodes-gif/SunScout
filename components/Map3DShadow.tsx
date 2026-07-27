@@ -239,6 +239,41 @@ document.getElementById('map').addEventListener('wheel', function(){
 
 map.on('rotate',function(){try{curRot=((map.getRotation()%360)+360)%360;document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();}catch(e){}});
 
+// On a container resize (rotating the phone fires this too), OSMBuildings
+// recalculates its camera projection from scratch and can silently reset
+// tilt/rotation to 0/0 in the process. The 'rotate' listener above then
+// picks up that reset and happily persists it as if the user had actually
+// reset the view — which is why rotating the phone and then clicking a new
+// location (which fully reinitializes the map from saved camera state) was
+// snapping back to a flat top-down view. Re-assert our own tracked
+// curRot/curTilt after resize settles, so the library's internal reset
+// never wins over what the user actually had set.
+var _resizeT=null;
+window.addEventListener('resize',function(){
+  clearTimeout(_resizeT);
+  _resizeT=setTimeout(function(){
+    try{
+      map.setRotation(curRot);
+      map.setTilt(curTilt);
+      document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';
+      drawArc();
+      saveCamera();
+    }catch(e){}
+  },250);
+});
+window.addEventListener('orientationchange',function(){
+  clearTimeout(_resizeT);
+  _resizeT=setTimeout(function(){
+    try{
+      map.setRotation(curRot);
+      map.setTilt(curTilt);
+      document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';
+      drawArc();
+      saveCamera();
+    }catch(e){}
+  },350);
+});
+
 function aR(d){curRot=(curRot+d+360)%360;map.setRotation(curRot);document.getElementById('cmp').style.transform='rotate('+curRot+'deg)';drawArc();saveCamera();}
 function aT(d){curTilt=Math.max(0,Math.min(70,curTilt+d));map.setTilt(curTilt);drawArc();saveCamera();}
 function rst(){curRot=0;curTilt=0;map.setRotation(0);map.setTilt(0);document.getElementById('cmp').style.transform='rotate(0deg)';drawArc();saveCamera();}
