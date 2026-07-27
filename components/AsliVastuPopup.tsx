@@ -39,25 +39,26 @@ const CSS = `
 /* Desktop / tablet: floating card */
 .av-popup {
   left: 50%;
-  bottom: 28px;
+  bottom: 20px;
   transform: translateX(-50%) translateY(0);
-  border-radius: 16px;
-  padding: 18px 24px;
+  border-radius: 12px;
+  padding: 11px 16px;
   display: flex;
   align-items: center;
-  gap: 20px;
-  max-width: 560px;
+  gap: 12px;
+  max-width: 420px;
   width: calc(100% - 32px);
 }
 .av-popup.hide { transform: translateX(-50%) translateY(16px); }
 
-.av-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.av-text { line-height: 1.45; flex: 1; min-width: 0; }
-.av-title { font-size: 15.5px; font-weight: 700; margin-bottom: 2px; }
-.av-sub { font-size: 13px; color: #bbb; }
-.av-msg { line-height: 1.45; color: #ccc; font-size: 14.5px; flex: 1; min-width: 0; }
-.av-open { background: #E07B00; color: #fff; padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; flex-shrink: 0; text-align: center; }
-.av-close { background: transparent; border: none; color: #999; cursor: pointer; font-size: 20px; line-height: 1; padding: 4px; flex-shrink: 0; }
+.av-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.av-row { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.av-text { line-height: 1.35; flex: 1; min-width: 0; }
+.av-title { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+.av-sub { font-size: 11px; color: #bbb; }
+.av-msg { line-height: 1.35; color: #ccc; font-size: 12.5px; flex: 1; min-width: 0; }
+.av-open { background: #E07B00; color: #fff; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; text-decoration: none; white-space: nowrap; flex-shrink: 0; text-align: center; }
+.av-close { background: transparent; border: none; color: #999; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px; flex-shrink: 0; }
 
 /* Mobile: full-width bottom sheet instead of a floating row */
 @media (max-width: 640px) {
