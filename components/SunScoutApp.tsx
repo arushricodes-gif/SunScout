@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import SolarChart from './SolarChart';
 import type { SolarData } from '@/app/page';
@@ -51,6 +52,25 @@ const SunLogo = () => (
 );
 
 const Divider = () => <div style={{ width:1, height:30, background:'rgba(224,123,0,0.2)', flexShrink:0 }} />;
+
+// Minimal stroke-based icon set — replaces emoji in the toolbar/drawer controls
+// for a more consistent, less "kiddish" look across both layouts.
+const Icon = ({ children, size = 14 }: { children: ReactNode; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, verticalAlign:'-2px' }}>
+    {children}
+  </svg>
+);
+const IconSearch = (p: {size?:number}) => <Icon {...p}><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
+const IconPin = (p: {size?:number}) => <Icon {...p}><path d="M12 22s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></Icon>;
+const IconBuilding = (p: {size?:number}) => <Icon {...p}><rect x="4" y="9" width="7" height="12"/><rect x="13" y="4" width="7" height="17"/><line x1="7" y1="12.5" x2="7" y2="12.5"/><line x1="16" y1="8" x2="16" y2="8"/></Icon>;
+const IconMap = (p: {size?:number}) => <Icon {...p}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></Icon>;
+const IconRefresh = (p: {size?:number}) => <Icon {...p}><path d="M21 12a9 9 0 0 1-15.3 6.4M3 12a9 9 0 0 1 15.3-6.4"/><polyline points="21 3 21 9 15 9"/><polyline points="3 21 3 15 9 15"/></Icon>;
+const IconChart = (p: {size?:number}) => <Icon {...p}><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="12" width="3" height="7"/><rect x="11" y="8" width="3" height="11"/><rect x="16" y="4" width="3" height="15"/></Icon>;
+const IconLink = (p: {size?:number}) => <Icon {...p}><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></Icon>;
+const IconCalendar = (p: {size?:number}) => <Icon {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></Icon>;
+const IconPlay = (p: {size?:number}) => <Icon {...p}><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></Icon>;
+const IconPause = (p: {size?:number}) => <Icon {...p}><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></Icon>;
+const IconCheck = (p: {size?:number}) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>;
 
 const SHOTS = [
   { label:'Summer · 9am',   date:'2025-06-21', time:'09:00' },
@@ -258,9 +278,9 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <Divider />
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
           <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'7px 11px', fontSize:13 }} />
-          <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'7px 13px', fontSize:13 }}>{searching ? '…' : '🔍'}</button>
+          <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'7px 13px', fontSize:13, display:'flex', alignItems:'center' }}>{searching ? '…' : <IconSearch />}</button>
         </form>
-        <button className="btn-primary" onClick={onGpsClick} style={{ padding:'7px 13px', fontSize:13, whiteSpace:'nowrap', flexShrink:0 }}>📍 My location</button>
+        <button className="btn-primary" onClick={onGpsClick} style={{ padding:'7px 13px', fontSize:13, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:6 }}><IconPin /> My location</button>
         <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
           {lat.toFixed(3)}°, {lon.toFixed(3)}°
         </div>
@@ -272,15 +292,15 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ padding:'7px 10px', fontSize:13, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
         )}
         <Divider />
-        <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
-          📅 {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
+        <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:6 }}>
+          <IconCalendar /> {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
         </div>
         <div style={{ flex:1 }} />
         <div style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', fontSize:13, fontWeight:700, whiteSpace:'nowrap' }} onClick={toggleAnim}>
           <div style={{ width:40, height:22, borderRadius:11, background:animating?ORG:'#D1D5DB', position:'relative', transition:'background .2s', flexShrink:0 }}>
             <div style={{ width:16, height:16, borderRadius:'50%', background:'#fff', position:'absolute', top:3, left:animating?21:3, transition:'left .2s' }} />
           </div>
-          {animating ? '⏸ Pause' : '▶ Play'}
+          <span style={{ display:'flex', alignItems:'center', gap:5 }}>{animating ? <IconPause /> : <IconPlay />} {animating ? 'Pause' : 'Play'}</span>
         </div>
         {!animating && (
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
@@ -295,15 +315,16 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <Divider />
         <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
-            const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Year' };
+            const icons = { '3d': <IconBuilding key="i"/>, '2d': <IconMap key="i"/>, 'year': <IconRefresh key="i"/> };
+            const labels = { '3d':'3D', '2d':'2D', 'year':'Year' };
             return (
-              <button key={id} onClick={() => switchView(id)} style={{ background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border: 'none', borderRadius:8, padding:'6px 12px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap', transition:'all .15s' }}>{labels[id]}</button>
+              <button key={id} onClick={() => switchView(id)} style={{ display:'flex', alignItems:'center', gap:5, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border: 'none', borderRadius:8, padding:'6px 12px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap', transition:'all .15s' }}>{icons[id]} {labels[id]}</button>
             );
           })}
         </div>
-        <button onClick={() => setShowData(!showData)} style={{ background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>📊 Data</button>
-        <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>📄 AI Report</button>
-        <button onClick={handleShare} style={{ background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
+        <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', gap:6, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}><IconChart /> Data</button>
+        <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>AI Report</button>
+        <button onClick={handleShare} style={{ display:'flex', alignItems:'center', gap:6, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
         <button onClick={() => setShowAbout(!showAbout)} style={{ background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>About</button>
       </div>
 
@@ -319,7 +340,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'5px 6px', fontSize:11, borderRadius:7, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:110, flexShrink:1 }}>
             {Object.keys(SEASONS).map(k => <option key={k} value={k}>{k}</option>)}
           </select>
-          <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:7, width:28, height:28, fontSize:14, fontWeight:700, cursor:'pointer', flexShrink:0 }}>⋯</button>
+          <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:7, width:28, height:28, fontSize:16, fontWeight:700, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>⋯</button>
         </div>
 
         {/* Row 2: search + GPS + AI Report (with label) */}
@@ -327,25 +348,32 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           <form onSubmit={handleSearch} style={{ display:'flex', flex:1, minWidth:0 }}>
             <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, minWidth:0, padding:'7px 10px', fontSize:13 }} />
           </form>
-          <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'7px 10px', fontSize:14, flexShrink:0 }}>📍</button>
+          <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'7px 10px', flexShrink:0, display:'flex', alignItems:'center' }}><IconPin /></button>
           <button onClick={() => setShowReport(true)} style={{ background:ORG, color:'#fff', border:'none', borderRadius:8, padding:'7px 11px', fontWeight:700, fontSize:12.5, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>AI Report</button>
         </div>
 
-        {/* Collapsible "More" drawer — view switch, play/pause, date, data, share, about */}
+        {/* Collapsible "More" drawer — one compact bar: view switch + play/pause + date, then data/share/about */}
         {showMoreMenu && (
           <div style={{ padding:'0 10px 12px', display:'flex', flexDirection:'column', gap:7, borderTop:'1px solid rgba(224,123,0,0.12)', paddingTop:8 }}>
-            <div style={{ display:'flex', gap:7, alignItems:'center' }}>
-              <div style={{ display:'flex', background:'#F0EDE8', borderRadius:9, padding:3, flex:1 }}>
+            <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+              <div style={{ display:'flex', background:'#F0EDE8', borderRadius:9, padding:3, flexShrink:0 }}>
                 {(['3d','2d','year'] as const).map(id => {
-                  const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Yr' };
+                  const icons = { '3d': <IconBuilding key="i"/>, '2d': <IconMap key="i"/>, 'year': <IconRefresh key="i"/> };
                   return (
-                    <button key={id} onClick={() => switchView(id)} style={{ flex:1, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border:'none', borderRadius:7, padding:'7px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>{labels[id]}</button>
+                    <button key={id} onClick={() => switchView(id)} aria-label={id} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:30, height:28, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border:'none', borderRadius:7, cursor:'pointer' }}>{icons[id]}</button>
                   );
                 })}
               </div>
-              <button onClick={toggleAnim} aria-label={animating ? 'Pause' : 'Play'} style={{ background: animating ? ORG : WHITE, color: animating ? '#fff' : TEXT_DARK, border:`1px solid ${animating ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:9, width:36, height:32, fontSize:14, cursor:'pointer', flexShrink:0 }}>
-                {animating ? '⏸' : '▶'}
+              <button onClick={toggleAnim} aria-label={animating ? 'Pause' : 'Play'} style={{ display:'flex', alignItems:'center', justifyContent:'center', background: animating ? ORG : WHITE, color: animating ? '#fff' : TEXT_DARK, border:`1px solid ${animating ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:9, width:32, height:32, cursor:'pointer', flexShrink:0 }}>
+                {animating ? <IconPause /> : <IconPlay />}
               </button>
+              {showCustom ? (
+                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ flex:1, minWidth:0, padding:'6px 8px', fontSize:11.5, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
+              ) : (
+                <div style={{ flex:1, minWidth:0, background:ORG_LT, borderRadius:8, padding:'6px 8px', fontSize:11, fontWeight:700, color:TEXT_DARK, display:'flex', alignItems:'center', justifyContent:'center', gap:5, whiteSpace:'nowrap', overflow:'hidden' }}>
+                  <IconCalendar /> {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
+                </div>
+              )}
             </div>
 
             {!animating && (
@@ -360,17 +388,8 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
             )}
 
             <div style={{ display:'flex', gap:7 }}>
-              {showCustom ? (
-                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ flex:1, padding:'8px 9px', fontSize:12.5, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
-              ) : (
-                <div style={{ flex:1, background:ORG_LT, borderRadius:8, padding:'8px 9px', fontSize:11.5, fontWeight:700, color:TEXT_DARK, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  📅 {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
-                </div>
-              )}
-            </div>
-            <div style={{ display:'flex', gap:7 }}>
-              <button onClick={() => setShowData(!showData)} style={{ flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>📊 Data</button>
-              <button onClick={handleShare} style={{ flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
+              <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}><IconChart /> Data</button>
+              <button onClick={handleShare} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
               <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>About</button>
             </div>
           </div>
