@@ -92,6 +92,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [windData, setWindData]       = useState<{speed:number,dir:number,gust:number}|null>(null);
   const [mounted, setMounted]         = useState(false);
   useEffect(() => { setMounted(true); }, []);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   const captureRef = useRef<((label: string, time: string, date: string) => void) | null>(null);
   const screenshotResolverRef = useRef<((screenshots: {label:string,base64:string}[]) => void) | null>(null);
@@ -239,8 +240,17 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100vh', overflow:'hidden', background:'#F9F9F7' }}>
 
-      {/* TOPBAR */}
-      <div style={{ background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', padding:'10px 16px', display:'flex', alignItems:'center', gap:10, flexShrink:0, flexWrap:'wrap' }}>
+      <style>{`
+        .topbar-desktop { display: flex; }
+        .topbar-mobile { display: none; }
+        @media (max-width: 768px) {
+          .topbar-desktop { display: none !important; }
+          .topbar-mobile { display: flex !important; }
+        }
+      `}</style>
+
+      {/* TOPBAR — DESKTOP */}
+      <div className="topbar-desktop" style={{ background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', padding:'10px 16px', alignItems:'center', gap:10, flexShrink:0, flexWrap:'wrap' }}>
         <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', flexShrink:0, userSelect:'none' }}>
           <SunLogo />
           <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ORG, letterSpacing:2 }}>SUN SCOUT</span>
@@ -295,6 +305,86 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>📄 AI Report</button>
         <button onClick={handleShare} style={{ background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
         <button onClick={() => setShowAbout(!showAbout)} style={{ background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>About</button>
+      </div>
+
+      {/* TOPBAR — MOBILE (purpose-built layout, not a squeezed version of desktop) */}
+      <div className="topbar-mobile" style={{ flexDirection:'column', background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', flexShrink:0 }}>
+        {/* Row 1: logo + coords + more menu toggle */}
+        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 12px 6px' }}>
+          <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:6, cursor:'pointer', userSelect:'none', flexShrink:0 }}>
+            <SunLogo />
+            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:17, color:ORG, letterSpacing:1.5 }}>SUN SCOUT</span>
+          </div>
+          <div style={{ flex:1 }} />
+          <div style={{ background:ORG_LT, borderRadius:8, padding:'4px 8px', fontSize:11, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap' }}>
+            {lat.toFixed(3)}°, {lon.toFixed(3)}°
+          </div>
+          <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:8, width:32, height:32, fontSize:16, fontWeight:700, cursor:'pointer', flexShrink:0 }}>⋯</button>
+        </div>
+
+        {/* Row 2: search + GPS, full width */}
+        <div style={{ display:'flex', gap:6, padding:'0 12px 8px' }}>
+          <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:1 }}>
+            <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'9px 12px', fontSize:14 }} />
+            <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'9px 14px', fontSize:14, flexShrink:0 }}>{searching ? '…' : '🔍'}</button>
+          </form>
+          <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'9px 12px', fontSize:15, flexShrink:0 }}>📍</button>
+        </div>
+
+        {/* Row 3: view switch + play/pause, full width */}
+        <div style={{ display:'flex', gap:8, padding:'0 12px 10px', alignItems:'center' }}>
+          <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flex:1 }}>
+            {(['3d','2d','year'] as const).map(id => {
+              const labels = { '3d':'🏙 3D', '2d':'🗺 2D', 'year':'🔄 Yr' };
+              return (
+                <button key={id} onClick={() => switchView(id)} style={{ flex:1, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border:'none', borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:12, cursor:'pointer' }}>{labels[id]}</button>
+              );
+            })}
+          </div>
+          <button onClick={toggleAnim} aria-label={animating ? 'Pause' : 'Play'} style={{ background: animating ? ORG : WHITE, color: animating ? '#fff' : TEXT_DARK, border:`1px solid ${animating ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:10, width:40, height:36, fontSize:15, cursor:'pointer', flexShrink:0 }}>
+            {animating ? '⏸' : '▶'}
+          </button>
+        </div>
+
+        {/* Time sliders — only while paused, matches desktop behavior */}
+        {!animating && (
+          <div style={{ display:'flex', gap:14, padding:'0 12px 10px', alignItems:'center' }}>
+            <label style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700, color:TEXT_DARK, flex:1 }}>
+              Hr {simH} <input type="range" min={0} max={23} value={simH} onChange={e => setSimHM(+e.target.value, simM)} style={{ flex:1, accentColor:ORG }} />
+            </label>
+            <label style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, fontWeight:700, color:TEXT_DARK, flex:1 }}>
+              Min {simM} <input type="range" min={0} max={55} step={5} value={simM} onChange={e => setSimHM(simH, +e.target.value)} style={{ flex:1, accentColor:ORG }} />
+            </label>
+          </div>
+        )}
+
+        {/* Row 4: AI Report — the core feature, kept as a persistent full-width primary action */}
+        <div style={{ padding:'0 12px 10px' }}>
+          <button onClick={() => setShowReport(true)} style={{ width:'100%', background:ORG, color:'#fff', border:'none', borderRadius:10, padding:'11px', fontWeight:700, fontSize:14, cursor:'pointer' }}>📄 AI Report</button>
+        </div>
+
+        {/* Collapsible "More" drawer — everything secondary lives here instead of crowding the main rows */}
+        {showMoreMenu && (
+          <div style={{ padding:'0 12px 14px', display:'flex', flexDirection:'column', gap:8, borderTop:'1px solid rgba(224,123,0,0.12)', paddingTop:10 }}>
+            <div style={{ display:'flex', gap:8 }}>
+              <select value={season} onChange={e => handleSeason(e.target.value)} style={{ flex:1, padding:'9px 10px', fontSize:13, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }}>
+                {Object.keys(SEASONS).map(k => <option key={k} value={k}>{k}</option>)}
+              </select>
+              {showCustom ? (
+                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ flex:1, padding:'9px 10px', fontSize:13, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
+              ) : (
+                <div style={{ flex:1, background:ORG_LT, borderRadius:8, padding:'9px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  📅 {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
+                </div>
+              )}
+            </div>
+            <div style={{ display:'flex', gap:8 }}>
+              <button onClick={() => setShowData(!showData)} style={{ flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'9px', fontWeight:700, fontSize:13, cursor:'pointer' }}>📊 Data</button>
+              <button onClick={handleShare} style={{ flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'9px', fontWeight:700, fontSize:13, cursor:'pointer' }}>{copied ? '✓ Copied!' : '🔗 Share'}</button>
+              <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'9px', fontWeight:700, fontSize:13, cursor:'pointer' }}>About</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MAP + DATA ROW */}

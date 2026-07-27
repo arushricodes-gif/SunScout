@@ -67,7 +67,7 @@ const CSS = `
     bottom: 0;
     transform: translateY(0);
     border-radius: 18px 18px 0 0;
-    padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 0px) + 28px);
     max-width: none;
     width: 100%;
     flex-direction: column;
