@@ -1,6 +1,27 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
+
+// Minimal stroke-based icon set — replaces emoji throughout the landing page.
+const LIcon = ({ children, size = 22 }: { children: ReactNode; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+    {children}
+  </svg>
+);
+const IconSun = (p: {size?:number}) => <LIcon {...p}><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4.5" y1="4.5" x2="6.6" y2="6.6"/><line x1="17.4" y1="17.4" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.6" y2="17.4"/><line x1="17.4" y1="6.6" x2="19.5" y2="4.5"/></LIcon>;
+const IconBuilding = (p: {size?:number}) => <LIcon {...p}><rect x="4" y="9" width="7" height="12"/><rect x="13" y="4" width="7" height="17"/><line x1="7" y1="13" x2="7" y2="13"/><line x1="16" y1="8" x2="16" y2="8"/></LIcon>;
+const IconCalendar = (p: {size?:number}) => <LIcon {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></LIcon>;
+const IconBolt = (p: {size?:number}) => <LIcon {...p}><polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2"/></LIcon>;
+const IconGlobe = (p: {size?:number}) => <LIcon {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></LIcon>;
+const IconTag = (p: {size?:number}) => <LIcon {...p}><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L3 3v6.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"/></LIcon>;
+const IconHome = (p: {size?:number}) => <LIcon {...p}><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></LIcon>;
+const IconLeaf = (p: {size?:number}) => <LIcon {...p}><path d="M11 20A7 7 0 0 1 4 13c0-6 6-11 15-11 0 9-5 15-11 15a7 7 0 0 1-4-1z"/></LIcon>;
+const IconCamera = (p: {size?:number}) => <LIcon {...p}><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></LIcon>;
+const IconCheck = (p: {size?:number}) => <LIcon {...p}><polyline points="20 6 9 17 4 12"/></LIcon>;
+const IconLinkedIn = (p: {size?:number}) => (
+  <svg width={p.size ?? 16} height={p.size ?? 16} viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.11 20.45H3.56V9h3.55v11.45z"/></svg>
+);
 
 export default function LandingPage({ onEnter }: { onEnter: () => void }) {
   const [scrollY, setScrollY] = useState(0);
@@ -299,17 +320,17 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 28 }}>What you get</div>
             <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 720 }}>
               {[
-                { icon: '☀️', label: 'Hour-by-hour animation', sub: 'Watch the sun move in real time' },
-                { icon: '🏗', label: '3D building shadows', sub: 'Real OpenStreetMap geometry' },
-                { icon: '🗓', label: 'Full seasonal range', sub: 'Summer, winter, equinox' },
-                { icon: '⚡', label: 'Solar panel scoring', sub: 'Is your roof worth it?' },
-                { icon: '🌍', label: 'Global coverage', sub: 'Any lat/long on Earth' },
-                { icon: '🆓', label: 'Always free', sub: 'No account, no catch' },
+                { icon: <IconSun size={20}/>, label: 'Hour-by-hour animation', sub: 'Watch the sun move in real time' },
+                { icon: <IconBuilding size={20}/>, label: '3D building shadows', sub: 'Real OpenStreetMap geometry' },
+                { icon: <IconCalendar size={20}/>, label: 'Full seasonal range', sub: 'Summer, winter, equinox' },
+                { icon: <IconBolt size={20}/>, label: 'Solar panel scoring', sub: 'Is your roof worth it?' },
+                { icon: <IconGlobe size={20}/>, label: 'Global coverage', sub: 'Any lat/long on Earth' },
+                { icon: <IconTag size={20}/>, label: 'Always free', sub: 'No account, no catch' },
               ].map(({ icon, label, sub }, i) => (
                 <div key={label} style={{ background: 'rgba(255,248,238,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(180,110,30,0.18)', borderRadius: 16, padding: '16px 18px', transition: 'all 0.2s', cursor: 'default', transitionDelay: `${i * 0.06}s` }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = 'rgba(255,248,238,0.95)'; el.style.borderColor = 'rgba(224,123,0,0.35)'; el.style.transform = 'translateY(-3px)'; el.style.boxShadow = '0 8px 28px rgba(224,123,0,0.15)'; }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = 'rgba(255,248,238,0.75)'; el.style.borderColor = 'rgba(180,110,30,0.18)'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}>
-                  <div style={{ fontSize: 22, marginBottom: 8 }}>{icon}</div>
+                  <div style={{ color: '#E07B00', marginBottom: 10 }}>{icon}</div>
                   <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 13, fontWeight: 700, color: '#1A0A00', marginBottom: 3 }}>{label}</div>
                   <div style={{ fontSize: 11, color: '#B07040', lineHeight: 1.4 }}>{sub}</div>
                 </div>
@@ -333,15 +354,15 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2, background: 'rgba(255,255,255,0.04)', borderRadius: 20, overflow: 'hidden' }}>
               {[
-                { e: '🏡', t: 'Home Buyers', d: 'Does that balcony get sun in December? Check before you sign. Takes 10 seconds and might save you years of regret.' },
-                { e: '⚡', t: 'Solar Installers', d: 'Verify rooftop viability remotely. See exact shading patterns from neighboring buildings, every hour, every season.' },
-                { e: '🌿', t: 'Gardeners', d: 'Find the exact full-sun spots in your garden. Know where to plant what, before you dig a single hole.' },
-                { e: '📸', t: 'Photographers', d: 'Scout golden hour positions ahead of time. Know where the light lands, at what angle, at exactly what time.' },
+                { e: <IconHome size={26}/>, t: 'Home Buyers', d: 'Does that balcony get sun in December? Check before you sign. Takes 10 seconds and might save you years of regret.' },
+                { e: <IconBolt size={26}/>, t: 'Solar Installers', d: 'Verify rooftop viability remotely. See exact shading patterns from neighboring buildings, every hour, every season.' },
+                { e: <IconLeaf size={26}/>, t: 'Gardeners', d: 'Find the exact full-sun spots in your garden. Know where to plant what, before you dig a single hole.' },
+                { e: <IconCamera size={26}/>, t: 'Photographers', d: 'Scout golden hour positions ahead of time. Know where the light lands, at what angle, at exactly what time.' },
               ].map((u, i) => (
                 <div key={i} className="pop-item" style={{ background: '#1A0A00', padding: '32px', display: 'flex', gap: 18, transition: 'background .2s', cursor: 'default', transitionDelay: `${i * 0.1}s` }}
                   onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = '#260E00'}
                   onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = '#1A0A00'}>
-                  <div style={{ fontSize: 28, flexShrink: 0 }}>{u.e}</div>
+                  <div style={{ color: '#E07B00', flexShrink: 0 }}>{u.e}</div>
                   <div>
                     <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 15, fontWeight: 700, color: '#FFF8EE', marginBottom: 8 }}>{u.t}</div>
                     <div style={{ fontSize: 13.5, color: 'rgba(255,210,160,0.45)', lineHeight: 1.7 }}>{u.d}</div>
@@ -390,7 +411,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
         {/* FINAL CTA */}
         <section className="scroll-pop" style={{ background: '#FFF0D0', padding: '100px 48px', borderTop: '1px solid rgba(180,110,30,0.15)', textAlign: 'center' }}>
           <div style={{ maxWidth: 560, margin: '0 auto' }}>
-            <div style={{ fontSize: 52, marginBottom: 24, animation: 'spin 8s linear infinite', display: 'inline-block' }}>☀️</div>
+            <div style={{ color: '#E07B00', marginBottom: 24, animation: 'spin 8s linear infinite', display: 'inline-block' }}><IconSun size={44}/></div>
             <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2.4rem,5vw,4rem)', fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 0.9, color: '#1A0A00', margin: '0 0 20px' }}>
               Your property.<br/><em style={{ color: '#E07B00', fontStyle: 'italic' }}>Now you know.</em>
             </h2>
@@ -400,25 +421,57 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(224,123,0,0.35)'; }}>
               Drop a pin →
             </button>
-            <div style={{ marginTop: 64, textAlign: 'left', borderTop: '1px solid rgba(180,110,30,0.15)', paddingTop: 44 }}>
-              <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 700, color: '#5A2800', marginBottom: 6 }}>Leave feedback</div>
-              <div style={{ fontSize: 12, color: '#B07040', marginBottom: 20 }}>We read everything. Reply rate 100%.</div>
-              {fbSent ? <div style={{ color: '#E07B00', fontWeight: 700 }}>✓ Got it — thank you!</div> : (
-                <form onSubmit={handleFeedback} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <input value={fbName} onChange={e => setFbName(e.target.value)} placeholder="Name (optional)" style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
-                  <textarea value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="What would make SunScout better?" rows={3} required style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', resize: 'vertical', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
-                  <button type="submit" style={{ alignSelf: 'flex-start', background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 100, padding: '9px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s', fontFamily: 'Plus Jakarta Sans,sans-serif' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#E07B00')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#1A0A00')}>Send →</button>
-                </form>
-              )}
+            <div style={{ marginTop: 64, borderTop: '1px solid rgba(180,110,30,0.15)', paddingTop: 44, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, textAlign: 'left' }}>
+              {/* Left half — builder credit */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #E07B00, #FF9E3D)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Grotesk,sans-serif', fontSize: 17, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 4px 16px rgba(224,123,0,0.35)' }}>AG</div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 3 }}>Built by</div>
+                    <div style={{ fontSize: 17, fontWeight: 800, color: '#1A0A00', fontFamily: 'Space Grotesk,sans-serif', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      Arushri Gangji
+                      <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#9A6030', display: 'flex', transition: 'color .15s' }} onMouseEnter={e => (e.currentTarget.style.color = '#E07B00')} onMouseLeave={e => (e.currentTarget.style.color = '#9A6030')}>
+                        <IconLinkedIn size={15}/>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 13, color: '#B07040', fontWeight: 600, marginBottom: 18, lineHeight: 1.6 }}>
+                  Freshman, BITS Pilani Dubai <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Classical Dancer <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Painter <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Cyclist
+                </div>
+                <p style={{ fontSize: 13, color: '#9A6030', lineHeight: 1.75, margin: 0 }}>
+                  Bothered by unsolved problems. SunScout is my attempt at making property research more honest — into design, data, and figuring out how things work, all the way down.
+                </p>
+              </div>
+
+              {/* Right half — feedback */}
+              <div style={{ borderLeft: '1px solid rgba(180,110,30,0.15)', paddingLeft: 48 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(224,123,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E07B00', flexShrink: 0 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 700, color: '#5A2800' }}>Leave feedback</div>
+                </div>
+                <div style={{ fontSize: 12, color: '#B07040', marginBottom: 20 }}>Every message is read personally — not routed to a queue.</div>
+                {fbSent ? (
+                  <div style={{ color: '#E07B00', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}><IconCheck size={16}/> Got it — thank you!</div>
+                ) : (
+                  <form onSubmit={handleFeedback} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <input value={fbName} onChange={e => setFbName(e.target.value)} placeholder="Name (optional)" style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
+                    <textarea value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="What would make SunScout better?" rows={3} required style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', resize: 'vertical', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
+                    <button type="submit" style={{ alignSelf: 'flex-start', background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 100, padding: '9px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s', fontFamily: 'Plus Jakarta Sans,sans-serif' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#E07B00')}
+                      onMouseLeave={e => (e.currentTarget.style.background = '#1A0A00')}>Send →</button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </section>
 
         {/* FOOTER */}
         <footer style={{ background: '#0E0500', padding: '22px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 800, color: '#FFF8EE' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span> <span style={{ fontSize: 11, color: '#5A3010', fontWeight: 400 }}>· Part of <a href="https://loclens.vercel.app" target="_blank" rel="noopener noreferrer" style={{ color: '#E07B00', textDecoration: 'none' }}>BlindSpot</a></span></span>
+          <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 800, color: '#FFF8EE' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span></span>
           <span style={{ fontSize: 12, color: '#5A3010' }}>Free · No login · Works worldwide</span>
         </footer>
       </div>
@@ -475,6 +528,8 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           section { padding:60px 20px!important; }
           [style*="padding: 100px 48px"] { padding:60px 20px!important; }
           [style*="grid-template-columns: repeat(2"],[style*="grid-template-columns: repeat(3"] { grid-template-columns:1fr!important; }
+          [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; gap:32px!important; }
+          [style*="border-left: 1px solid rgba(180,110,30,0.15)"] { border-left:none!important; border-top:1px solid rgba(180,110,30,0.15)!important; padding-left:0!important; padding-top:32px!important; }
           [style*="padding: 0 8vw"] { padding:0 20px!important; }
           [style*="padding: 60px 8vw"] { padding:40px 20px!important; }
           .features-grid { grid-template-columns: repeat(2,1fr)!important; }
