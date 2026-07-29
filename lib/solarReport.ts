@@ -14,6 +14,7 @@
 // no network round trip, and identical reliability for every location.
 
 import { getSunTimes, buildPathData, getSolarPos } from './solar';
+import type { BuildingHeightNote } from './buildingHeights';
 
 export const MONTHS = [
     { name: 'January',   date: '2025-01-15' },
@@ -163,6 +164,10 @@ export const MONTHS = [
       verdict: string; avgUsableHours: number;
       bestMonths: string[]; worstMonths: string[];
     };
+    // Attached by app/api/report/analyse/route.ts after computeSolarSummary
+    // returns — not set by this file itself. Optional/nullable because the
+    // Overpass check fails soft.
+    buildingHeightNote?: BuildingHeightNote | null;
   }
   
   export async function computeSolarSummary(

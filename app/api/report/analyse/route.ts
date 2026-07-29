@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { computeSolarSummary } from '@/lib/solarReport';
+import { checkBuildingHeights } from '@/lib/buildingHeights';
 
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
@@ -36,6 +37,12 @@ Note: floor clearance is an estimate based on typical urban obstruction heights,
     groundTruthText = '\n(Ground-truth solar computation unavailable — rely more cautiously on visual inspection and say so explicitly.)';
   }
 
+  // Real-data honesty check, independent of the prompt/analysis above. Fails
+  // soft: if Overpass is unreachable this is just null and the PDF route
+  // omits the line rather than ever inventing a count.
+  const buildingHeightNote = await checkBuildingHeights(latN, lonN).catch(() => null);
+  const reportSummary = solarSummary ? { ...solarSummary, buildingHeightNote } : null;
+
   const prompt = `You are a solar intelligence analyst helping a home buyer in India.
 
 Property: ${address} (${latN.toFixed(4)}°N, ${lonN.toFixed(4)}°E)
@@ -44,27 +51,28 @@ ${groundTruthText}
 
 You also have ${screenshots.length} screenshots of the actual 3D map at this location. The orange circle/dot marks the exact property location; darker areas are rendered shadows from OpenStreetMap building data. Use these images ONLY for narrative color and visual confirmation (e.g. "as the images show, a taller block sits to the southeast") — do NOT estimate hours of sun, shadow duration, or building heights from the images; use the ground-truth numbers above for all figures. If a screenshot looks blank, black, or unreadable, say so explicitly rather than guessing what it would show.
 
-Write concise, complete sections — do not run out of space. Keep each section tight (3-5 sentences or bullets) so the full response fits comfortably.
+Be thorough and specific, not brief. This report is a defensible artifact a buyer will rely on — do not compress away detail to save space.
 
 FORMATTING RULES (follow exactly, every time, regardless of location):
 - Start each section heading on its own line as "1. TITLE" (plain text, no ** bold markers, no # markdown).
 - Use plain "- " for bullet points, not "*".
 - Do not use markdown bold (**) anywhere except to emphasize a single key figure inline.
 - Always include all 4 numbered sections below, in order, even if a section is short for this location.
+- For section 1 ONLY, do not write prose paragraphs or bullets. Instead output exactly one line per screenshot, in this exact machine-readable form and nothing else on the line: @N@ <description>, where N is the image number from the "Image order" list below (1 to ${screenshots.length}). Output the lines in image order, one per image, no blank lines between them, no sub-headers.
 
 Provide:
 
 1. SHADOW ANALYSIS BY SEASON & TIME
-For each screenshot, briefly describe what you observe and connect it to the ground-truth numbers for that season.
+For each screenshot (one @N@ line per image, per the formatting rule above), write a detailed 4-6 sentence description: what specifically is casting the shadow near the property marker (a taller building, a row of low-rise structures, nothing nearby), which direction the shadow falls, roughly how much of the visible area around the marker is shaded vs sunlit at this exact time, and how that connects to the ground-truth numbers for this season. Be concrete and descriptive, not generic — this is the reader's main evidence per image, so do not shortchange it.
 
 2. FLOOR ${floorN} SPECIFIC ANALYSIS
-Using the ground-truth floor clearance data: when does direct sunlight first reach this unit in summer vs winter, and roughly how many hours per day in best/worst months?
+Using the ground-truth floor clearance data, give a full, detailed explanation: when does direct sunlight first reach this unit in summer vs winter, how many hours per day in the best and worst months, how that changes month to month, and what this practically means for someone living on this floor (natural light for daily use, need for artificial lighting, heat gain, etc). Do not compress this into a couple of sentences — explain the reasoning, not just the conclusion.
 
 3. ${facing.toUpperCase()}-FACING WINDOW ASSESSMENT
-When does the sun shine directly into a ${facing}-facing window here, and is this a good or bad facing for this specific location?
+Explain in full when the sun shines directly into a ${facing}-facing window here across the year, why (walk through the azimuth/elevation reasoning in plain language), and whether this is a good or bad facing for this specific location and floor — with the reasoning spelled out, not just a verdict.
 
 4. HOME BUYER VERDICT
-3-4 honest sentences: is the sunlight situation good, acceptable, or poor? What floor would you recommend as a minimum? Any specific concerns visible in the shadow patterns?`;
+A full, honest verdict, several sentences to a short paragraph: is the sunlight situation good, acceptable, or poor, and why specifically. What floor would you recommend as a minimum, and why. Any specific concerns visible in the shadow patterns across the screenshots. Do not just restate the overall feasibility label — explain what it means for someone actually living there.`;
 
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
@@ -96,7 +104,7 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: msgContents,
-          generationConfig: { maxOutputTokens: 4096, temperature: 0.2 },
+          generationConfig: { maxOutputTokens: 8192, temperature: 0.2 },
         }),
       });
       if (!res.ok) {
@@ -110,7 +118,7 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
     let data = await callGemini(contents);
     if (!data) {
       return NextResponse.json(
-        { analysis: 'AI analysis request failed. Please try again in a moment.', summary: solarSummary },
+        { analysis: 'AI analysis request failed. Please try again in a moment.', summary: reportSummary },
         { status: 502 }
       );
     }
@@ -121,9 +129,9 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
 
     // If Gemini ran out of output tokens mid-response, ask it to continue from
     // exactly where it stopped, rather than shipping a report that dead-ends
-    // mid-sentence. Cap at 2 continuations so a pathological loop can't run forever.
+    // mid-sentence. Cap continuations so a pathological loop can't run forever.
     let continuations = 0;
-    while (finishReason === 'MAX_TOKENS' && continuations < 2) {
+    while (finishReason === 'MAX_TOKENS' && continuations < 3) {
       continuations++;
       console.warn(`Gemini hit MAX_TOKENS, requesting continuation #${continuations}`);
       const followUpContents = [
@@ -149,7 +157,7 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
       return NextResponse.json(
         {
           analysis: `AI analysis was incomplete (reason: ${finishReason || 'unknown'}). The data table above is still accurate — try regenerating the report for the full write-up.`,
-          summary: solarSummary,
+          summary: reportSummary,
         },
         { status: 200 }
       );
@@ -160,11 +168,11 @@ When does the sun shine directly into a ${facing}-facing window here, and is thi
       analysis += '\n\n*(Note: this analysis was cut short by a length limit — the data table above remains fully accurate.)*';
     }
 
-    return NextResponse.json({ analysis, summary: solarSummary });
+    return NextResponse.json({ analysis, summary: reportSummary });
   } catch (err: any) {
     console.error('Gemini Vision error:', err);
     return NextResponse.json(
-      { analysis: 'Could not reach Gemini Vision. Please try again in a moment.', summary: solarSummary },
+      { analysis: 'Could not reach Gemini Vision. Please try again in a moment.', summary: reportSummary },
       { status: 502 }
     );
   }

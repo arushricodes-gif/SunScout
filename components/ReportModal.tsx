@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Props {
   lat: number;
@@ -16,9 +16,50 @@ const FACING = ['North','South','East','West','North-East','South-East','North-W
 export default function ReportModal({ lat, lon, tzOffset, address, onClose, captureScreenshots }: Props) {
   const [floor, setFloor]     = useState('5');
   const [facing, setFacing]   = useState('South');
+  const [facingTouched, setFacingTouched] = useState(false); // becomes true the moment the person picks a direction themselves
+  const facingTouchedRef = useRef(false);
+  const [facingSuggestion, setFacingSuggestion] = useState<{ direction: string; sentence: string } | null>(null);
+  const [facingLoading, setFacingLoading] = useState(true);
+  const [facingExpanded, setFacingExpanded] = useState(false); // the picker only shows if the person asks to change the guess
+  const [reportLabel, setReportLabel] = useState(''); // optional nickname, e.g. "Skyline Residences · Unit 502"
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [error, setError]     = useState('');
+
+  // Auto-guess a facing direction as soon as the modal opens, so the person
+  // doesn't have to know it up front. Never overwrites a direction they've
+  // already picked themselves (checked via a ref so this effect doesn't need
+  // to depend on — and re-fire on — facingTouched).
+  useEffect(() => {
+    let cancelled = false;
+    setFacingLoading(true);
+    fetch(`/api/report/suggest-facing?lat=${lat}&lon=${lon}`)
+      .then(res => res.ok ? res.json() : { suggestion: null })
+      .then(({ suggestion }) => {
+        if (cancelled) return;
+        if (suggestion) {
+          setFacingSuggestion(suggestion);
+          if (!facingTouchedRef.current) setFacing(suggestion.direction);
+        } else if (!facingTouchedRef.current) {
+          // No usable building data near this point — don't sit on the
+          // arbitrary 'South' initial state and label it a "guess". Open
+          // the picker so the person actually chooses instead.
+          setFacingExpanded(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled && !facingTouchedRef.current) setFacingExpanded(true);
+      })
+      .finally(() => { if (!cancelled) setFacingLoading(false); });
+    return () => { cancelled = true; };
+  }, [lat, lon]);
+
+  const pickFacing = (dir: string) => {
+    setFacing(dir);
+    setFacingTouched(true);
+    facingTouchedRef.current = true;
+    setFacingExpanded(false); // collapse back to the summary line once they've made a choice
+  };
 
   const generate = async () => {
     setLoading(true);
@@ -29,7 +70,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       setLoadingMsg('📸 Capturing 12 map screenshots...');
       const screenshots = await captureScreenshots();
 
-      setLoadingMsg('🤖 Gemini is analysing real shadows...');
+      setLoadingMsg('🔎 Reading the shadows in your screenshots...');
       const analyseRes = await fetch('/api/report/analyse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,11 +79,15 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       if (!analyseRes.ok) throw new Error('Analysis failed');
       const { analysis, summary } = await analyseRes.json();
 
-      setLoadingMsg('📄 Building your report...');
+      setLoadingMsg('📄 Putting your report together...');
       const pdfRes = await fetch('/api/report/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lon, tzOffset, address: addr, floor, facing, screenshots, analysis, summary }),
+        body: JSON.stringify({
+          lat, lon, tzOffset, address: addr, floor, facing, screenshots, analysis, summary,
+          reportLabel: reportLabel || undefined,
+          facingAssumptionNote: (!facingTouched && facingSuggestion) ? facingSuggestion.sentence : undefined,
+        }),
       });
       if (!pdfRes.ok) throw new Error('PDF generation failed');
 
@@ -72,7 +117,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
             </div>
 
             <p style={{ fontSize:13, color:'#999', lineHeight:1.6, marginBottom:24 }}>
-              We compute precise sun/shadow data for this exact location, capture 12 real screenshots (3 per season) at different times, then use Gemini Vision to narrate the shadow patterns at your pin location.
+              We compute precise sun/shadow data for this exact location, capture 12 real screenshots (3 per season) at different times, then use AI to narrate the shadow patterns at your pin location.
             </p>
 
             <div style={{ marginBottom:20 }}>
@@ -84,13 +129,57 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
               <div style={{ fontSize:11, color:'#B07040', marginTop:3 }}>Floor {floor} ≈ {parseInt(floor)*3}m above ground</div>
             </div>
 
-            <div style={{ marginBottom:28 }}>
+            <div style={{ marginBottom:20 }}>
               <label style={{ fontSize:12, fontWeight:700, color:'#5A2800', display:'block', marginBottom:8 }}>Which direction does the unit face?</label>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:7 }}>
-                {FACING.map(dir => (
-                  <button key={dir} onClick={() => setFacing(dir)} style={{ background: facing===dir ? '#E07B00' : '#fff', color: facing===dir ? '#fff' : '#5A2800', border: `1.5px solid ${facing===dir ? '#E07B00' : 'rgba(200,130,40,0.2)'}`, borderRadius:9, padding:'7px 4px', fontSize:11, fontWeight:700, cursor:'pointer', transition:'all .15s' }}>{dir}</button>
-                ))}
-              </div>
+
+              {!facingExpanded ? (
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#fff8ee', border:'1.5px solid rgba(200,130,40,0.2)', borderRadius:9, padding:'10px 12px' }}>
+                  <div style={{ fontSize:13, color:'#5A2800' }}>
+                    {facingLoading ? (
+                      <span style={{ color:'#B07040' }}>🧭 Detecting facing from nearby buildings…</span>
+                    ) : (
+                      <>
+                        <strong>{facing}</strong>
+                        <span style={{ color:'#B07040', fontSize:11.5 }}>
+                          {' '}— {facingTouched ? 'set by you' : facingSuggestion ? 'assumed from nearby buildings, unconfirmed' : 'default, unconfirmed'}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <button onClick={() => setFacingExpanded(true)} style={{ background:'none', border:'none', color:'#E07B00', fontSize:12, fontWeight:700, cursor:'pointer', textDecoration:'underline', padding:0 }}>
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:7 }}>
+                    {FACING.map(dir => (
+                      <button key={dir} onClick={() => pickFacing(dir)} style={{ background: facing===dir ? '#E07B00' : '#fff', color: facing===dir ? '#fff' : '#5A2800', border: `1.5px solid ${facing===dir ? '#E07B00' : 'rgba(200,130,40,0.2)'}`, borderRadius:9, padding:'7px 4px', fontSize:11, fontWeight:700, cursor:'pointer', transition:'all .15s' }}>{dir}</button>
+                    ))}
+                  </div>
+                  <button onClick={() => setFacingExpanded(false)} style={{ background:'none', border:'none', color:'#B07040', fontSize:11, cursor:'pointer', marginTop:8, padding:0 }}>
+                    Done
+                  </button>
+                </>
+              )}
+
+              {facingSuggestion && !facingTouched && (
+                <div style={{ fontSize:10.5, color:'#B07040', marginTop:8, lineHeight:1.5 }}>
+                  {facingSuggestion.sentence}
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginBottom:28 }}>
+              <label style={{ fontSize:12, fontWeight:700, color:'#5A2800', display:'block', marginBottom:8 }}>Name this report (optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. Skyline Residences · Unit 502"
+                value={reportLabel}
+                onChange={e => setReportLabel(e.target.value)}
+                style={{ width:'100%', border:'1.5px solid rgba(200,130,40,0.2)', borderRadius:9, padding:'10px 12px', fontSize:13, fontFamily:'inherit' }}
+              />
+              <div style={{ fontSize:10.5, color:'#ccc', marginTop:6 }}>Shows as a small tag at the top of the report — handy if you're tracking a few units at once.</div>
             </div>
 
             {error && (
@@ -103,12 +192,12 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
               </button>
               <button onClick={onClose} style={{ background:'#f0ede8', color:'#888', border:'none', borderRadius:12, padding:'13px 18px', fontSize:14, cursor:'pointer' }}>Cancel</button>
             </div>
-            <div style={{ fontSize:11, color:'#ccc', textAlign:'center', marginTop:10 }}>Takes ~30 seconds · Free · Powered by Gemini Vision</div>
+            <div style={{ fontSize:11, color:'#ccc', textAlign:'center', marginTop:10 }}>Takes ~30 seconds · Free · AI-powered analysis</div>
           </>
         ) : (
           <div style={{ textAlign:'center', padding:'20px 0' }}>
             <div style={{ fontSize:48, marginBottom:20, animation:'spin 2s linear infinite', display:'inline-block' }}>☀️</div>
-            <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:12 }}>Analysing your property...</h3>
+            <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:12 }}>Generating your report...</h3>
             <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:20 }}>{loadingMsg}</p>
             <div style={{ background:'#f0ede8', borderRadius:8, height:6, overflow:'hidden' }}>
               <div style={{ background:'#E07B00', height:'100%', width:'60%', borderRadius:8, animation:'progress 2s ease-in-out infinite' }} />
