@@ -8,7 +8,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { computeSolarSummary } from '@/lib/solarReport';
 import { checkBuildingHeights } from '@/lib/buildingHeights';
 
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+// Fallback chain — if gemini-2.5-flash is rate-limited (429), try flash-lite,
+// which has its own separate quota bucket.
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const GEMINI_URL = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 export async function POST(req: NextRequest) {
   const { screenshots, lat, lon, address, floor, facing, tzOffset } = await req.json();
@@ -98,21 +101,26 @@ A full, honest verdict, several sentences to a short paragraph: is the sunlight 
 
     const contents = [{ role: 'user', parts: [{ text: `${prompt}\n\nImage order:\n${labelLine}` }, ...imageParts] }];
 
+    // Tries each model in GEMINI_MODELS in order. Only moves to the next one
+    // on a 429 (rate limit) — any other failure returns null immediately,
+    // same as before.
     const callGemini = async (msgContents: any[]) => {
-      const res = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: msgContents,
-          generationConfig: { maxOutputTokens: 8192, temperature: 0.2 },
-        }),
-      });
-      if (!res.ok) {
+      for (const model of GEMINI_MODELS) {
+        const res = await fetch(`${GEMINI_URL(model)}?key=${process.env.GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: msgContents,
+            generationConfig: { maxOutputTokens: 8192, temperature: 0.2 },
+          }),
+        });
+        if (res.ok) return res.json();
         const errText = await res.text();
-        console.error('Gemini Vision request failed:', res.status, errText);
-        return null;
+        console.error(`Gemini Vision request failed (${model}):`, res.status, errText);
+        if (res.status !== 429) return null;
+        // else: rate-limited, fall through and try the next model
       }
-      return res.json();
+      return null;
     };
 
     let data = await callGemini(contents);
