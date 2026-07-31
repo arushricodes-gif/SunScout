@@ -272,8 +272,11 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
       {/* TOPBAR — DESKTOP */}
       <div className="topbar-desktop" style={{ background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', padding:'10px 16px', alignItems:'center', gap:10, flexShrink:0, flexWrap:'wrap' }}>
         <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', flexShrink:0, userSelect:'none' }}>
-          <SunLogo />
-          <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ORG, letterSpacing:2 }}>SUN SCOUT</span>
+          <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:30, width:'auto' }} />
+          <div style={{ display:'flex', flexDirection:'column', lineHeight:1.1 }}>
+            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ORG, letterSpacing:2 }}>SUN SCOUT</span>
+            <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:9.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.03em' }}>by BlindSpot</span>
+          </div>
         </div>
         <Divider />
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
@@ -333,8 +336,11 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         {/* Row 1: logo + season (compact) + more menu toggle */}
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 10px' }}>
           <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none', flexShrink:0 }}>
-            <SunLogo />
-            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:ORG, letterSpacing:1 }}>SUN SCOUT</span>
+            <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:24, width:'auto' }} />
+            <div style={{ display:'flex', flexDirection:'column', lineHeight:1.05 }}>
+              <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:ORG, letterSpacing:1 }}>SUN SCOUT</span>
+              <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:7.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.02em' }}>by BlindSpot</span>
+            </div>
           </div>
           <div style={{ flex:1 }} />
           <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'5px 6px', fontSize:11, borderRadius:7, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:110, flexShrink:1 }}>

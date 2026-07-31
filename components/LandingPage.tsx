@@ -246,11 +246,11 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
       {/* Nav */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: scrollY > 50 ? '13px 44px' : '20px 44px', background: scrollY > 50 ? 'rgba(255,248,238,0.88)' : 'transparent', backdropFilter: scrollY > 50 ? 'blur(14px)' : 'none', borderBottom: scrollY > 50 ? '1px solid rgba(180,110,30,0.1)' : 'none', transition: 'all 0.35s' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
-            {[0,45,90,135,180,225,270,315].map((d,i) => <line key={i} x1={18+8*Math.cos(d*Math.PI/180)} y1={18+8*Math.sin(d*Math.PI/180)} x2={18+13*Math.cos(d*Math.PI/180)} y2={18+13*Math.sin(d*Math.PI/180)} stroke="#E07B00" strokeWidth="2.2" strokeLinecap="round"/>)}
-            <circle cx="18" cy="18" r="6" fill="#E07B00"/>
-          </svg>
-          <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: '-0.02em', color: '#1A0A00' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span></span>
+          <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height: 27, width: 'auto' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+            <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: '-0.02em', color: '#1A0A00' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span></span>
+            <span style={{ fontFamily: 'Plus Jakarta Sans,sans-serif', fontSize: 9.5, fontWeight: 600, color: '#B07040', letterSpacing: '.03em' }}>by BlindSpot</span>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: '#B07040' }}>Free · No login</span>
@@ -471,7 +471,10 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
 
         {/* FOOTER */}
         <footer style={{ background: '#0E0500', padding: '22px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 800, color: '#FFF8EE' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height: 20, width: 'auto' }} />
+            <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 800, color: '#FFF8EE' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span> <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,248,238,0.5)' }}>by BlindSpot</span></span>
+          </div>
           <span style={{ fontSize: 12, color: '#5A3010' }}>Free · No login · Works worldwide</span>
         </footer>
       </div>
