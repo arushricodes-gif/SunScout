@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 export const metadata: Metadata = {
-  title: 'SunScout',
+  title: 'SunScout - Shadow and Sun Path visualizer',
   icons: {
     icon: '/blindspot-mark-yellow.png',
     shortcut: '/blindspot-mark-yellow.png',
@@ -27,17 +27,17 @@ export const metadata: Metadata = {
     'seasonal sunlight tracker',
   ],
   openGraph: {
-    title: 'Sun Scout — Free Sun Path Visualizer for Any Property',
-    description: 'Drop a pin on any property. See real 3D building shadows, sun path animation, and seasonal comparison. Free, no login.',
+    title: 'SunScout - Shadow and Sun Path visualizer',
+    description: 'Drop a pin on any property. See real 3D building shadows, sun path animation, and seasonal comparison.',
     url: 'https://sun-scout.com',
-    siteName: 'Sun Scout',
-    images: [{ url: 'https://sun-scout.com/og-image.jpg', width: 1200, height: 630, alt: 'Sun Scout — Solar path visualizer with 3D building shadows' }],
+    siteName: 'SunScout',
+    images: [{ url: 'https://sun-scout.com/og-image.jpg', width: 1200, height: 630, alt: 'SunScout — Shadow and Sun Path visualizer' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sun Scout — Free Sun Path Visualizer for Any Property',
-    description: 'Drop a pin on any property. See real 3D building shadows and sun path animation. Free.',
+    title: 'SunScout - Shadow and Sun Path visualizer',
+    description: 'Drop a pin on any property. See real 3D building shadows and sun path animation.',
     images: ['https://sun-scout.com/og-image.jpg'],
   },
 };
