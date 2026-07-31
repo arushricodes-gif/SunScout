@@ -2,8 +2,13 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 export const metadata: Metadata = {
-  title: 'Sun Scout ☀️ — Free Sun Path Visualizer for Any Property',
-  description: 'Free sun path visualizer — drop a pin and see exactly where sunlight falls hour by hour, season by season, with real 3D building shadows. Check sunlight before buying or renting a home.',
+  title: 'SunScout',
+  icons: {
+    icon: '/blindspot-mark-yellow.png',
+    shortcut: '/blindspot-mark-yellow.png',
+    apple: '/blindspot-mark-yellow.png',
+  },
+  description: 'Shadow and Sun Path visualizer — drop a pin and see exactly where sunlight falls hour by hour, season by season, with real 3D building shadows. Check sunlight before buying or renting a home.',
   keywords: [
     'sun path visualizer',
     'solar path visualizer',
