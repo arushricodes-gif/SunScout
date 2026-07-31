@@ -274,7 +274,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', flexShrink:0, userSelect:'none' }}>
           <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:30, width:'auto' }} />
           <div style={{ display:'flex', flexDirection:'column', lineHeight:1.1 }}>
-            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ORG, letterSpacing:2 }}>SUN SCOUT</span>
+            <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:18, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
             <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:9.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.03em' }}>by BlindSpot</span>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none', flexShrink:0 }}>
             <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:24, width:'auto' }} />
             <div style={{ display:'flex', flexDirection:'column', lineHeight:1.05 }}>
-              <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:14, color:ORG, letterSpacing:1 }}>SUN SCOUT</span>
+              <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:13.5, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
               <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:7.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.02em' }}>by BlindSpot</span>
             </div>
           </div>
