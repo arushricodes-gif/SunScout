@@ -200,6 +200,7 @@ export async function POST(req: NextRequest) {
 <body>
   <div class="no-print" style="position:fixed;top:20px;right:20px;z-index:100;display:flex;gap:10px;align-items:center;">
     <span id="pdf-status" style="font-size:12px;color:#888;max-width:260px;text-align:right;"></span>
+    <button id="back-to-sunscout-btn" style="background:#fff;color:#e07b00;border:1px solid #e07b00;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;">← Back to SunScout</button>
     <button id="print-btn" style="background:#f0ede8;color:#555;border:none;border-radius:10px;padding:10px 16px;font-size:13px;cursor:pointer;">Print</button>
     <button id="download-pdf-btn" style="background:#e07b00;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(224,123,0,0.35);">⬇ Download PDF</button>
     <button onclick="window.close()" style="background:#f0ede8;color:#555;border:none;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer;">Close</button>
@@ -279,6 +280,16 @@ export async function POST(req: NextRequest) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
+
+    document.getElementById('back-to-sunscout-btn').addEventListener('click', function () {
+      if (window.opener && !window.opener.closed) {
+        window.opener.focus();
+      } else {
+        // The tab that opened this report is gone (closed, or this was
+        // opened some other way) -- just go to SunScout directly instead.
+        window.open(window.location.origin, '_blank');
+      }
+    });
 
     document.getElementById('download-pdf-btn').addEventListener('click', async function () {
       var btn = document.getElementById('download-pdf-btn');
