@@ -282,7 +282,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <span style={{ fontSize: 12, color: '#B07040' }}>Works anywhere on Earth</span>
           </div>
           <div style={{ display: 'flex', gap: 32, marginTop: 44, paddingTop: 22, borderTop: '1px solid rgba(180,110,30,0.15)' }}>
-            {[['250+','weekly users'],['Global','coverage'],['AI-Written','reports']].map(([v,l]) => (
+            {[['365','days modeled'],['3D','building shadows'],['NOAA','solar data']].map(([v,l]) => (
               <div key={l}>
                 <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 800, color: '#1A0A00', letterSpacing: '-0.03em' }}>{v}</div>
                 <div style={{ fontSize: 10, color: '#B07040', marginTop: 2, textTransform: 'uppercase', letterSpacing: '.08em' }}>{l}</div>
