@@ -39,6 +39,7 @@ export interface PendingSunScoutReport {
 }
 
 const PENDING_SAVE_KEY = 'blindspot_pending_save';
+const RETURN_TO_KEY = 'blindspot_return_to';
 
 // Actually writes a report into the shared `reports` table. Requires an
 // active session -- call getBlindSpotSession() first and redirect to
@@ -72,9 +73,20 @@ export async function saveReportToBlindSpot(report: PendingSunScoutReport) {
 // which finishes the save once they're signed in.
 export function redirectToBlindSpotLogin(report: PendingSunScoutReport) {
   sessionStorage.setItem(PENDING_SAVE_KEY, JSON.stringify(report));
+  // Remember exactly where they were (map view, any query params) so the
+  // callback can send them back here instead of the homepage.
+  sessionStorage.setItem(RETURN_TO_KEY, window.location.href);
   const returnTo = `${window.location.origin}/blindspot-callback`;
   const blindspotLogin = `https://blindspotco.net/login?next=${encodeURIComponent(returnTo)}`;
   window.location.href = blindspotLogin;
+}
+
+export function getReturnTo(): string | null {
+  return sessionStorage.getItem(RETURN_TO_KEY);
+}
+
+export function clearReturnTo() {
+  sessionStorage.removeItem(RETURN_TO_KEY);
 }
 
 export function getPendingSave(): PendingSunScoutReport | null {

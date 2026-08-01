@@ -1,11 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getBlindSpotClient, getPendingSave, clearPendingSave, saveReportToBlindSpot } from '@/lib/blindspot';
+import { getBlindSpotClient, getPendingSave, clearPendingSave, saveReportToBlindSpot, getReturnTo, clearReturnTo } from '@/lib/blindspot';
 
 export default function BlindSpotCallback() {
-  const router = useRouter();
   const [status, setStatus] = useState<'working' | 'done' | 'error'>('working');
   const [message, setMessage] = useState('Signing you in…');
 
@@ -15,36 +13,16 @@ export default function BlindSpotCallback() {
         const hash = new URLSearchParams(window.location.hash.slice(1));
         const access_token = hash.get('access_token');
         const refresh_token = hash.get('refresh_token');
-        console.log('[blindspot-callback] tokens in URL hash:', {
-          hasAccessToken: !!access_token,
-          hasRefreshToken: !!refresh_token,
-        });
 
         if (access_token && refresh_token) {
           const supabase = getBlindSpotClient();
-          const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
-          console.log('[blindspot-callback] setSession result:', {
-            gotSession: !!data?.session,
-            userId: data?.session?.user?.id,
-            error: error?.message,
-          });
+          const { error } = await supabase.auth.setSession({ access_token, refresh_token });
           if (error) throw error;
           window.history.replaceState(null, '', window.location.pathname);
-        } else {
-          console.warn('[blindspot-callback] No tokens found in URL hash at all -- window.location.hash was:', window.location.hash);
         }
-
-        // Re-check the session right before using it, to see exactly what
-        // the client thinks it has at this point.
-        const { data: checkData } = await getBlindSpotClient().auth.getSession();
-        console.log('[blindspot-callback] session right before save:', {
-          hasSession: !!checkData?.session,
-          userId: checkData?.session?.user?.id,
-        });
 
         setMessage('Saving your report…');
         const pending = getPendingSave();
-        console.log('[blindspot-callback] pending report found:', !!pending);
         if (pending) {
           await saveReportToBlindSpot(pending);
           clearPendingSave();
@@ -53,14 +31,20 @@ export default function BlindSpotCallback() {
           setMessage('Signed in.');
         }
         setStatus('done');
-        setTimeout(() => router.push('/'), 1200);
+
+        // Return to exactly the page they were on (the map, with whatever
+        // pin/view they had) instead of always landing on the homepage.
+        const returnTo = getReturnTo();
+        clearReturnTo();
+        setTimeout(() => {
+          window.location.href = returnTo || '/';
+        }, 1200);
       } catch (e: any) {
-        console.error('[blindspot-callback] failed:', e);
         setStatus('error');
         setMessage(e.message || 'Something went wrong finishing sign-in.');
       }
     })();
-  }, [router]);
+  }, []);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Plus Jakarta Sans,sans-serif' }}>
