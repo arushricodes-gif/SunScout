@@ -283,10 +283,12 @@ export async function POST(req: NextRequest) {
 
     document.getElementById('back-to-sunscout-btn').addEventListener('click', function () {
       if (window.opener && !window.opener.closed) {
-        window.opener.focus();
+        // window.focus() is unreliable -- most browsers ignore a
+        // background tab trying to steal focus. Closing this tab is
+        // what actually, reliably returns the browser to whichever tab
+        // opened it.
+        window.close();
       } else {
-        // The tab that opened this report is gone (closed, or this was
-        // opened some other way) -- just go to SunScout directly instead.
         window.open(window.location.origin, '_blank');
       }
     });

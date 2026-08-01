@@ -24,7 +24,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
   const [facingExpanded, setFacingExpanded] = useState(false); // the picker only shows if the person asks to change the guess
   const [reportLabel, setReportLabel] = useState(''); // optional nickname, e.g. "Skyline Residences · Unit 502"
   const [loading, setLoading] = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState('');
+  const [progress, setProgress] = useState(0);
   const [error, setError]     = useState('');
   const [reportUrl, setReportUrl] = useState<string | null>(null);
   const [reportPayload, setReportPayload] = useState<{ summary: any; analysis: string } | null>(null);
@@ -69,13 +69,13 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
   const generate = async () => {
     setLoading(true);
     setError('');
+    setProgress(5);
     try {
       const addr = address || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
-      setLoadingMsg('📸 Capturing 12 map screenshots...');
       const screenshots = await captureScreenshots();
+      setProgress(35);
 
-      setLoadingMsg('🔎 Reading the shadows in your screenshots...');
       const analyseRes = await fetch('/api/report/analyse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,8 +83,8 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       });
       if (!analyseRes.ok) throw new Error('analysis-failed');
       const { analysis, summary } = await analyseRes.json();
+      setProgress(75);
 
-      setLoadingMsg('📄 Putting your report together...');
       const pdfRes = await fetch('/api/report/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,6 +95,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
         }),
       });
       if (!pdfRes.ok) throw new Error('pdf-failed');
+      setProgress(100);
 
       const html = await pdfRes.text();
       const blob = new Blob([html], { type: 'text/html' });
@@ -266,16 +267,15 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
           <div style={{ textAlign:'center', padding:'20px 0' }}>
             <div style={{ fontSize:48, marginBottom:20, animation:'spin 2s linear infinite', display:'inline-block' }}>☀️</div>
             <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:12 }}>Generating your report...</h3>
-            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:20 }}>{loadingMsg}</p>
+            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:20 }}>This usually takes under a minute.</p>
             <div style={{ background:'#f0ede8', borderRadius:8, height:6, overflow:'hidden' }}>
-              <div style={{ background:'#E07B00', height:'100%', width:'60%', borderRadius:8, animation:'progress 2s ease-in-out infinite' }} />
+              <div style={{ background:'#E07B00', height:'100%', width:`${progress}%`, borderRadius:8, transition:'width 0.4s ease' }} />
             </div>
           </div>
         )}
 
         <style>{`
           @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-          @keyframes progress { 0%{width:20%} 50%{width:80%} 100%{width:20%} }
         `}</style>
       </div>
     </div>
