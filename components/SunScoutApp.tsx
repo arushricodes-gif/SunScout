@@ -7,6 +7,7 @@ import SolarChart from './SolarChart';
 import type { SolarData } from '@/app/page';
 import ReportModal from './ReportModal';
 import AsliVastuPopup from './AsliVastuPopup';
+import AsliVastuTopBarButton from './AsliVastuTopBarButton';
 
 
 const Map3DShadow = dynamic(() => import('./Map3DShadow'), { ssr: false }) as any;
@@ -328,6 +329,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', gap:6, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}><IconChart /> Data</button>
         <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>AI Report</button>
         <button onClick={handleShare} style={{ display:'flex', alignItems:'center', gap:6, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
+        {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} />}
         <button onClick={() => setShowAbout(!showAbout)} style={{ background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>About</button>
       </div>
 
@@ -398,6 +400,11 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               <button onClick={handleShare} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
               <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>About</button>
             </div>
+            {hasRealLocation && (
+              <div style={{ marginTop:7 }}>
+                <AsliVastuTopBarButton lat={lat} lon={lon} style={{ width:'100%', justifyContent:'center', padding:'8px' }} />
+              </div>
+            )}
           </div>
         )}
       </div>
