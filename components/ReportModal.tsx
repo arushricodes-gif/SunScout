@@ -81,7 +81,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ screenshots, lat, lon, address: addr, floor, facing, tzOffset }),
       });
-      if (!analyseRes.ok) throw new Error('Analysis failed');
+      if (!analyseRes.ok) throw new Error('analysis-failed');
       const { analysis, summary } = await analyseRes.json();
 
       setLoadingMsg('📄 Putting your report together...');
@@ -94,7 +94,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
           facingAssumptionNote: (!facingTouched && facingSuggestion) ? facingSuggestion.sentence : undefined,
         }),
       });
-      if (!pdfRes.ok) throw new Error('PDF generation failed');
+      if (!pdfRes.ok) throw new Error('pdf-failed');
 
       const html = await pdfRes.text();
       const blob = new Blob([html], { type: 'text/html' });
@@ -103,7 +103,11 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       setReportUrl(url);
       setReportPayload({ summary, analysis });
     } catch (e: any) {
-      setError(e.message || 'Something went wrong. Try again.');
+      // Log the real technical cause for debugging, but never show it to
+      // the person -- Gemini quota errors, network failures, etc. all
+      // just become one calm, friendly message.
+      console.error('Report generation failed:', e);
+      setError("Something went wrong generating your report. This sometimes happens when things are busy — please try again in a minute.");
     } finally {
       setLoading(false);
     }
