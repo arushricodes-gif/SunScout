@@ -273,38 +273,38 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
       `}</style>
 
       {/* TOPBAR — DESKTOP */}
-      <div className="topbar-desktop" style={{ background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', padding:'10px 16px', alignItems:'center', gap:10, flexShrink:0, flexWrap:'wrap' }}>
+      <div className="topbar-desktop" style={{ background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', padding:'8px 16px', alignItems:'center', gap:10, flexShrink:0, flexWrap:'wrap' }}>
         <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', flexShrink:0, userSelect:'none' }}>
-          <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:30, width:'auto' }} />
+          <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:28, width:'auto' }} />
           <div style={{ display:'flex', flexDirection:'column', lineHeight:1.1 }}>
-            <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:18, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
-            <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:9.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.03em' }}>by BlindSpot</span>
+            <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:17, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
+            <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:9, fontWeight:600, color:'#9a9a9a', letterSpacing:'.03em' }}>by BlindSpot</span>
           </div>
         </div>
         <Divider />
         <form onSubmit={handleSearch} style={{ display:'flex', gap:6, flex:'1 1 160px', minWidth:140 }}>
-          <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'7px 11px', fontSize:13 }} />
-          <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'7px 13px', fontSize:13, display:'flex', alignItems:'center' }}>{searching ? '…' : <IconSearch />}</button>
+          <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, padding:'6px 10px', fontSize:13, borderRadius:0 }} />
+          <button type="submit" className="btn-primary" disabled={searching} style={{ padding:'6px 12px', fontSize:13, display:'flex', alignItems:'center', borderRadius:0 }}>{searching ? '…' : <IconSearch />}</button>
         </form>
-        <button className="btn-primary" onClick={onGpsClick} style={{ padding:'7px 13px', fontSize:13, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:6 }}><IconPin /> My location</button>
-        <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
+        <button className="btn-primary" onClick={onGpsClick} style={{ padding:'6px 9px', fontSize:11.5, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:4, borderRadius:0 }}><IconPin /> Location</button>
+        <div style={{ background:ORG_LT, borderRadius:0, padding:'5px 9px', fontSize:11.5, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0 }}>
           {lat.toFixed(3)}°, {lon.toFixed(3)}°
         </div>
         <Divider />
-        <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'7px 10px', fontSize:13, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, cursor:'pointer', flexShrink:0 }}>
+        <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'6px 9px', fontSize:13, borderRadius:0, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, cursor:'pointer', flexShrink:0 }}>
           {Object.keys(SEASONS).map(k => <option key={k} value={k}>{k}</option>)}
         </select>
         {showCustom && (
-          <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ padding:'7px 10px', fontSize:13, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
+          <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ padding:'6px 9px', fontSize:13, borderRadius:0, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
         )}
         <Divider />
-        <div style={{ background:ORG_LT, borderRadius:8, padding:'5px 10px', fontSize:12, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:6 }}>
+        <div style={{ background:ORG_LT, borderRadius:0, padding:'5px 9px', fontSize:11.5, fontWeight:700, color:TEXT_DARK, whiteSpace:'nowrap', flexShrink:0, display:'flex', alignItems:'center', gap:6 }}>
           <IconCalendar /> {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
         </div>
         <div style={{ flex:1 }} />
         <div style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer', fontSize:13, fontWeight:700, whiteSpace:'nowrap' }} onClick={toggleAnim}>
-          <div style={{ width:40, height:22, borderRadius:11, background:animating?ORG:'#D1D5DB', position:'relative', transition:'background .2s', flexShrink:0 }}>
-            <div style={{ width:16, height:16, borderRadius:'50%', background:'#fff', position:'absolute', top:3, left:animating?21:3, transition:'left .2s' }} />
+          <div style={{ width:38, height:20, borderRadius:0, background:animating?ORG:'#D1D5DB', position:'relative', transition:'background .2s', flexShrink:0 }}>
+            <div style={{ width:14, height:14, borderRadius:0, background:'#fff', position:'absolute', top:3, left:animating?21:3, transition:'left .2s' }} />
           </div>
           <span style={{ display:'flex', alignItems:'center', gap:5 }}>{animating ? <IconPause /> : <IconPlay />} {animating ? 'Pause' : 'Play'}</span>
         </div>
@@ -319,68 +319,66 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           </div>
         )}
         <Divider />
-        <div style={{ display:'flex', background:'#F0EDE8', borderRadius:10, padding:3, flexShrink:0 }}>
+        <div style={{ display:'flex', background:'#F0EDE8', borderRadius:0, padding:3, flexShrink:0 }}>
           {(['3d','2d','year'] as const).map(id => {
             const icons = { '3d': <IconBuilding key="i"/>, '2d': <IconMap key="i"/>, 'year': <IconRefresh key="i"/> };
             const labels = { '3d':'3D', '2d':'2D', 'year':'Year' };
             return (
-              <button key={id} onClick={() => switchView(id)} style={{ display:'flex', alignItems:'center', gap:5, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border: 'none', borderRadius:8, padding:'6px 12px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap', transition:'all .15s' }}>{icons[id]} {labels[id]}</button>
+              <button key={id} onClick={() => switchView(id)} style={{ display:'flex', alignItems:'center', gap:5, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border: 'none', borderRadius:0, padding:'6px 11px', fontWeight:700, fontSize:12, cursor:'pointer', whiteSpace:'nowrap', transition:'all .15s' }}>{icons[id]} {labels[id]}</button>
             );
           })}
         </div>
-        <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', gap:6, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border: `1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}><IconChart /> Data</button>
-        <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>AI Report</button>
-        <button onClick={handleShare} style={{ display:'flex', alignItems:'center', gap:6, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
-        {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} />}
-        <button onClick={() => setShowAbout(!showAbout)} style={{ background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border: `1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>About</button>
+        <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:0, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>AI Report</button>
+        {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} style={{ borderRadius:0 }} />}
+        <button onClick={handleShare} aria-label="Share" style={{ display:'flex', alignItems:'center', gap:5, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:0, padding: copied ? '7px 11px' : '7px 8px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? <><IconCheck /> Copied!</> : <IconLink />}</button>
       </div>
 
       {/* TOPBAR — MOBILE (purpose-built layout, not a squeezed version of desktop) */}
       <div className="topbar-mobile" style={{ flexDirection:'column', background:WHITE, borderBottom:'1px solid rgba(224,123,0,0.15)', flexShrink:0 }}>
         {/* Row 1: logo + season (compact) + more menu toggle */}
-        <div style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 10px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:6, padding:'5px 8px' }}>
           <div onClick={onHome} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none', flexShrink:0 }}>
-            <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:24, width:'auto' }} />
+            <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height:20, width:'auto' }} />
             <div style={{ display:'flex', flexDirection:'column', lineHeight:1.05 }}>
-              <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:13.5, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
-              <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:7.5, fontWeight:600, color:'#9a9a9a', letterSpacing:'.02em' }}>by BlindSpot</span>
+              <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:12.5, fontWeight:800, letterSpacing:'-0.02em', color:'#1A1A1A' }}>Sun<span style={{ color:ORG }}>Scout</span></span>
+              <span style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontSize:7, fontWeight:600, color:'#9a9a9a', letterSpacing:'.02em' }}>by BlindSpot</span>
             </div>
           </div>
           <div style={{ flex:1 }} />
-          <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'5px 6px', fontSize:11, borderRadius:7, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:110, flexShrink:1 }}>
+          <select value={season} onChange={e => handleSeason(e.target.value)} style={{ padding:'4px 5px', fontSize:10.5, borderRadius:0, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK, maxWidth:100, flexShrink:1 }}>
             {Object.keys(SEASONS).map(k => <option key={k} value={k}>{k}</option>)}
           </select>
-          <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:7, width:28, height:28, fontSize:16, fontWeight:700, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>⋯</button>
+          <button onClick={() => setShowMoreMenu(!showMoreMenu)} aria-label="More options" style={{ background: showMoreMenu ? ORG : WHITE, color: showMoreMenu ? '#fff' : TEXT_DARK, border:`1px solid ${showMoreMenu ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:0, width:26, height:26, fontSize:15, fontWeight:700, cursor:'pointer', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>⋯</button>
         </div>
 
         {/* Row 2: search + GPS + AI Report (with label) */}
-        <div style={{ display:'flex', gap:5, padding:'0 10px 7px' }}>
+        <div style={{ display:'flex', gap:5, padding:'0 8px 5px' }}>
           <form onSubmit={handleSearch} style={{ display:'flex', flex:1, minWidth:0 }}>
-            <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, minWidth:0, padding:'7px 10px', fontSize:13 }} />
+            <input className="input-field" placeholder="Search for landmarks" value={searchQuery} onChange={e => setSearch(e.target.value)} style={{ flex:1, minWidth:0, padding:'6px 9px', fontSize:13, borderRadius:0 }} />
           </form>
-          <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'7px 10px', flexShrink:0, display:'flex', alignItems:'center' }}><IconPin /></button>
-          <button onClick={() => setShowReport(true)} style={{ background:ORG, color:'#fff', border:'none', borderRadius:8, padding:'7px 11px', fontWeight:700, fontSize:12.5, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>AI Report</button>
+          <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'6px 9px', flexShrink:0, display:'flex', alignItems:'center', borderRadius:0 }}><IconPin /></button>
+          <button onClick={() => setShowReport(true)} style={{ background:ORG, color:'#fff', border:'none', borderRadius:0, padding:'6px 10px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>AI Report</button>
         </div>
 
-        {/* Collapsible "More" drawer — one compact bar: view switch + play/pause + date, then data/share/about */}
+        {/* Collapsible "More" drawer — view switch + play/pause + date, then AsliVastu/share */}
         {showMoreMenu && (
-          <div style={{ padding:'0 10px 12px', display:'flex', flexDirection:'column', gap:7, borderTop:'1px solid rgba(224,123,0,0.12)', paddingTop:8 }}>
+          <div style={{ padding:'0 8px 10px', display:'flex', flexDirection:'column', gap:6, borderTop:'1px solid rgba(224,123,0,0.12)', paddingTop:7 }}>
             <div style={{ display:'flex', gap:6, alignItems:'center' }}>
-              <div style={{ display:'flex', background:'#F0EDE8', borderRadius:9, padding:3, flexShrink:0 }}>
+              <div style={{ display:'flex', background:'#F0EDE8', borderRadius:0, padding:3, flexShrink:0 }}>
                 {(['3d','2d','year'] as const).map(id => {
                   const icons = { '3d': <IconBuilding key="i"/>, '2d': <IconMap key="i"/>, 'year': <IconRefresh key="i"/> };
                   return (
-                    <button key={id} onClick={() => switchView(id)} aria-label={id} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:30, height:28, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border:'none', borderRadius:7, cursor:'pointer' }}>{icons[id]}</button>
+                    <button key={id} onClick={() => switchView(id)} aria-label={id} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:28, height:26, background: view===id ? ORG : 'transparent', color: view===id ? '#fff' : TEXT_SUB, border:'none', borderRadius:0, cursor:'pointer' }}>{icons[id]}</button>
                   );
                 })}
               </div>
-              <button onClick={toggleAnim} aria-label={animating ? 'Pause' : 'Play'} style={{ display:'flex', alignItems:'center', justifyContent:'center', background: animating ? ORG : WHITE, color: animating ? '#fff' : TEXT_DARK, border:`1px solid ${animating ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:9, width:32, height:32, cursor:'pointer', flexShrink:0 }}>
+              <button onClick={toggleAnim} aria-label={animating ? 'Pause' : 'Play'} style={{ display:'flex', alignItems:'center', justifyContent:'center', background: animating ? ORG : WHITE, color: animating ? '#fff' : TEXT_DARK, border:`1px solid ${animating ? ORG : 'rgba(224,123,0,0.25)'}`, borderRadius:0, width:30, height:30, cursor:'pointer', flexShrink:0 }}>
                 {animating ? <IconPause /> : <IconPlay />}
               </button>
               {showCustom ? (
-                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ flex:1, minWidth:0, padding:'6px 8px', fontSize:11.5, borderRadius:8, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
+                <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={{ flex:1, minWidth:0, padding:'5px 7px', fontSize:11, borderRadius:0, border:'1px solid rgba(224,123,0,0.25)', background:WHITE, color:TEXT_DARK }} />
               ) : (
-                <div style={{ flex:1, minWidth:0, background:ORG_LT, borderRadius:8, padding:'6px 8px', fontSize:11, fontWeight:700, color:TEXT_DARK, display:'flex', alignItems:'center', justifyContent:'center', gap:5, whiteSpace:'nowrap', overflow:'hidden' }}>
+                <div style={{ flex:1, minWidth:0, background:ORG_LT, borderRadius:0, padding:'5px 7px', fontSize:10.5, fontWeight:700, color:TEXT_DARK, display:'flex', alignItems:'center', justifyContent:'center', gap:5, whiteSpace:'nowrap', overflow:'hidden' }}>
                   <IconCalendar /> {new Date(targetDate + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
                 </div>
               )}
@@ -398,10 +396,8 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
             )}
 
             <div style={{ display:'flex', gap:5 }}>
-              <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:4, flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}><IconChart /> Data</button>
-              <button onClick={handleShare} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:4, flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
-              <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>About</button>
-              {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} compact style={{ flex:1 }} />}
+              {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} compact style={{ flex:1, borderRadius:0 }} />}
+              <button onClick={handleShare} aria-label="Share" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:4, flex: copied ? 1 : undefined, width: copied ? undefined : 42, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:0, padding:'8px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <IconLink />}</button>
             </div>
           </div>
         )}
