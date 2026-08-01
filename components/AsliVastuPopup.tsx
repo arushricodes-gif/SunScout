@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 interface Props {
   lat: number;
   lon: number;
+  onDismiss?: () => void;
 }
 
 type CheckResult =
@@ -84,7 +85,7 @@ const CSS = `
 }
 `;
 
-export default function AsliVastuPopup({ lat, lon }: Props) {
+export default function AsliVastuPopup({ lat, lon, onDismiss }: Props) {
   const [result, setResult] = useState<CheckResult>({ status: 'loading' });
   const [visible, setVisible] = useState(false);
 
@@ -129,6 +130,7 @@ export default function AsliVastuPopup({ lat, lon }: Props) {
 
   const dismiss = () => {
     setVisible(false);
+    onDismiss?.();
     setTimeout(() => setResult({ status: 'hidden' }), 200);
   };
 

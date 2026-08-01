@@ -112,6 +112,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [fbSent, setFbSent]           = useState(false);
   const [windData, setWindData]       = useState<{speed:number,dir:number,gust:number}|null>(null);
   const [mounted, setMounted]         = useState(false);
+  const [avDismissed, setAvDismissed] = useState(false); // once dismissed, stays gone for the whole session regardless of location changes
   useEffect(() => { setMounted(true); }, []);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
@@ -526,7 +527,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
         )}
       </div>
 
-      {data && !loading && hasRealLocation && <AsliVastuPopup lat={lat} lon={lon} />}
+      {data && !loading && hasRealLocation && !avDismissed && <AsliVastuPopup lat={lat} lon={lon} onDismiss={() => setAvDismissed(true)} />}
 
       {/* AI Report Modal */}
       {showReport && (
