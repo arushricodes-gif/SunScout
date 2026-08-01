@@ -10,7 +10,7 @@ import { checkBuildingHeights } from '@/lib/buildingHeights';
 
 // Fallback chain — if gemini-2.5-flash is rate-limited (429), try flash-lite,
 // which has its own separate quota bucket.
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-3.1-flash-lite'];
 const GEMINI_URL = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 export async function POST(req: NextRequest) {

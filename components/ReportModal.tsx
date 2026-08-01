@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { getBlindSpotSession, saveReportToBlindSpot, redirectToBlindSpotLogin } from '@/lib/blindspot';
 
 interface Props {
   lat: number;
@@ -25,6 +26,10 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [error, setError]     = useState('');
+  const [reportUrl, setReportUrl] = useState<string | null>(null);
+  const [reportPayload, setReportPayload] = useState<{ summary: any; analysis: string } | null>(null);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState('');
 
   // Auto-guess a facing direction as soon as the modal opens, so the person
   // doesn't have to know it up front. Never overwrites a direction they've
@@ -93,8 +98,10 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
 
       const html = await pdfRes.text();
       const blob = new Blob([html], { type: 'text/html' });
-      window.open(URL.createObjectURL(blob), '_blank');
-      onClose();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setReportUrl(url);
+      setReportPayload({ summary, analysis });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Try again.');
     } finally {
@@ -102,11 +109,68 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
     }
   };
 
+  const handleSaveToBlindSpot = async () => {
+    if (!reportPayload) return;
+    setSaveState('saving');
+    setSaveError('');
+    const addr = address || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    const payload = {
+      address: addr, lat, lon, floor, facing,
+      summary: reportPayload.summary, analysis: reportPayload.analysis,
+      reportLabel: reportLabel || undefined,
+    };
+    try {
+      const session = await getBlindSpotSession();
+      if (!session) {
+        // Full-page redirect to BlindSpot's normal login -- proven to
+        // work reliably, unlike the popup approach. Stashes the report
+        // and comes back to /blindspot-callback once signed in.
+        redirectToBlindSpotLogin(payload);
+        return;
+      }
+      await saveReportToBlindSpot(payload);
+      setSaveState('saved');
+    } catch (e: any) {
+      setSaveState('error');
+      setSaveError(e.message || 'Could not save. Try again.');
+    }
+  };
+
   return (
     <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
       <div style={{ background:'#FFFBF5', borderRadius:20, padding:32, width:'100%', maxWidth:460, boxShadow:'0 24px 80px rgba(0,0,0,0.2)', fontFamily:'Plus Jakarta Sans,sans-serif' }}>
 
-        {!loading ? (
+        {reportUrl ? (
+          <div style={{ textAlign:'center', padding:'8px 0' }}>
+            <div style={{ fontSize:40, marginBottom:16 }}>✅</div>
+            <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:8 }}>Report ready</h3>
+            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:24 }}>Opened in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+                View Report Again
+              </button>
+              {saveState === 'saved' ? (
+                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, color:'#16a34a' }}>
+                  ✓ Saved to BlindSpot
+                </div>
+              ) : (
+                <button
+                  onClick={handleSaveToBlindSpot}
+                  disabled={saveState === 'saving'}
+                  style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
+                >
+                  {saveState === 'saving' ? 'Saving…' : 'Save to BlindSpot'}
+                </button>
+              )}
+              {saveState === 'error' && (
+                <div style={{ background:'#fef2f2', border:'1px solid #fca5a5', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#dc2626' }}>⚠️ {saveError}</div>
+              )}
+              <button onClick={onClose} style={{ background:'none', color:'#888', border:'none', padding:'8px', fontSize:13, cursor:'pointer' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        ) : !loading ? (
           <>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
               <div>
