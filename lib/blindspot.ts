@@ -62,7 +62,7 @@ export async function saveReportToBlindSpot(report: PendingSunScoutReport) {
       analysis: report.analysis,
       generatedAt: new Date().toISOString(),
     },
-  });
+  } as any);
   if (error) throw error;
 }
 
