@@ -68,6 +68,7 @@ const IconMap = (p: {size?:number}) => <Icon {...p}><polygon points="3 6 9 3 15 
 const IconRefresh = (p: {size?:number}) => <Icon {...p}><path d="M21 12a9 9 0 0 1-15.3 6.4M3 12a9 9 0 0 1 15.3-6.4"/><polyline points="21 3 21 9 15 9"/><polyline points="3 21 3 15 9 15"/></Icon>;
 const IconChart = (p: {size?:number}) => <Icon {...p}><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="12" width="3" height="7"/><rect x="11" y="8" width="3" height="11"/><rect x="16" y="4" width="3" height="15"/></Icon>;
 const IconLink = (p: {size?:number}) => <Icon {...p}><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></Icon>;
+const IconHome = (p: {size?:number}) => <Icon {...p}><path d="M4 11L12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></Icon>;
 const IconCalendar = (p: {size?:number}) => <Icon {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></Icon>;
 const IconPlay = (p: {size?:number}) => <Icon {...p}><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></Icon>;
 const IconPause = (p: {size?:number}) => <Icon {...p}><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></Icon>;
@@ -396,16 +397,12 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
               </div>
             )}
 
-            <div style={{ display:'flex', gap:7 }}>
-              <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}><IconChart /> Data</button>
-              <button onClick={handleShare} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
-              <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px', fontWeight:700, fontSize:12.5, cursor:'pointer' }}>About</button>
+            <div style={{ display:'flex', gap:5 }}>
+              <button onClick={() => setShowData(!showData)} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:4, flex:1, background: showData ? ORG : WHITE, color: showData ? '#fff' : TEXT_DARK, border:`1px solid ${showData ? ORG : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}><IconChart /> Data</button>
+              <button onClick={handleShare} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:4, flex:1, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border:`1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>{copied ? <><IconCheck /> Copied!</> : <><IconLink /> Share</>}</button>
+              <button onClick={() => setShowAbout(!showAbout)} style={{ flex:1, background: showAbout ? '#1A1A1A' : WHITE, color: showAbout ? '#fff' : TEXT_DARK, border:`1px solid ${showAbout ? '#1A1A1A' : 'rgba(224,123,0,0.2)'}`, borderRadius:8, padding:'8px 4px', fontWeight:700, fontSize:11.5, cursor:'pointer' }}>About</button>
+              {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} compact style={{ flex:1 }} />}
             </div>
-            {hasRealLocation && (
-              <div style={{ marginTop:7 }}>
-                <AsliVastuTopBarButton lat={lat} lon={lon} style={{ width:'100%', justifyContent:'center', padding:'8px' }} />
-              </div>
-            )}
           </div>
         )}
       </div>
