@@ -253,8 +253,8 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: '#B07040' }}>Free · No login</span>
-          <button onClick={onEnter} style={{ background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 100, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s' }}
+          <span style={{ fontSize: 12, color: '#B07040' }}>Works anywhere on Earth</span>
+          <button onClick={onEnter} style={{ background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 0, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = '#E07B00')}
             onMouseLeave={e => (e.currentTarget.style.background = '#1A0A00')}>Open app →</button>
         </div>
@@ -274,15 +274,15 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             Drop a pin on any property. Watch the actual sun arc across it — every hour, every season, with real 3D shadows.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, pointerEvents: 'all' }}>
-            <button onClick={onEnter} style={{ background: '#E07B00', color: '#fff', border: 'none', borderRadius: 14, padding: '14px 30px', fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 24px rgba(224,123,0,0.4)', transition: 'all .2s' }}
+            <button onClick={onEnter} style={{ background: '#E07B00', color: '#fff', border: 'none', borderRadius: 0, padding: '14px 30px', fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 24px rgba(224,123,0,0.4)', transition: 'all .2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 36px rgba(224,123,0,0.55)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(224,123,0,0.4)'; }}>
               Drop a pin →
             </button>
-            <span style={{ fontSize: 12, color: '#B07040' }}>Free · Works anywhere on Earth</span>
+            <span style={{ fontSize: 12, color: '#B07040' }}>Works anywhere on Earth</span>
           </div>
           <div style={{ display: 'flex', gap: 32, marginTop: 44, paddingTop: 22, borderTop: '1px solid rgba(180,110,30,0.15)' }}>
-            {[['250+','weekly users'],['Global','coverage'],['Free','always']].map(([v,l]) => (
+            {[['250+','weekly users'],['Global','coverage'],['AI-Written','reports']].map(([v,l]) => (
               <div key={l}>
                 <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 800, color: '#1A0A00', letterSpacing: '-0.03em' }}>{v}</div>
                 <div style={{ fontSize: 10, color: '#B07040', marginTop: 2, textTransform: 'uppercase', letterSpacing: '.08em' }}>{l}</div>
@@ -301,13 +301,13 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
       <div style={{ position: 'relative', zIndex: 10 }}>
 
         {[
-          { enter: 200, exit: 900, time: '06:12', title: 'Not all homes\nwake with the sun.', body: 'Listing photos are taken at noon in June. That glowing balcony in the pictures? It sits in complete shadow from October through March. Nobody tells you this.' },
-          { enter: 800, exit: 1500, time: '12:00', title: 'Drop a pin.\nGet the truth.', body: 'NOAA solar algorithms + real OpenStreetMap building geometry. See exactly where light falls at any hour, on any day, for any location on Earth. Instantly.' },
-          { enter: 1400, exit: 2200, time: 'All year', title: 'The sun moves.\nA lot.', body: 'Same property. Completely different at 9am vs 3pm. And completely different again in December vs June. See the whole picture before you commit.' },
+          { enter: 200, exit: 900, time: '06:12', title: 'The listing photo\nlied to you.', body: "It was shot at noon, in June, on the one clear day that month. That's not when you'll actually live there. Shadows shift by the hour and by the season — and nobody puts that in the brochure." },
+          { enter: 800, exit: 1500, time: '12:00', title: 'One pin.\nReal data, not a guess.', body: 'NOAA solar-position algorithms, cross-referenced against real OpenStreetMap building geometry. Not an estimate — the actual angle of the sun, the actual shadow of the actual building next door, for any hour you ask.' },
+          { enter: 1400, exit: 2200, time: 'Jan–Dec', title: 'Same address.\nTwelve different stories.', body: "A south-facing window is bright in June and dead by December — same wall, same sun, different season. See the full year before you sign a lease based on one good afternoon." },
         ].map((ch, i) => (
           <div key={i} style={{ height: '65vh', display: 'flex', alignItems: 'center', padding: '0 8vw' }}>
             <div style={{ maxWidth: 500, ...op(ch.enter, ch.exit) }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 16 }}>{ch.time}</div>
+              <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, fontWeight: 500, color: '#E07B00', letterSpacing: '.1em', marginBottom: 16 }}>{ch.time}</div>
               <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2rem,4vw,3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 0.95, margin: '0 0 18px', color: '#1A0A00', whiteSpace: 'pre-line' }}>{ch.title}</h2>
               <p style={{ fontSize: 15, color: '#7A4820', lineHeight: 1.78, margin: 0 }}>{ch.body}</p>
             </div>
@@ -320,14 +320,14 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 28 }}>What you get</div>
             <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 720 }}>
               {[
-                { icon: <IconSun size={20}/>, label: 'Hour-by-hour animation', sub: 'Watch the sun move in real time' },
-                { icon: <IconBuilding size={20}/>, label: '3D building shadows', sub: 'Real OpenStreetMap geometry' },
-                { icon: <IconCalendar size={20}/>, label: 'Full seasonal range', sub: 'Summer, winter, equinox' },
-                { icon: <IconBolt size={20}/>, label: 'Solar panel scoring', sub: 'Is your roof worth it?' },
-                { icon: <IconGlobe size={20}/>, label: 'Global coverage', sub: 'Any lat/long on Earth' },
-                { icon: <IconTag size={20}/>, label: 'Always free', sub: 'No account, no catch' },
+                { icon: <IconSun size={20}/>, label: 'Hour-by-hour animation', sub: 'Drag to any minute of any day, watch shadows move in real time' },
+                { icon: <IconBuilding size={20}/>, label: '3D building shadows', sub: 'Real OpenStreetMap geometry — actual neighboring buildings, not estimates' },
+                { icon: <IconCalendar size={20}/>, label: 'Full seasonal range', sub: 'Compare summer, winter, and equinox light for the same spot' },
+                { icon: <IconBolt size={20}/>, label: 'Solar panel scoring', sub: 'Usable-sun-hours estimate for rooftop solar viability' },
+                { icon: <IconGlobe size={20}/>, label: 'Global coverage', sub: 'Any latitude, any longitude, anywhere on Earth' },
+                { icon: <IconCamera size={20}/>, label: 'Written AI report', sub: 'A full narrative analysis of your exact spot, not just a chart' },
               ].map(({ icon, label, sub }, i) => (
-                <div key={label} style={{ background: 'rgba(255,248,238,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(180,110,30,0.18)', borderRadius: 16, padding: '16px 18px', transition: 'all 0.2s', cursor: 'default', transitionDelay: `${i * 0.06}s` }}
+                <div key={label} style={{ background: 'rgba(255,248,238,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(180,110,30,0.18)', borderRadius: 0, padding: '16px 18px', transition: 'all 0.2s', cursor: 'default', transitionDelay: `${i * 0.06}s` }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = 'rgba(255,248,238,0.95)'; el.style.borderColor = 'rgba(224,123,0,0.35)'; el.style.transform = 'translateY(-3px)'; el.style.boxShadow = '0 8px 28px rgba(224,123,0,0.15)'; }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = 'rgba(255,248,238,0.75)'; el.style.borderColor = 'rgba(180,110,30,0.18)'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}>
                   <div style={{ color: '#E07B00', marginBottom: 10 }}>{icon}</div>
@@ -352,12 +352,12 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2rem,3.5vw,3rem)', fontWeight: 800, letterSpacing: '-0.04em', color: '#FFF8EE', margin: '0 0 52px', lineHeight: 1.0 }}>
               If light matters<br/>to your decision.
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2, background: 'rgba(255,255,255,0.04)', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2, background: 'rgba(255,255,255,0.04)', borderRadius: 0, overflow: 'hidden' }}>
               {[
-                { e: <IconHome size={26}/>, t: 'Home Buyers', d: 'Does that balcony get sun in December? Check before you sign. Takes 10 seconds and might save you years of regret.' },
-                { e: <IconBolt size={26}/>, t: 'Solar Installers', d: 'Verify rooftop viability remotely. See exact shading patterns from neighboring buildings, every hour, every season.' },
-                { e: <IconLeaf size={26}/>, t: 'Gardeners', d: 'Find the exact full-sun spots in your garden. Know where to plant what, before you dig a single hole.' },
-                { e: <IconCamera size={26}/>, t: 'Photographers', d: 'Scout golden hour positions ahead of time. Know where the light lands, at what angle, at exactly what time.' },
+                { e: <IconHome size={26}/>, t: 'Home Buyers & Renters', d: "That bright, sunny balcony in the listing photos was shot at noon on the one clear day that month. Drop the same pin and see what it actually looks like at 8am in December, before you're locked into a lease." },
+                { e: <IconBolt size={26}/>, t: 'Solar Installers', d: 'Pre-qualify a rooftop remotely before sending someone out. See exactly how neighboring buildings shade the roof, hour by hour, across every season — real geometry, not a rough guess.' },
+                { e: <IconLeaf size={26}/>, t: 'Gardeners & Landscapers', d: "\u201cFull sun\u201d and \u201cpart shade\u201d mean nothing without knowing your specific yard. See precisely which corners get real, direct light and when — before you plant something in the wrong spot." },
+                { e: <IconCamera size={26}/>, t: 'Photographers & Location Scouts', d: "Golden hour isn't the same everywhere. Check the exact light angle and shadow pattern at a location before you show up, so you're not guessing on shoot day." },
               ].map((u, i) => (
                 <div key={i} className="pop-item" style={{ background: '#1A0A00', padding: '32px', display: 'flex', gap: 18, transition: 'background .2s', cursor: 'default', transitionDelay: `${i * 0.1}s` }}
                   onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = '#260E00'}
@@ -365,7 +365,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
                   <div style={{ color: '#E07B00', flexShrink: 0 }}>{u.e}</div>
                   <div>
                     <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 15, fontWeight: 700, color: '#FFF8EE', marginBottom: 8 }}>{u.t}</div>
-                    <div style={{ fontSize: 13.5, color: 'rgba(255,210,160,0.45)', lineHeight: 1.7 }}>{u.d}</div>
+                    <div style={{ fontSize: 13.5, color: 'rgba(255,210,160,0.5)', lineHeight: 1.7 }}>{u.d}</div>
                   </div>
                 </div>
               ))}
@@ -373,35 +373,28 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           </div>
         </section>
 
-        {/* WHAT YOU GET — warm */}
+        {/* HOW IT WORKS — warm */}
         <section className="scroll-pop" style={{ background: '#FFF8EE', padding: '100px 48px' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 52, flexWrap: 'wrap', gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 16 }}>Three things</div>
-                <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2rem,3.5vw,3rem)', fontWeight: 800, letterSpacing: '-0.04em', color: '#1A0A00', margin: 0, lineHeight: 1.0 }}>
-                  One pin drop.
-                </h2>
-              </div>
-              <button onClick={onEnter} style={{ background: 'transparent', color: '#E07B00', border: '1.5px solid rgba(224,123,0,0.35)', borderRadius: 100, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all .2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(224,123,0,0.07)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>Try it free →</button>
+            <div style={{ marginBottom: 52 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 16 }}>How it works</div>
+              <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2rem,3.5vw,3rem)', fontWeight: 800, letterSpacing: '-0.04em', color: '#1A0A00', margin: 0, lineHeight: 1.0 }}>
+                From a pin to a report.
+              </h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2, background: 'rgba(180,110,30,0.08)', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2, background: 'rgba(180,110,30,0.08)', borderRadius: 0, overflow: 'hidden' }}>
               {[
-                { n: '01', title: 'Hour-by-hour sun path', desc: 'Watch the sun animate across your location in real time. Pause at any hour. See exact light angles and where shadows fall.', tag: 'Animated' },
-                { n: '02', title: '3D building shadows', desc: 'Real geometry from OpenStreetMap. Neighboring buildings cast accurate shadows on your property — not guesses. Actual geodata.', tag: 'Accurate' },
-                { n: '03', title: 'Full seasonal range', desc: 'Summer solstice, winter, equinox — understand the full year of light in 10 seconds. Before you commit to 10 years.', tag: 'Year-round' },
+                { n: '01', title: 'Drop a pin', desc: 'Search an address or place a pin directly on the map — anywhere on Earth.' },
+                { n: '02', title: 'Watch the shadows', desc: 'Scrub through the day and the year in 3D. See exactly when and where direct light hits.' },
+                { n: '03', title: 'Generate the AI report', desc: 'One click builds a full written analysis from 12 real map angles — floor, facing, and season all accounted for.' },
+                { n: '04', title: 'Save it, come back later', desc: 'Sign in once to keep reports in your BlindSpot account and revisit them anytime.' },
               ].map((f, i) => (
-                <div key={i} className="pop-item" style={{ background: '#FFF8EE', padding: '32px 26px', transition: 'background 0.2s', cursor: 'default', transitionDelay: `${i * 0.12}s` }}
+                <div key={i} className="pop-item" style={{ background: '#FFF8EE', padding: '32px 24px', transition: 'background 0.2s', cursor: 'default', transitionDelay: `${i * 0.1}s` }}
                   onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = '#FFF0D8'}
                   onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = '#FFF8EE'}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(180,100,20,0.3)', letterSpacing: '.1em' }}>{f.n}</span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: '#E07B00', background: 'rgba(224,123,0,0.1)', border: '1px solid rgba(224,123,0,0.2)', borderRadius: 100, padding: '3px 10px', letterSpacing: '.08em', textTransform: 'uppercase' }}>{f.tag}</span>
-                  </div>
-                  <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 15, fontWeight: 700, color: '#1A0A00', marginBottom: 12, lineHeight: 1.3 }}>{f.title}</div>
-                  <div style={{ fontSize: 13, color: '#9A6030', lineHeight: 1.7 }}>{f.desc}</div>
+                  <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: 11, fontWeight: 500, color: 'rgba(180,100,20,0.4)', letterSpacing: '.1em', marginBottom: 18 }}>{f.n}</div>
+                  <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 15, fontWeight: 700, color: '#1A0A00', marginBottom: 10, lineHeight: 1.3 }}>{f.title}</div>
+                  <div style={{ fontSize: 12.5, color: '#9A6030', lineHeight: 1.65 }}>{f.desc}</div>
                 </div>
               ))}
             </div>
@@ -415,8 +408,8 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <h2 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 'clamp(2.4rem,5vw,4rem)', fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 0.9, color: '#1A0A00', margin: '0 0 20px' }}>
               Your property.<br/><em style={{ color: '#E07B00', fontStyle: 'italic' }}>Now you know.</em>
             </h2>
-            <p style={{ fontSize: 15, color: '#9A6030', lineHeight: 1.75, marginBottom: 40 }}>Free. No signup. Works for any address on Earth.</p>
-            <button onClick={onEnter} style={{ background: '#E07B00', color: '#fff', border: 'none', borderRadius: 14, padding: '15px 44px', fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 32px rgba(224,123,0,0.35)', transition: 'all .2s' }}
+            <p style={{ fontSize: 15, color: '#9A6030', lineHeight: 1.75, marginBottom: 40 }}>Works for any address on Earth.</p>
+            <button onClick={onEnter} style={{ background: '#E07B00', color: '#fff', border: 'none', borderRadius: 0, padding: '15px 44px', fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 32px rgba(224,123,0,0.35)', transition: 'all .2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 48px rgba(224,123,0,0.5)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(224,123,0,0.35)'; }}>
               Drop a pin →
@@ -425,29 +418,29 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
               {/* Left half — builder credit */}
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #E07B00, #FF9E3D)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Grotesk,sans-serif', fontSize: 17, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 4px 16px rgba(224,123,0,0.35)' }}>AG</div>
+                  <div style={{ width: 48, height: 48, borderRadius: 0, background: 'linear-gradient(135deg, #E07B00, #FF9E3D)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Grotesk,sans-serif', fontSize: 17, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: '0 4px 16px rgba(224,123,0,0.35)' }}>AG</div>
                   <div>
                     <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.14em', marginBottom: 3 }}>Built by</div>
                     <div style={{ fontSize: 17, fontWeight: 800, color: '#1A0A00', fontFamily: 'Space Grotesk,sans-serif', display: 'flex', alignItems: 'center', gap: 8 }}>
                       Arushri Gangji
-                      <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#9A6030', display: 'flex', transition: 'color .15s' }} onMouseEnter={e => (e.currentTarget.style.color = '#E07B00')} onMouseLeave={e => (e.currentTarget.style.color = '#9A6030')}>
+                      <a href="https://www.linkedin.com/in/arushri-gangji-056108381/" target="_blank" rel="noopener noreferrer" style={{ color: '#9A6030', display: 'flex', transition: 'color .15s' }} onMouseEnter={e => (e.currentTarget.style.color = '#E07B00')} onMouseLeave={e => (e.currentTarget.style.color = '#9A6030')}>
                         <IconLinkedIn size={15}/>
                       </a>
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: 13, color: '#B07040', fontWeight: 600, marginBottom: 18, lineHeight: 1.6 }}>
-                  Freshman, BITS Pilani Dubai <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Classical Dancer <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Painter <span style={{ color: '#E07B00', margin: '0 8px' }}>·</span> Cyclist
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#E07B00', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12 }}>
+                  Co-founder · Builds SunScout
                 </div>
                 <p style={{ fontSize: 13, color: '#9A6030', lineHeight: 1.75, margin: 0 }}>
-                  Bothered by unsolved problems. SunScout is my attempt at making property research more honest — into design, data, and figuring out how things work, all the way down.
+                  Leads SunScout, the solar and shadow-analysis engine behind BlindSpot — modelling real sun paths and floor-level shadow hours for a unit, so buyers know exactly how much light a space gets before they sign anything.
                 </p>
               </div>
 
               {/* Right half — feedback */}
               <div style={{ borderLeft: '1px solid rgba(180,110,30,0.15)', paddingLeft: 48 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(224,123,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E07B00', flexShrink: 0 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 0, background: 'rgba(224,123,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E07B00', flexShrink: 0 }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                   </div>
                   <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 700, color: '#5A2800' }}>Leave feedback</div>
@@ -457,9 +450,9 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
                   <div style={{ color: '#E07B00', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}><IconCheck size={16}/> Got it — thank you!</div>
                 ) : (
                   <form onSubmit={handleFeedback} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <input value={fbName} onChange={e => setFbName(e.target.value)} placeholder="Name (optional)" style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
-                    <textarea value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="What would make SunScout better?" rows={3} required style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', resize: 'vertical', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
-                    <button type="submit" style={{ alignSelf: 'flex-start', background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 100, padding: '9px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s', fontFamily: 'Plus Jakarta Sans,sans-serif' }}
+                    <input value={fbName} onChange={e => setFbName(e.target.value)} placeholder="Name (optional)" style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 0, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
+                    <textarea value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="What would make SunScout better?" rows={3} required style={{ border: '1.5px solid rgba(180,110,30,0.22)', background: '#FFF8EE', borderRadius: 0, padding: '10px 14px', fontSize: 14, color: '#1A0A00', outline: 'none', resize: 'vertical', transition: 'border-color .15s', fontFamily: 'Plus Jakarta Sans,sans-serif' }} onFocus={e => (e.currentTarget.style.borderColor = '#E07B00')} onBlur={e => (e.currentTarget.style.borderColor = 'rgba(180,110,30,0.22)')}/>
+                    <button type="submit" style={{ alignSelf: 'flex-start', background: '#1A0A00', color: '#FFF8EE', border: 'none', borderRadius: 0, padding: '9px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'background .2s', fontFamily: 'Plus Jakarta Sans,sans-serif' }}
                       onMouseEnter={e => (e.currentTarget.style.background = '#E07B00')}
                       onMouseLeave={e => (e.currentTarget.style.background = '#1A0A00')}>Send →</button>
                   </form>
@@ -475,12 +468,12 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
             <img src="/blindspot-mark-yellow.png" alt="BlindSpot" style={{ height: 20, width: 'auto' }} />
             <span style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 800, color: '#FFF8EE' }}>Sun<span style={{ color: '#E07B00' }}>Scout</span> <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,248,238,0.5)' }}>by BlindSpot</span></span>
           </div>
-          <span style={{ fontSize: 12, color: '#5A3010' }}>Free · No login · Works worldwide</span>
+          <span style={{ fontSize: 11, color: '#5A3010', letterSpacing: '.03em' }}>REAL SOLAR GEOMETRY + LIVE 3D MAP DATA</span>
         </footer>
       </div>
 
       {/* Persistent floating CTA */}
-      <button onClick={onEnter} style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 300, background: '#E07B00', color: '#fff', border: 'none', borderRadius: 100, padding: '12px 22px', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 28px rgba(224,123,0,0.5)', transition: 'all .2s', display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Plus Jakarta Sans,sans-serif' }}
+      <button onClick={onEnter} style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 300, background: '#E07B00', color: '#fff', border: 'none', borderRadius: 0, padding: '12px 22px', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 6px 28px rgba(224,123,0,0.5)', transition: 'all .2s', display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Plus Jakarta Sans,sans-serif' }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(224,123,0,0.65)'; }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(224,123,0,0.5)'; }}>
         <svg width="13" height="13" viewBox="0 0 36 36" fill="none">
@@ -530,7 +523,7 @@ export default function LandingPage({ onEnter }: { onEnter: () => void }) {
           nav { padding:13px 18px!important; }
           section { padding:60px 20px!important; }
           [style*="padding: 100px 48px"] { padding:60px 20px!important; }
-          [style*="grid-template-columns: repeat(2"],[style*="grid-template-columns: repeat(3"] { grid-template-columns:1fr!important; }
+          [style*="grid-template-columns: repeat(2"],[style*="grid-template-columns: repeat(3"],[style*="grid-template-columns: repeat(4"] { grid-template-columns:1fr!important; }
           [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; gap:32px!important; }
           [style*="border-left: 1px solid rgba(180,110,30,0.15)"] { border-left:none!important; border-top:1px solid rgba(180,110,30,0.15)!important; padding-left:0!important; padding-top:32px!important; }
           [style*="padding: 0 8vw"] { padding:0 20px!important; }
