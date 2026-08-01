@@ -25,6 +25,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// Escapes text before it goes into the report HTML. Without this, anything
+// a person types into the address/nickname fields -- or, less likely but
+// still possible, text the AI model generates -- gets inserted into the
+// page verbatim. Since the address field is free text and reports can be
+// shared via URL, an unescaped '<script>' there would execute in whoever
+// opens that shared report.
+function escapeHtml(str: unknown): string {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 /** Pulls the "@N@ description" lines Gemini emits for section 1 and returns
  *  { perImage: {index -> text}, rest: analysis text with section 1 stripped } */
 function splitPerImageAnalysis(analysis: string, shotCount: number) {
@@ -74,10 +89,22 @@ export async function POST(req: NextRequest) {
      // optional short label/nickname for the report, e.g. "Skyline Residences · Unit 502"
   } = await req.json();
 
+  // Escape every value that's either directly user-typed (address,
+  // reportLabel) or model-generated (analysis, and a couple of summary
+  // fields) before any of it touches the HTML template below.
+  const safeAddress = escapeHtml(address);
+  const safeReportLabel = reportLabel ? escapeHtml(reportLabel) : '';
+  const safeFacing = escapeHtml(facing);
+  const safeFloor = escapeHtml(floor);
+  const safeFacingAssumptionNote = facingAssumptionNote ? escapeHtml(facingAssumptionNote) : undefined;
+  const safeAnalysis = escapeHtml(analysis);
+  if (summary?.solarFeasibility?.verdict) summary.solarFeasibility.verdict = escapeHtml(summary.solarFeasibility.verdict);
+  if (summary?.buildingHeightNote?.sentence) summary.buildingHeightNote.sentence = escapeHtml(summary.buildingHeightNote.sentence);
+
   const date = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
   const shotCount = (screenshots as any[])?.length || 0;
 
-  const { perImage, rest } = splitPerImageAnalysis(analysis as string, shotCount);
+  const { perImage, rest } = splitPerImageAnalysis(safeAnalysis, shotCount);
 
   const rawAnalysis = rest
     .replace(/^#{1,4}\s*(.+)$/gm, '$1')
@@ -131,7 +158,7 @@ export async function POST(req: NextRequest) {
     <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:Arial,sans-serif;margin-bottom:12px;">
       <thead>
         <tr style="background:#fff8ee;">
-          ${['Month','Sunrise','Sunset','Noon Elevation','Usable Sun','Peak Window',`Floor ${floor} Clearance`]
+          ${['Month','Sunrise','Sunset','Noon Elevation','Usable Sun','Peak Window',`Floor ${safeFloor} Clearance`]
             .map(h => `<th style="text-align:left;padding:9px 10px;border-bottom:2px solid #e8e4de;color:#5A2800;font-weight:700;">${h}</th>`).join('')}
         </tr>
       </thead>
@@ -177,14 +204,14 @@ export async function POST(req: NextRequest) {
 
   const labelPill = reportLabel ? `
     <div style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#e07b00,#ff9f40);color:#fff;font-size:12.5px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:14px;box-shadow:0 4px 14px rgba(224,123,0,0.3);">
-      📍 ${reportLabel}
+      📍 ${safeReportLabel}
     </div>` : '';
 
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>SunScout Report — ${address}</title>
+  <title>SunScout Report — ${safeAddress}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
   <style>
@@ -217,19 +244,19 @@ export async function POST(req: NextRequest) {
           <span style="font-size:11px;color:#bbb;">Home Buyer Solar Report · Visual AI Analysis</span>
         </div>
         ${labelPill}
-        <h1 style="font-size:28px;font-weight:800;color:#1a0a00;margin-bottom:6px;font-family:'Space Grotesk',Arial,sans-serif;letter-spacing:-.01em;">${address}</h1>
+        <h1 style="font-size:28px;font-weight:800;color:#1a0a00;margin-bottom:6px;font-family:'Space Grotesk',Arial,sans-serif;letter-spacing:-.01em;">${safeAddress}</h1>
         <div style="font-size:11px;color:#aaa;">📍 ${parseFloat(lat).toFixed(5)}°N, ${parseFloat(lon).toFixed(5)}°E · ${date}</div>
       </div>
 
       <div style="display:flex;gap:14px;margin-bottom:32px;flex-wrap:wrap;">
         <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:120px;">
           <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Floor</div>
-          <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${floor}</div>
-          <div style="font-size:10px;color:#aaa;margin-top:2px;">≈${parseInt(floor)*3}m height</div>
+          <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${safeFloor}</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">≈${(parseInt(floor)||0)*3}m height</div>
         </div>
         <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:120px;">
           <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Facing</div>
-          <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${facing}</div>
+          <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${safeFacing}</div>
           <div style="font-size:10px;color:#aaa;margin-top:2px;">${facingAssumptionNote ? 'window orientation · assumed, unconfirmed' : 'window orientation'}</div>
         </div>
         <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:3;min-width:200px;display:flex;align-items:center;gap:12px;">
@@ -252,7 +279,7 @@ export async function POST(req: NextRequest) {
       <div style="background:#fff8ee;border:1.5px solid #e8e4de;border-radius:18px;padding:30px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
           <span style="font-size:18px;">🤖</span>
-          <h2 style="font-size:17px;font-weight:800;color:#1a0a00;font-family:'Space Grotesk',Arial,sans-serif;">Full Analysis · Floor ${floor}, ${facing}-facing</h2>
+          <h2 style="font-size:17px;font-weight:800;color:#1a0a00;font-family:'Space Grotesk',Arial,sans-serif;">Full Analysis · Floor ${safeFloor}, ${safeFacing}-facing</h2>
         </div>
         ${formattedAnalysis}
       </div>
@@ -263,7 +290,7 @@ export async function POST(req: NextRequest) {
           <li>Sun position and monthly sunlight hours come from a NOAA solar-geometry algorithm — deterministic, not AI-generated.</li>
           <li>Floor clearance uses a generic urban-obstruction estimate, not a measurement of this property's specific neighboring buildings.</li>
           ${summary?.buildingHeightNote ? `<li>${summary.buildingHeightNote.sentence}</li>` : ''}
-          ${facingAssumptionNote ? `<li>${facingAssumptionNote}</li>` : ''}
+          ${safeFacingAssumptionNote ? `<li>${safeFacingAssumptionNote}</li>` : ''}
           <li>The narrative sections use AI to describe the screenshots and summarize findings — it is instructed to treat the numbers above as fact, not to estimate its own.</li>
           <li>The orange marker on each screenshot marks the property location as framed by the capture — it is a visual reference, not a separately measured coordinate.</li>
         </ul>
