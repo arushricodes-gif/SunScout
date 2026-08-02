@@ -70,6 +70,20 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
     setLoading(true);
     setError('');
     setProgress(5);
+
+    // Opened immediately, synchronously, right here in direct response to
+    // the click -- this is what keeps window.opener reliable on the tab
+    // we open below. Opening it later (after the several awaits this
+    // function does) is what was breaking "Back to SunScout": by the time
+    // window.open() ran, browsers no longer treated it as a direct
+    // response to the click, and silently dropped the opener reference
+    // (or routed it through the popup blocker) -- unpredictably, which is
+    // exactly the symptom this was causing.
+    const reportWindow = window.open('', '_blank');
+    if (reportWindow) {
+      reportWindow.document.write('<html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;color:#888;">Generating your report…</body></html>');
+    }
+
     try {
       const addr = address || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
@@ -100,7 +114,17 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       const html = await pdfRes.text();
       const blob = new Blob([html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      if (reportWindow && !reportWindow.closed) {
+        // Write the real report into the tab we already opened above --
+        // keeps window.opener intact on it.
+        reportWindow.document.open();
+        reportWindow.document.write(html);
+        reportWindow.document.close();
+      } else {
+        // Popup got blocked or the person closed that placeholder tab in
+        // the meantime -- fall back to opening fresh now.
+        window.open(url, '_blank');
+      }
       setReportUrl(url);
       setReportPayload({ summary, analysis, screenshots });
     } catch (e: any) {

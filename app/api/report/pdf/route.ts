@@ -355,7 +355,12 @@ export async function POST(req: NextRequest) {
       // reads on load to jump straight to that spot) -- always lands on
       // the actual map at the right location, not the marketing landing
       // page, regardless of any tab/opener relationship.
-      window.open('https://sun-scout.com/?lat=${parseFloat(lat).toFixed(5)}&lon=${parseFloat(lon).toFixed(5)}', '_blank');
+      if (window.opener && !window.opener.closed) {
+        window.opener.focus();
+        window.close();
+      } else {
+        window.location.href = 'https://sun-scout.com/?lat=${parseFloat(lat).toFixed(5)}&lon=${parseFloat(lon).toFixed(5)}';
+      }
     });
 
     document.getElementById('download-pdf-btn').addEventListener('click', async function () {
