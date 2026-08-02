@@ -71,7 +71,9 @@ function splitPerImageAnalysis(analysis: string, shotCount: number) {
 // no verdict section exists), the text is returned completely unchanged.
 function moveVerdictFirst(text: string): string {
   const headerRegex = /^(\d+)\.\s+(.+)$/gm;
-  const matches = [...text.matchAll(headerRegex)];
+  const matches: RegExpExecArray[] = [];
+  let hm: RegExpExecArray | null;
+  while ((hm = headerRegex.exec(text))) matches.push(hm);
   if (matches.length === 0) return text;
 
   const sections: { title: string; body: string }[] = [];
