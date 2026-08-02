@@ -87,7 +87,7 @@ function moveVerdictFirst(text: string): string {
   if (verdictIdx === -1) return text;
 
   const reordered = [sections[verdictIdx], ...sections.filter((_, i) => i !== verdictIdx)];
-  return reordered.map((s, i) => `${i + 1}. ${s.title}${s.body}`).join('').trim();
+  return reordered.map((s, i) => `${i + 1}. ${s.title}${s.body}`.trimEnd()).join('\n\n').trim();
 }
 
 // Crosshair overlay marking the property location — shown once, on the
@@ -340,15 +340,14 @@ export async function POST(req: NextRequest) {
     document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
 
     document.getElementById('back-to-sunscout-btn').addEventListener('click', function () {
-      if (window.opener && !window.opener.closed) {
-        // window.focus() is unreliable -- most browsers ignore a
-        // background tab trying to steal focus. Closing this tab is
-        // what actually, reliably returns the browser to whichever tab
-        // opened it.
-        window.close();
-      } else {
-        window.open(window.location.origin, '_blank');
-      }
+      // window.opener-based approaches (focus, close) turned out unreliable
+      // in practice -- browsers restrict them in ways that vary and are
+      // hard to predict from here. This instead uses SunScout's own
+      // existing share-link format (?lat=X&lon=Y, which the app already
+      // reads on load to jump straight to that spot) -- always lands on
+      // the actual map at the right location, not the marketing landing
+      // page, regardless of any tab/opener relationship.
+      window.open('https://sun-scout.com/?lat=${parseFloat(lat).toFixed(5)}&lon=${parseFloat(lon).toFixed(5)}', '_blank');
     });
 
     document.getElementById('download-pdf-btn').addEventListener('click', async function () {
