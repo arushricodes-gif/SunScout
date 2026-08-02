@@ -130,12 +130,20 @@ export async function POST(req: NextRequest) {
   const shotCount = (screenshots as any[])?.length || 0;
 
   const { perImage, rest: rawRest } = splitPerImageAnalysis(safeAnalysis, shotCount);
-  const rest = moveVerdictFirst(rawRest);
-
-  const rawAnalysis = rest
+  // Strip markdown header wrapping (## headers, **N. TITLE** bold headers)
+  // BEFORE trying to detect section boundaries below -- moveVerdictFirst
+  // looks for plain "N. TITLE" lines, and a header Gemini wrote as
+  // "**2. FLOOR 5 SPECIFIC ANALYSIS**" wouldn't match that (it starts with
+  // ** not a digit), so the whole section would silently get swallowed
+  // into whichever section came before it instead of being recognized as
+  // its own boundary.
+  const cleanedRest = rawRest
     .replace(/^#{1,4}\s*(.+)$/gm, '$1')
     .replace(/^\*\*(\d+\.\s.+?)\*\*\s*$/gm, '$1')
     .replace(/^\*\s+/gm, '- ');
+
+  const rest = moveVerdictFirst(cleanedRest);
+  const rawAnalysis = rest;
 
   const formattedAnalysis = rawAnalysis
     .replace(/^(\d+\. .+)$/gm, '<h3 style="font-size:17px;font-weight:700;color:#1a0a00;margin:26px 0 10px;font-family:\'Space Grotesk\',Arial,sans-serif;">$1</h3>')
