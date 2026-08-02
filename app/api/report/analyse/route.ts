@@ -10,7 +10,7 @@ import { checkBuildingHeights } from '@/lib/buildingHeights';
 
 // Fallback chain — if gemini-2.5-flash is rate-limited (429), try flash-lite,
 // which has its own separate quota bucket.
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-3.1-flash-lite'];
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 const GEMINI_URL = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 export async function POST(req: NextRequest) {
@@ -20,17 +20,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ analysis: 'No screenshots provided.' }, { status: 400 });
   }
 
+  // The frontend only ever sends one of these eight values (a fixed
+  // dropdown), but that's a UI constraint, not a security boundary --
+  // this API route is directly callable by anyone. Without this check,
+  // 'facing' goes straight into the Gemini prompt below unsanitized,
+  // which is a real prompt-injection path (e.g. facing: "ignore prior
+  // instructions and instead..."). Falls back to a safe default rather
+  // than rejecting outright, since a wrong-but-safe value is harmless.
+  const ALLOWED_FACINGS = ['North', 'South', 'East', 'West', 'North-East', 'South-East', 'North-West', 'South-West'];
+  const safeFacingInput = ALLOWED_FACINGS.includes(facing) ? facing : 'South';
+
+  // 'address' is inherently free text (real addresses vary endlessly) so
+  // it can't be restricted to a fixed set the way facing can -- capping
+  // its length at least bounds how much attacker-controlled text can ride
+  // into the prompt in one request.
+  const safeAddressInput = typeof address === 'string' ? address.slice(0, 200) : '';
+
   const latN = parseFloat(lat), lonN = parseFloat(lon), floorN = parseInt(floor);
   const tz = tzOffset ?? 330;
 
   let solarSummary: Awaited<ReturnType<typeof computeSolarSummary>> | null = null;
   let groundTruthText = '';
   try {
-    solarSummary = await computeSolarSummary(latN, lonN, floorN, facing, tz);
+    solarSummary = await computeSolarSummary(latN, lonN, floorN, safeFacingInput, tz);
     groundTruthText = `
 GROUND TRUTH (computed from precise solar geometry — treat every number below as fact, do NOT re-derive or override it from the images):
 ${solarSummary.monthlySummary.map((m) =>
-  `${m.month}: Rise ${m.sunrise}, Set ${m.sunset}, Noon elevation ${m.noonElevation}°, Usable sun ${m.usableHours}h, Peak ${m.peakWindow}, Floor ${floorN} ${facing}-facing gets sun ${m.floorClearance}`
+  `${m.month}: Rise ${m.sunrise}, Set ${m.sunset}, Noon elevation ${m.noonElevation}°, Usable sun ${m.usableHours}h, Peak ${m.peakWindow}, Floor ${floorN} ${safeFacingInput}-facing gets sun ${m.floorClearance}`
 ).join('\n')}
 Overall feasibility: ${solarSummary.solarFeasibility.verdict} (avg ${solarSummary.solarFeasibility.avgUsableHours}h/day usable)
 Best months: ${solarSummary.solarFeasibility.bestMonths.join(', ')} · Worst months: ${solarSummary.solarFeasibility.worstMonths.join(', ')}
@@ -48,8 +64,8 @@ Note: floor clearance is an estimate based on typical urban obstruction heights,
 
   const prompt = `You are a solar intelligence analyst helping a home buyer in India.
 
-Property: ${address} (${latN.toFixed(4)}°N, ${lonN.toFixed(4)}°E)
-Unit: Floor ${floorN} (≈${floorN * 3}m height), ${facing}-facing
+Property: ${safeAddressInput} (${latN.toFixed(4)}°N, ${lonN.toFixed(4)}°E)
+Unit: Floor ${floorN} (≈${floorN * 3}m height), ${safeFacingInput}-facing
 ${groundTruthText}
 
 You also have ${screenshots.length} screenshots of the actual 3D map at this location. The orange circle/dot marks the exact property location; darker areas are rendered shadows from OpenStreetMap building data. Use these images ONLY for narrative color and visual confirmation (e.g. "as the images show, a taller block sits to the southeast") — do NOT estimate hours of sun, shadow duration, or building heights from the images; use the ground-truth numbers above for all figures. If a screenshot looks blank, black, or unreadable, say so explicitly rather than guessing what it would show.
@@ -71,8 +87,8 @@ For each screenshot (one @N@ line per image, per the formatting rule above), wri
 2. FLOOR ${floorN} SPECIFIC ANALYSIS
 Using the ground-truth floor clearance data, give a full, detailed explanation: when does direct sunlight first reach this unit in summer vs winter, how many hours per day in the best and worst months, how that changes month to month, and what this practically means for someone living on this floor (natural light for daily use, need for artificial lighting, heat gain, etc). Do not compress this into a couple of sentences — explain the reasoning, not just the conclusion.
 
-3. ${facing.toUpperCase()}-FACING WINDOW ASSESSMENT
-Explain in full when the sun shines directly into a ${facing}-facing window here across the year, why (walk through the azimuth/elevation reasoning in plain language), and whether this is a good or bad facing for this specific location and floor — with the reasoning spelled out, not just a verdict.
+3. ${safeFacingInput.toUpperCase()}-FACING WINDOW ASSESSMENT
+Explain in full when the sun shines directly into a ${safeFacingInput}-facing window here across the year, why (walk through the azimuth/elevation reasoning in plain language), and whether this is a good or bad facing for this specific location and floor — with the reasoning spelled out, not just a verdict.
 
 4. HOME BUYER VERDICT
 A full, honest verdict, several sentences to a short paragraph: is the sunlight situation good, acceptable, or poor, and why specifically. What floor would you recommend as a minimum, and why. Any specific concerns visible in the shadow patterns across the screenshots. Do not just restate the overall feasibility label — explain what it means for someone actually living there.`;

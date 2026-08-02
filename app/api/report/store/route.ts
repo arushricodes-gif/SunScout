@@ -1,20 +1,40 @@
 // app/api/report/store/route.ts
-// Persists an already-built report HTML string (from /api/report/pdf) so it
-// has a stable, shareable public URL — separate from the in-browser blob URL
-// that only exists in the tab that generated it. Uses Vercel Blob because
-// this app already deploys on Vercel and Blob needs no schema/DB setup:
-// once a Blob store is linked to the project, BLOB_READ_WRITE_TOKEN is
-// injected automatically.
+// Persists a shareable, stable public URL for a report — separate from the
+// in-browser blob URL that only exists in the tab that generated it. Uses
+// Vercel Blob because this app already deploys on Vercel and Blob needs no
+// schema/DB setup: once a Blob store is linked to the project,
+// BLOB_READ_WRITE_TOKEN is injected automatically.
+//
+// Security note: this endpoint does NOT accept raw HTML from the caller.
+// Earlier versions did, which meant anyone could POST arbitrary HTML here
+// and have it published publicly under this project's own storage --
+// usable for phishing or hosting unrelated content under a trusted-looking
+// URL, no report involved at all. Instead, this takes the same structured
+// inputs /api/report/pdf takes, and builds the HTML itself by calling that
+// route's own (already-escaping) builder -- so only a real, safely-escaped
+// SunScout report can ever end up stored here, regardless of what a caller
+// sends.
 
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
+import { POST as buildReportPdf } from '../pdf/route';
 
 export async function POST(req: NextRequest) {
-  const { html, address } = await req.json();
+  const body = await req.json();
+  const { address } = body;
 
-  if (!html || typeof html !== 'string') {
-    return NextResponse.json({ error: 'Missing report HTML' }, { status: 400 });
+  // Build the report HTML the same trusted, escaped way /api/report/pdf
+  // does -- by actually calling that route, not by trusting anything the
+  // caller claims is pre-built HTML.
+  const pdfRes = await buildReportPdf(new NextRequest(req.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }));
+  if (!pdfRes.ok) {
+    return NextResponse.json({ error: 'Could not build the report to share.' }, { status: 502 });
   }
+  const html = await pdfRes.text();
 
   // This is the #1 reason share-link creation fails: no Blob store has been
   // created/linked in the Vercel project yet (Storage tab → Create → Blob).
