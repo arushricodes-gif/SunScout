@@ -65,6 +65,29 @@ function splitPerImageAnalysis(analysis: string, shotCount: number) {
   return { perImage, rest };
 }
 
+// Pure reordering, not a rewrite: moves the "Home Buyer Verdict" section to
+// the front and renumbers the headers to match, without touching a single
+// word of what Gemini actually wrote. If no numbered sections are found (or
+// no verdict section exists), the text is returned completely unchanged.
+function moveVerdictFirst(text: string): string {
+  const headerRegex = /^(\d+)\.\s+(.+)$/gm;
+  const matches = [...text.matchAll(headerRegex)];
+  if (matches.length === 0) return text;
+
+  const sections: { title: string; body: string }[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const start = matches[i].index! + matches[i][0].length;
+    const end = i + 1 < matches.length ? matches[i + 1].index! : text.length;
+    sections.push({ title: matches[i][2].trim(), body: text.slice(start, end) });
+  }
+
+  const verdictIdx = sections.findIndex(s => /home\s*buyer\s*verdict/i.test(s.title));
+  if (verdictIdx === -1) return text;
+
+  const reordered = [sections[verdictIdx], ...sections.filter((_, i) => i !== verdictIdx)];
+  return reordered.map((s, i) => `${i + 1}. ${s.title}${s.body}`).join('').trim();
+}
+
 // Crosshair overlay marking the property location — shown once, on the
 // first screenshot only, as a reference for the rest of the set (repeating
 // it on every image risked appearing to sit "behind" a building in shots
@@ -104,7 +127,8 @@ export async function POST(req: NextRequest) {
   const date = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
   const shotCount = (screenshots as any[])?.length || 0;
 
-  const { perImage, rest } = splitPerImageAnalysis(safeAnalysis, shotCount);
+  const { perImage, rest: rawRest } = splitPerImageAnalysis(safeAnalysis, shotCount);
+  const rest = moveVerdictFirst(rawRest);
 
   const rawAnalysis = rest
     .replace(/^#{1,4}\s*(.+)$/gm, '$1')
