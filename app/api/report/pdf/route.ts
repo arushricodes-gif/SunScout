@@ -137,11 +137,11 @@ export async function POST(req: NextRequest) {
       </h3>
       <div style="display:flex;flex-direction:column;gap:22px;">
         ${g.shots.map((shot: any) => `
-          <div class="shot-card" style="border:1px solid #e8e4de;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.05);">
+          <div class="shot-card" style="border:1px solid #e8e4de;border-radius:0;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.05);">
             <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A0C10;position:relative;">
               <img src="data:image/jpeg;base64,${shot.base64}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="${shot.label}"/>
               ${PROPERTY_MARKER_HTML}
-              <div style="position:absolute;top:12px;left:12px;background:rgba(224,123,0,0.95);color:#fff;font-size:17px;font-weight:800;padding:5px 14px;border-radius:999px;letter-spacing:.02em;box-shadow:0 3px 10px rgba(0,0,0,0.25);">${shot.label.split(' · ')[1] || shot.label}</div>
+              <div style="position:absolute;top:12px;left:12px;background:rgba(224,123,0,0.95);color:#fff;font-size:17px;font-weight:800;padding:5px 14px;border-radius:0;letter-spacing:.02em;box-shadow:0 3px 10px rgba(0,0,0,0.25);">${shot.label.split(' · ')[1] || shot.label}</div>
             </div>
             ${perImage[shot.idx] ? `
             <div style="padding:16px 20px;background:#fff;border-top:1px solid #f0ede8;">
@@ -153,8 +153,25 @@ export async function POST(req: NextRequest) {
     </div>
   `).join('');
 
-  const monthlyTable = summary?.monthlySummary ? `
-    <h2 style="font-size:17px;font-weight:800;color:#1a0a00;margin:36px 0 14px;font-family:'Space Grotesk',Arial,sans-serif;">Monthly Sunlight Data</h2>
+  const verdictSection = summary?.solarFeasibility ? `
+    <div style="display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap;">
+      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:1;min-width:140px;">
+        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Overall Verdict</div>
+        <div style="font-size:22px;font-weight:800;color:#e07b00;font-family:'Space Grotesk',Arial,sans-serif;">${summary.solarFeasibility.verdict}</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px;">${summary.solarFeasibility.avgUsableHours}h/day avg</div>
+      </div>
+      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:1;min-width:140px;">
+        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Best Months</div>
+        <div style="font-size:13.5px;font-weight:700;color:#1a0a00;">${summary.solarFeasibility.bestMonths.join(', ')}</div>
+      </div>
+      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:1;min-width:140px;">
+        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Worst Months</div>
+        <div style="font-size:13.5px;font-weight:700;color:#1a0a00;">${summary.solarFeasibility.worstMonths.join(', ')}</div>
+      </div>
+    </div>` : '';
+
+  const monthlyTableSection = summary?.monthlySummary ? `
+    <h2 style="font-size:17px;font-weight:800;color:#1a0a00;margin:0 0 14px;font-family:'Space Grotesk',Arial,sans-serif;">Monthly Sunlight Data</h2>
     <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:Arial,sans-serif;margin-bottom:12px;">
       <thead>
         <tr style="background:#fff8ee;">
@@ -179,33 +196,27 @@ export async function POST(req: NextRequest) {
 
     <!-- Honesty line: real OSM data-completeness check, not a canned disclaimer -->
     ${summary.buildingHeightNote ? `
-    <div style="display:flex;gap:8px;align-items:flex-start;background:#fbfaf7;border:1px dashed #d8d2c8;border-radius:10px;padding:11px 15px;margin-bottom:24px;">
+    <div style="display:flex;gap:8px;align-items:flex-start;background:#fbfaf7;border:1px dashed #d8d2c8;border-radius:0;padding:11px 15px;margin-bottom:24px;">
       <span style="font-size:13px;line-height:1.5;">📐</span>
       <div style="font-size:11.5px;color:#8a7d6e;line-height:1.6;">${summary.buildingHeightNote.sentence}</div>
-    </div>` : ''}
-
-    ${summary.solarFeasibility ? `
-    <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
-      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:140px;">
-        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Overall Verdict</div>
-        <div style="font-size:22px;font-weight:800;color:#e07b00;font-family:'Space Grotesk',Arial,sans-serif;">${summary.solarFeasibility.verdict}</div>
-        <div style="font-size:10px;color:#aaa;margin-top:2px;">${summary.solarFeasibility.avgUsableHours}h/day avg</div>
-      </div>
-      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:140px;">
-        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Best Months</div>
-        <div style="font-size:13.5px;font-weight:700;color:#1a0a00;">${summary.solarFeasibility.bestMonths.join(', ')}</div>
-      </div>
-      <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:140px;">
-        <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Worst Months</div>
-        <div style="font-size:13.5px;font-weight:700;color:#1a0a00;">${summary.solarFeasibility.worstMonths.join(', ')}</div>
-      </div>
     </div>` : ''}
   ` : '';
 
   const labelPill = reportLabel ? `
-    <div style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#e07b00,#ff9f40);color:#fff;font-size:12.5px;font-weight:700;padding:7px 16px;border-radius:999px;margin-bottom:14px;box-shadow:0 4px 14px rgba(224,123,0,0.3);">
+    <div style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#e07b00,#ff9f40);color:#fff;font-size:12.5px;font-weight:700;padding:7px 16px;border-radius:0;margin-bottom:14px;box-shadow:0 4px 14px rgba(224,123,0,0.3);">
       📍 ${safeReportLabel}
     </div>` : '';
+
+  // Written narrative, moved up near the top of the report per the requested
+  // order: verdict, then this summary, then the monthly table, then images.
+  const fullAnalysisSection = `
+    <div style="background:#fff8ee;border:1.5px solid #e8e4de;border-radius:0;padding:28px;margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e07b00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <h2 style="font-size:17px;font-weight:800;color:#1a0a00;font-family:'Space Grotesk',Arial,sans-serif;">Summary · Floor ${safeFloor}, ${safeFacing}-facing</h2>
+      </div>
+      ${formattedAnalysis}
+    </div>`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -227,19 +238,19 @@ export async function POST(req: NextRequest) {
 <body>
   <div class="no-print" style="position:fixed;top:20px;right:20px;z-index:100;display:flex;gap:10px;align-items:center;">
     <span id="pdf-status" style="font-size:12px;color:#888;max-width:260px;text-align:right;"></span>
-    <button id="back-to-sunscout-btn" style="background:#fff;color:#e07b00;border:1px solid #e07b00;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;">← Back to SunScout</button>
-    <button id="print-btn" style="background:#f0ede8;color:#555;border:none;border-radius:10px;padding:10px 16px;font-size:13px;cursor:pointer;">Print</button>
-    <button id="download-pdf-btn" style="background:#e07b00;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(224,123,0,0.35);">⬇ Download PDF</button>
-    <button onclick="window.close()" style="background:#f0ede8;color:#555;border:none;border-radius:10px;padding:10px 18px;font-size:14px;cursor:pointer;">Close</button>
+    <button id="back-to-sunscout-btn" style="background:#fff;color:#e07b00;border:1px solid #e07b00;border-radius:0;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;">← Back to SunScout</button>
+    <button id="print-btn" style="background:#f0ede8;color:#555;border:none;border-radius:0;padding:10px 16px;font-size:13px;cursor:pointer;">Print</button>
+    <button id="download-pdf-btn" style="background:#e07b00;color:#fff;border:none;border-radius:0;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(224,123,0,0.35);">⬇ Download PDF</button>
+    <button onclick="window.close()" style="background:#f0ede8;color:#555;border:none;border-radius:0;padding:10px 18px;font-size:14px;cursor:pointer;">Close</button>
   </div>
 
   <div id="report-root" style="max-width:900px;margin:0 auto;background:#fff;">
 
-    <!-- Page 1: cover / summary data -->
+    <!-- Page 1: cover / verdict / summary / table -->
     <div class="pdf-page" style="padding:48px 32px 40px;">
       <div style="border-bottom:2px solid #f0ede8;padding-bottom:24px;margin-bottom:28px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <span style="font-size:16px;">☀️</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e07b00" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22"/><line x1="2" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22" y2="12"/><line x1="4.5" y1="4.5" x2="6.2" y2="6.2"/><line x1="17.8" y1="17.8" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.2" y2="17.8"/><line x1="17.8" y1="6.2" x2="19.5" y2="4.5"/></svg>
           <span style="font-size:12px;font-weight:700;color:#e07b00;text-transform:uppercase;letter-spacing:.12em;">SunScout</span>
           <span style="font-size:11px;color:#bbb;">Home Buyer Solar Report · Visual AI Analysis</span>
         </div>
@@ -248,43 +259,37 @@ export async function POST(req: NextRequest) {
         <div style="font-size:11px;color:#aaa;">📍 ${parseFloat(lat).toFixed(5)}°N, ${parseFloat(lon).toFixed(5)}°E · ${date}</div>
       </div>
 
-      <div style="display:flex;gap:14px;margin-bottom:32px;flex-wrap:wrap;">
-        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:120px;">
+      <div style="display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap;">
+        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:1;min-width:120px;">
           <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Floor</div>
           <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${safeFloor}</div>
           <div style="font-size:10px;color:#aaa;margin-top:2px;">≈${(parseInt(floor)||0)*3}m height</div>
         </div>
-        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:1;min-width:120px;">
+        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:1;min-width:120px;">
           <div style="font-size:9.5px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Facing</div>
           <div style="font-size:32px;font-weight:800;color:#e07b00;line-height:1;font-family:'Space Grotesk',Arial,sans-serif;">${safeFacing}</div>
           <div style="font-size:10px;color:#aaa;margin-top:2px;">${facingAssumptionNote ? 'window orientation · assumed, unconfirmed' : 'window orientation'}</div>
         </div>
-        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:14px;padding:14px 18px;flex:3;min-width:200px;display:flex;align-items:center;gap:12px;">
-          <span style="font-size:32px;">🤖</span>
+        <div style="background:#fff8ee;border:1px solid #e8e4de;border-radius:0;padding:14px 18px;flex:3;min-width:200px;display:flex;align-items:center;gap:12px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e07b00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 20l6-6 4 4 8-8"/><path d="M15 6h6v6"/></svg>
           <div>
-            <div style="font-size:13px;font-weight:700;color:#1a0a00;">Visual Shadow Analysis</div>
-            <div style="font-size:11px;color:#aaa;margin-top:2px;">${shotCount || 12} real 3D map screenshots + precise solar-geometry data</div>
+            <div style="font-size:13px;font-weight:700;color:#1a0a00;">Real 3D map with sun and shadow path</div>
+            <div style="font-size:11px;color:#aaa;margin-top:2px;">Precise solar geometry from ${shotCount || 12} real map angles</div>
           </div>
         </div>
       </div>
 
-      ${monthlyTable}
+      ${verdictSection}
+      ${fullAnalysisSection}
+      ${monthlyTableSection}
     </div>
 
     <!-- One page per season -->
     ${screenshotPages}
 
-    <!-- Final page: full narrative + methodology + footer -->
+    <!-- Final page: methodology + footer -->
     <div class="pdf-page" style="padding:40px 32px 48px;">
-      <div style="background:#fff8ee;border:1.5px solid #e8e4de;border-radius:18px;padding:30px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-          <span style="font-size:18px;">🤖</span>
-          <h2 style="font-size:17px;font-weight:800;color:#1a0a00;font-family:'Space Grotesk',Arial,sans-serif;">Full Analysis · Floor ${safeFloor}, ${safeFacing}-facing</h2>
-        </div>
-        ${formattedAnalysis}
-      </div>
-
-      <div style="border:1px solid #f0ede8;border-radius:16px;padding:20px 24px;margin-top:24px;">
+      <div style="border:1px solid #f0ede8;border-radius:0;padding:20px 24px;">
         <div style="font-size:11px;font-weight:700;color:#5A2800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">How this report was built</div>
         <ul style="margin:0;padding-left:18px;font-size:11.5px;color:#8a7d6e;line-height:1.7;">
           <li>Sun position and monthly sunlight hours come from a NOAA solar-geometry algorithm — deterministic, not AI-generated.</li>

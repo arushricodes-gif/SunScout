@@ -27,7 +27,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
   const [progress, setProgress] = useState(0);
   const [error, setError]     = useState('');
   const [reportUrl, setReportUrl] = useState<string | null>(null);
-  const [reportPayload, setReportPayload] = useState<{ summary: any; analysis: string } | null>(null);
+  const [reportPayload, setReportPayload] = useState<{ summary: any; analysis: string; screenshots: {label:string, base64:string}[] } | null>(null);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [saveError, setSaveError] = useState('');
 
@@ -102,7 +102,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       setReportUrl(url);
-      setReportPayload({ summary, analysis });
+      setReportPayload({ summary, analysis, screenshots });
     } catch (e: any) {
       // Log the real technical cause for debugging, but never show it to
       // the person -- Gemini quota errors, network failures, etc. all
@@ -122,6 +122,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
     const payload = {
       address: addr, lat, lon, floor, facing,
       summary: reportPayload.summary, analysis: reportPayload.analysis,
+      screenshots: reportPayload.screenshots,
       reportLabel: reportLabel || undefined,
     };
     try {
@@ -143,7 +144,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
 
   return (
     <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
-      <div style={{ background:'#FFFBF5', borderRadius:20, padding:32, width:'100%', maxWidth:460, boxShadow:'0 24px 80px rgba(0,0,0,0.2)', fontFamily:'Plus Jakarta Sans,sans-serif' }}>
+      <div style={{ background:'#FFFBF5', borderRadius:0, padding:32, width:'100%', maxWidth:460, boxShadow:'0 24px 80px rgba(0,0,0,0.2)', fontFamily:'Plus Jakarta Sans,sans-serif' }}>
 
         {reportUrl ? (
           <div style={{ textAlign:'center', padding:'8px 0' }}>
@@ -151,18 +152,18 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
             <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:8 }}>Report ready</h3>
             <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:24 }}>Opened in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
                 View Report Again
               </button>
               {saveState === 'saved' ? (
-                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, color:'#16a34a' }}>
+                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, color:'#16a34a' }}>
                   ✓ Saved to BlindSpot
                 </div>
               ) : (
                 <button
                   onClick={handleSaveToBlindSpot}
                   disabled={saveState === 'saving'}
-                  style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
+                  style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
                 >
                   {saveState === 'saving' ? 'Saving…' : 'Save to BlindSpot'}
                 </button>
@@ -256,20 +257,22 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
             )}
 
             <div style={{ display:'flex', gap:10 }}>
-              <button onClick={generate} style={{ flex:1, background:'#E07B00', color:'#fff', border:'none', borderRadius:12, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 16px rgba(224,123,0,0.3)' }}>
+              <button onClick={generate} style={{ flex:1, background:'#E07B00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 16px rgba(224,123,0,0.3)' }}>
                 📸 Generate AI Report
               </button>
-              <button onClick={onClose} style={{ background:'#f0ede8', color:'#888', border:'none', borderRadius:12, padding:'13px 18px', fontSize:14, cursor:'pointer' }}>Cancel</button>
+              <button onClick={onClose} style={{ background:'#f0ede8', color:'#888', border:'none', borderRadius:0, padding:'13px 18px', fontSize:14, cursor:'pointer' }}>Cancel</button>
             </div>
             <div style={{ fontSize:11, color:'#ccc', textAlign:'center', marginTop:10 }}>Takes ~30 seconds · Free · AI-powered analysis</div>
           </>
         ) : (
           <div style={{ textAlign:'center', padding:'20px 0' }}>
-            <div style={{ fontSize:48, marginBottom:20, animation:'spin 2s linear infinite', display:'inline-block' }}>☀️</div>
+            <div style={{ marginBottom:20, animation:'spin 2s linear infinite', display:'inline-block', color:'#E07B00' }}>
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4.5" y1="4.5" x2="6.6" y2="6.6"/><line x1="17.4" y1="17.4" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.6" y2="17.4"/><line x1="17.4" y1="6.6" x2="19.5" y2="4.5"/></svg>
+            </div>
             <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:12 }}>Generating your report...</h3>
             <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:20 }}>This usually takes under a minute.</p>
-            <div style={{ background:'#f0ede8', borderRadius:8, height:6, overflow:'hidden' }}>
-              <div style={{ background:'#E07B00', height:'100%', width:`${progress}%`, borderRadius:8, transition:'width 0.4s ease' }} />
+            <div style={{ background:'#f0ede8', borderRadius:0, height:6, overflow:'hidden' }}>
+              <div style={{ background:'#E07B00', height:'100%', width:`${progress}%`, borderRadius:0, transition:'width 0.4s ease' }} />
             </div>
           </div>
         )}

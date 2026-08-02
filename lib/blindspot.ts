@@ -35,6 +35,7 @@ export interface PendingSunScoutReport {
   facing: string;
   summary: any; // structured monthly-summary/feasibility object, not plain text
   analysis: string;
+  screenshots?: { label: string; base64: string }[];
   reportLabel?: string;
 }
 
@@ -61,6 +62,7 @@ export async function saveReportToBlindSpot(report: PendingSunScoutReport) {
       facing: report.facing,
       summary: report.summary,
       analysis: report.analysis,
+      screenshots: report.screenshots || [],
       generatedAt: new Date().toISOString(),
     },
   } as any);
