@@ -71,19 +71,6 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
     setError('');
     setProgress(5);
 
-    // Opened immediately, synchronously, right here in direct response to
-    // the click -- this is what keeps window.opener reliable on the tab
-    // we open below. Opening it later (after the several awaits this
-    // function does) is what was breaking "Back to SunScout": by the time
-    // window.open() ran, browsers no longer treated it as a direct
-    // response to the click, and silently dropped the opener reference
-    // (or routed it through the popup blocker) -- unpredictably, which is
-    // exactly the symptom this was causing.
-    const reportWindow = window.open('', '_blank');
-    if (reportWindow) {
-      reportWindow.document.write('<html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;color:#888;">Generating your report…</body></html>');
-    }
-
     try {
       const addr = address || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
@@ -114,17 +101,14 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
       const html = await pdfRes.text();
       const blob = new Blob([html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
-      if (reportWindow && !reportWindow.closed) {
-        // Write the real report into the tab we already opened above --
-        // keeps window.opener intact on it.
-        reportWindow.document.open();
-        reportWindow.document.write(html);
-        reportWindow.document.close();
-      } else {
-        // Popup got blocked or the person closed that placeholder tab in
-        // the meantime -- fall back to opening fresh now.
-        window.open(url, '_blank');
-      }
+      // Don't auto-open a tab here -- by this point several awaits have
+      // passed since the click, so browsers no longer treat window.open()
+      // as a direct user gesture and will usually block it (or, worse,
+      // silently drop window.opener even when it isn't blocked). Instead
+      // we stay on this tab and show a real "Open Report" button below;
+      // clicking that IS a direct gesture, so the tab opens reliably and
+      // window.opener (used by the report's "Back to SunScout" link)
+      // comes through correctly too.
       setReportUrl(url);
       setReportPayload({ summary, analysis, screenshots });
     } catch (e: any) {
@@ -174,10 +158,10 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
           <div style={{ textAlign:'center', padding:'8px 0' }}>
             <div style={{ fontSize:40, marginBottom:16 }}>✅</div>
             <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:8 }}>Report ready</h3>
-            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:24 }}>Opened in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
+            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:24 }}>Opens in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
-                View Report Again
+              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+                Open Report
               </button>
               {saveState === 'saved' ? (
                 <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, color:'#16a34a' }}>
@@ -187,7 +171,7 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
                 <button
                   onClick={handleSaveToBlindSpot}
                   disabled={saveState === 'saving'}
-                  style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
+                  style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
                 >
                   {saveState === 'saving' ? 'Saving…' : 'Save to BlindSpot'}
                 </button>
