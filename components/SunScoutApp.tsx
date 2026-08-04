@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import SolarChart from './SolarChart';
 import type { SolarData } from '@/app/page';
 import ReportModal from './ReportModal';
+import LiveScoreModal from './LiveScoreModal';
 import AsliVastuPopup from './AsliVastuPopup';
 import AsliVastuTopBarButton from './AsliVastuTopBarButton';
 
@@ -107,6 +108,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
   const [copied, setCopied]           = useState(false);
   const [showAbout, setShowAbout]     = useState(false);
   const [showReport, setShowReport]   = useState(false);
+  const [showLiveScore, setShowLiveScore] = useState(false);
   const [views, setViews]             = useState<number|null>(null);
   const [feedback, setFeedback]       = useState('');
   const [fbName, setFbName]           = useState('');
@@ -329,6 +331,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           })}
         </div>
         <button onClick={() => setShowReport(true)} style={{ background: ORG, color: '#fff', border: 'none', borderRadius:0, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>AI Report</button>
+        <button onClick={() => setShowLiveScore(true)} style={{ background: '#1A0A00', color: '#fff', border: 'none', borderRadius:0, padding:'7px 12px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0 }}>⚡ LiveScore</button>
         {hasRealLocation && <AsliVastuTopBarButton lat={lat} lon={lon} style={{ borderRadius:0 }} />}
         <button onClick={handleShare} aria-label="Share" style={{ display:'flex', alignItems:'center', gap:5, background: copied ? '#22c55e' : WHITE, color: copied ? '#fff' : TEXT_DARK, border: `1px solid ${copied ? '#22c55e' : 'rgba(224,123,0,0.2)'}`, borderRadius:0, padding: copied ? '7px 11px' : '7px 8px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, transition:'all .2s' }}>{copied ? <><IconCheck /> Copied!</> : <IconLink />}</button>
       </div>
@@ -358,6 +361,7 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           </form>
           <button className="btn-primary" onClick={onGpsClick} aria-label="My location" style={{ padding:'6px 9px', flexShrink:0, display:'flex', alignItems:'center', borderRadius:0 }}><IconPin /></button>
           <button onClick={() => setShowReport(true)} style={{ background:ORG, color:'#fff', border:'none', borderRadius:0, padding:'6px 10px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>AI Report</button>
+          <button onClick={() => setShowLiveScore(true)} style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:0, padding:'6px 10px', fontWeight:700, fontSize:12, cursor:'pointer', flexShrink:0, whiteSpace:'nowrap' }}>⚡</button>
         </div>
 
         {/* Collapsible "More" drawer — view switch + play/pause + date, then AsliVastu/share */}
@@ -531,6 +535,16 @@ export default function SunScoutApp({ coords, setCoords, targetDate, setTargetDa
           address={searchQuery || undefined}
           onClose={() => setShowReport(false)}
           captureScreenshots={captureScreenshots}
+        />
+      )}
+
+      {/* LiveScore Modal */}
+      {showLiveScore && (
+        <LiveScoreModal
+          lat={lat}
+          lon={lon}
+          tzOffset={tzOffset}
+          onClose={() => setShowLiveScore(false)}
         />
       )}
     </div>
