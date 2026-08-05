@@ -14,6 +14,14 @@ interface Props {
 
 const FACING = ['North','South','East','West','North-East','South-East','North-West','South-West'];
 
+const ORG = '#E07B00';
+const INK = '#1A0A00';
+const SUB = '#8A8A8A';
+const LINE = 'rgba(26,10,0,0.15)';
+const MONO = "'IBM Plex Mono', monospace";
+const SANS = "'Plus Jakarta Sans', sans-serif";
+const DISPLAY = "'Space Grotesk', sans-serif";
+
 export default function ReportModal({ lat, lon, tzOffset, address, onClose, captureScreenshots }: Props) {
   const [floor, setFloor]     = useState('5');
   const [facing, setFacing]   = useState('South');
@@ -151,35 +159,36 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
   };
 
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
-      <div style={{ background:'#FFFBF5', borderRadius:0, padding:32, width:'100%', maxWidth:460, boxShadow:'0 24px 80px rgba(0,0,0,0.2)', fontFamily:'Plus Jakarta Sans,sans-serif' }}>
+    <div style={{ position:'fixed', inset:0, zIndex:1000, background:'rgba(10,5,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
+      <div style={{ background:'#FFFBF5', border:`1px solid ${LINE}`, padding:0, width:'100%', maxWidth:480, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 30px 90px rgba(0,0,0,0.35)', fontFamily:SANS }}>
+      <div style={{ padding:24 }}>
 
         {reportUrl ? (
-          <div style={{ textAlign:'center', padding:'8px 0' }}>
-            <div style={{ fontSize:40, marginBottom:16 }}>✅</div>
-            <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:8 }}>Report ready</h3>
-            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:24 }}>Opens in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:'#1A0A00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+          <div style={{ textAlign:'center', padding:'20px 0' }}>
+            <div style={{ fontFamily:MONO, fontSize:11, fontWeight:500, color:'#16a34a', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:14, border:'1px solid #16a34a', display:'inline-block', padding:'5px 14px' }}>Report Ready</div>
+            <h3 style={{ fontFamily:DISPLAY, fontSize:18, fontWeight:800, color:INK, marginBottom:8 }}>Your report is ready</h3>
+            <p style={{ fontSize:13, color:SUB, lineHeight:1.6, marginBottom:24 }}>Opens in a new tab. Want to keep it? Save it to your BlindSpot account.</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+              <button onClick={() => window.open(reportUrl, '_blank')} style={{ background:INK, color:'#fff', border:'none', padding:'13px', fontSize:13, fontWeight:700, cursor:'pointer', letterSpacing:'.03em', textTransform:'uppercase' }}>
                 Open Report
               </button>
               {saveState === 'saved' ? (
-                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, color:'#16a34a' }}>
-                  ✓ Saved to BlindSpot
+                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderTop:'none', padding:'13px', fontSize:13, fontWeight:700, color:'#16a34a', fontFamily:MONO }}>
+                  SAVED TO BLINDSPOT
                 </div>
               ) : (
                 <button
                   onClick={handleSaveToBlindSpot}
                   disabled={saveState === 'saving'}
-                  style={{ background:'#f0ede8', color:'#5A2800', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1 }}
+                  style={{ background:'transparent', color:INK, border:`1px solid ${LINE}`, borderTop:'none', padding:'13px', fontSize:13, fontWeight:700, cursor: saveState === 'saving' ? 'default' : 'pointer', opacity: saveState === 'saving' ? 0.6 : 1, letterSpacing:'.03em', textTransform:'uppercase' }}
                 >
                   {saveState === 'saving' ? 'Saving…' : 'Save to BlindSpot'}
                 </button>
               )}
               {saveState === 'error' && (
-                <div style={{ background:'#fef2f2', border:'1px solid #fca5a5', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#dc2626' }}>⚠️ {saveError}</div>
+                <div style={{ border:'1px solid #dc2626', padding:'10px 14px', fontSize:12, color:'#dc2626', marginTop:10, fontFamily:MONO }}>ERROR: {saveError}</div>
               )}
-              <button onClick={onClose} style={{ background:'none', color:'#888', border:'none', padding:'8px', fontSize:13, cursor:'pointer' }}>
+              <button onClick={onClose} style={{ background:'none', color:SUB, border:'none', padding:'12px', fontSize:12, cursor:'pointer', marginTop:10, fontFamily:MONO, letterSpacing:'.05em', textTransform:'uppercase' }}>
                 Close
               </button>
             </div>
@@ -188,106 +197,107 @@ export default function ReportModal({ lat, lon, tzOffset, address, onClose, capt
           <>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
               <div>
-                <div style={{ fontSize:10, fontWeight:700, color:'#E07B00', textTransform:'uppercase', letterSpacing:'.12em', marginBottom:5 }}>AI Solar Report</div>
-                <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:21, fontWeight:800, color:'#1A0A00', margin:0 }}>Home Buyer Analysis</h2>
+                <div style={{ fontFamily:MONO, fontSize:10, fontWeight:500, color:ORG, letterSpacing:'.14em', marginBottom:6 }}>AI SOLAR REPORT</div>
+                <h2 style={{ fontFamily:DISPLAY, fontSize:21, fontWeight:800, color:INK, margin:0 }}>Home Buyer Analysis</h2>
               </div>
-              <button onClick={onClose} style={{ background:'none', border:'none', fontSize:20, cursor:'pointer', color:'#bbb' }}>✕</button>
+              <button onClick={onClose} style={{ background:'none', border:'none', fontSize:18, cursor:'pointer', color:SUB, lineHeight:1, padding:4 }}>✕</button>
             </div>
 
-            <p style={{ fontSize:13, color:'#999', lineHeight:1.6, marginBottom:24 }}>
+            <p style={{ fontSize:13, color:SUB, lineHeight:1.6, marginBottom:26 }}>
               We compute precise sun/shadow data for this exact location, capture 12 real screenshots (3 per season) at different times, then use AI to narrate the shadow patterns at your pin location.
             </p>
 
-            <div style={{ marginBottom:20 }}>
-              <label style={{ fontSize:12, fontWeight:700, color:'#5A2800', display:'block', marginBottom:8 }}>Floor number</label>
+            <div style={{ marginBottom:22 }}>
+              <label style={{ fontFamily:MONO, fontSize:10.5, fontWeight:500, color:INK, letterSpacing:'.08em', display:'block', marginBottom:10, textTransform:'uppercase' }}>Floor number</label>
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <input type="range" min="1" max="30" value={floor} onChange={e => setFloor(e.target.value)} style={{ flex:1, accentColor:'#E07B00' }} />
-                <div style={{ background:'#E07B00', color:'#fff', borderRadius:8, padding:'4px 12px', fontSize:14, fontWeight:700, minWidth:40, textAlign:'center' }}>{floor}</div>
+                <input type="range" min="1" max="30" value={floor} onChange={e => setFloor(e.target.value)} style={{ flex:1, accentColor:ORG }} />
+                <div style={{ background:INK, color:'#fff', fontFamily:MONO, fontSize:13, fontWeight:500, padding:'4px 12px', minWidth:40, textAlign:'center' }}>{floor}</div>
               </div>
-              <div style={{ fontSize:11, color:'#B07040', marginTop:3 }}>Floor {floor} ≈ {parseInt(floor)*3}m above ground</div>
+              <div style={{ fontFamily:MONO, fontSize:10.5, color:SUB, marginTop:6 }}>Floor {floor} ≈ {parseInt(floor)*3}m above ground</div>
             </div>
 
-            <div style={{ marginBottom:20 }}>
-              <label style={{ fontSize:12, fontWeight:700, color:'#5A2800', display:'block', marginBottom:8 }}>Which direction does the unit face?</label>
+            <div style={{ marginBottom:22 }}>
+              <label style={{ fontFamily:MONO, fontSize:10.5, fontWeight:500, color:INK, letterSpacing:'.08em', display:'block', marginBottom:10, textTransform:'uppercase' }}>Facing direction</label>
 
               {!facingExpanded ? (
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#fff8ee', border:'1.5px solid rgba(200,130,40,0.2)', borderRadius:9, padding:'10px 12px' }}>
-                  <div style={{ fontSize:13, color:'#5A2800' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', border:`1px solid ${LINE}`, padding:'11px 14px' }}>
+                  <div style={{ fontSize:13, color:INK }}>
                     {facingLoading ? (
-                      <span style={{ color:'#B07040' }}>🧭 Detecting facing from nearby buildings…</span>
+                      <span style={{ color:SUB, fontFamily:MONO, fontSize:11.5 }}>Detecting facing from nearby buildings…</span>
                     ) : (
                       <>
                         <strong>{facing}</strong>
-                        <span style={{ color:'#B07040', fontSize:11.5 }}>
+                        <span style={{ color:SUB, fontSize:11.5 }}>
                           {' '}— {facingTouched ? 'set by you' : facingSuggestion ? 'assumed from nearby buildings, unconfirmed' : 'default, unconfirmed'}
                         </span>
                       </>
                     )}
                   </div>
-                  <button onClick={() => setFacingExpanded(true)} style={{ background:'none', border:'none', color:'#E07B00', fontSize:12, fontWeight:700, cursor:'pointer', textDecoration:'underline', padding:0 }}>
+                  <button onClick={() => setFacingExpanded(true)} style={{ background:'none', border:'none', color:ORG, fontFamily:MONO, fontSize:11, fontWeight:500, cursor:'pointer', textTransform:'uppercase', letterSpacing:'.04em', padding:0 }}>
                     Change
                   </button>
                 </div>
               ) : (
                 <>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:7 }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
                     {FACING.map(dir => (
-                      <button key={dir} onClick={() => pickFacing(dir)} style={{ background: facing===dir ? '#E07B00' : '#fff', color: facing===dir ? '#fff' : '#5A2800', border: `1.5px solid ${facing===dir ? '#E07B00' : 'rgba(200,130,40,0.2)'}`, borderRadius:9, padding:'7px 4px', fontSize:11, fontWeight:700, cursor:'pointer', transition:'all .15s' }}>{dir}</button>
+                      <button key={dir} onClick={() => pickFacing(dir)} style={{ background: facing===dir ? ORG : '#fff', color: facing===dir ? '#fff' : INK, border:`1px solid ${facing===dir ? ORG : LINE}`, padding:'8px 4px', fontSize:11, fontWeight:700, cursor:'pointer', marginLeft:-1, marginTop:-1 }}>{dir}</button>
                     ))}
                   </div>
-                  <button onClick={() => setFacingExpanded(false)} style={{ background:'none', border:'none', color:'#B07040', fontSize:11, cursor:'pointer', marginTop:8, padding:0 }}>
-                    Done
+                  <button onClick={() => setFacingExpanded(false)} style={{ background:'none', border:'none', color:ORG, fontFamily:MONO, fontSize:10.5, cursor:'pointer', marginTop:10, padding:0, textTransform:'uppercase', letterSpacing:'.05em' }}>
+                    [−] Done
                   </button>
                 </>
               )}
 
               {facingSuggestion && !facingTouched && (
-                <div style={{ fontSize:10.5, color:'#B07040', marginTop:8, lineHeight:1.5 }}>
+                <div style={{ fontFamily:MONO, fontSize:10.5, color:SUB, marginTop:10, lineHeight:1.6, borderTop:`1px dashed ${LINE}`, paddingTop:8 }}>
                   {facingSuggestion.sentence}
                 </div>
               )}
             </div>
 
-            <div style={{ marginBottom:28 }}>
-              <label style={{ fontSize:12, fontWeight:700, color:'#5A2800', display:'block', marginBottom:8 }}>Name this report (optional)</label>
+            <div style={{ marginBottom:24 }}>
+              <label style={{ fontFamily:MONO, fontSize:10.5, fontWeight:500, color:INK, letterSpacing:'.08em', display:'block', marginBottom:10, textTransform:'uppercase' }}>Name this report <span style={{ color:SUB, textTransform:'none', letterSpacing:0 }}>(optional)</span></label>
               <input
                 type="text"
                 placeholder="e.g. Skyline Residences · Unit 502"
                 value={reportLabel}
                 onChange={e => setReportLabel(e.target.value)}
-                style={{ width:'100%', border:'1.5px solid rgba(200,130,40,0.2)', borderRadius:9, padding:'10px 12px', fontSize:13, fontFamily:'inherit' }}
+                style={{ width:'100%', border:`1px solid ${LINE}`, padding:'11px 12px', fontSize:13, fontFamily:'inherit', boxSizing:'border-box' }}
               />
-              <div style={{ fontSize:10.5, color:'#ccc', marginTop:6 }}>Shows as a small tag at the top of the report — handy if you're tracking a few units at once.</div>
+              <div style={{ fontFamily:MONO, fontSize:10, color:SUB, marginTop:8 }}>Shows as a small tag at the top of the report — handy if you're tracking a few units at once.</div>
             </div>
 
             {error && (
-              <div style={{ background:'#fef2f2', border:'1px solid #fca5a5', borderRadius:10, padding:'10px 14px', fontSize:12, color:'#dc2626', marginBottom:14 }}>⚠️ {error}</div>
+              <div style={{ border:'1px solid #dc2626', padding:'10px 14px', fontSize:12, color:'#dc2626', marginBottom:16, fontFamily:MONO }}>ERROR: {error}</div>
             )}
 
-            <div style={{ display:'flex', gap:10 }}>
-              <button onClick={generate} style={{ flex:1, background:'#E07B00', color:'#fff', border:'none', borderRadius:0, padding:'13px', fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 16px rgba(224,123,0,0.3)' }}>
-                📸 Generate AI Report
+            <div style={{ display:'flex', gap:0 }}>
+              <button onClick={generate} style={{ flex:1, background:ORG, color:'#fff', border:'none', padding:'14px', fontSize:13, fontWeight:700, cursor:'pointer', letterSpacing:'.03em', textTransform:'uppercase' }}>
+                Generate AI Report
               </button>
-              <button onClick={onClose} style={{ background:'#f0ede8', color:'#888', border:'none', borderRadius:0, padding:'13px 18px', fontSize:14, cursor:'pointer' }}>Cancel</button>
+              <button onClick={onClose} style={{ background:'transparent', color:SUB, border:`1px solid ${LINE}`, borderLeft:'none', padding:'14px 20px', fontSize:13, cursor:'pointer' }}>Cancel</button>
             </div>
-            <div style={{ fontSize:11, color:'#ccc', textAlign:'center', marginTop:10 }}>Takes ~30 seconds · Free · AI-powered analysis</div>
+            <div style={{ fontFamily:MONO, fontSize:10.5, color:SUB, textAlign:'center', marginTop:12, letterSpacing:'.03em' }}>TAKES ~30 SECONDS · FREE · AI-POWERED</div>
           </>
         ) : (
-          <div style={{ textAlign:'center', padding:'20px 0' }}>
-            <div style={{ marginBottom:20, animation:'spin 2s linear infinite', display:'inline-block', color:'#E07B00' }}>
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4.5" y1="4.5" x2="6.6" y2="6.6"/><line x1="17.4" y1="17.4" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.6" y2="17.4"/><line x1="17.4" y1="6.6" x2="19.5" y2="4.5"/></svg>
+          <div style={{ textAlign:'center', padding:'30px 0' }}>
+            <div style={{ marginBottom:20, animation:'rm-spin 1.6s linear infinite', display:'inline-block', color:ORG }}>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
             </div>
-            <h3 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:18, fontWeight:800, color:'#1A0A00', marginBottom:12 }}>Generating your report...</h3>
-            <p style={{ fontSize:13, color:'#888', lineHeight:1.6, marginBottom:20 }}>This usually takes under a minute.</p>
-            <div style={{ background:'#f0ede8', borderRadius:0, height:6, overflow:'hidden' }}>
-              <div style={{ background:'#E07B00', height:'100%', width:`${progress}%`, borderRadius:0, transition:'width 0.4s ease' }} />
+            <h3 style={{ fontFamily:DISPLAY, fontSize:17, fontWeight:800, color:INK, marginBottom:10 }}>Generating your report</h3>
+            <p style={{ fontFamily:MONO, fontSize:11.5, color:SUB, lineHeight:1.8, marginBottom:20 }}>This usually takes under a minute.</p>
+            <div style={{ background:'#EFEBE3', height:4, overflow:'hidden' }}>
+              <div style={{ background:ORG, height:'100%', width:`${progress}%`, transition:'width 0.4s ease' }} />
             </div>
           </div>
         )}
 
         <style>{`
-          @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+          @keyframes rm-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         `}</style>
+      </div>
       </div>
     </div>
   );
