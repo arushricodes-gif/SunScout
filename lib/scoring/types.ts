@@ -1,11 +1,10 @@
 // lib/scoring/types.ts
 // Shared types for the LiveScore feature — a per-FLAT rating (floor + facing
 // specific), not a neighbourhood score like AsliVastu. Sun/Shade are built on
-// the same solar geometry lib/solarReport.ts already uses; View/Privacy are
-// built on the new ray-cast engine in lib/occlusion.ts; Wind combines live
-// Open-Meteo data with the same occlusion profile. A LiveScore for a given
-// lat/lon/floor/facing is always consistent with what the existing solar
-// report and wind panel already show for that property.
+// the same solar geometry lib/solarReport.ts already uses. View/Privacy are
+// deterministic floor-based cutoffs (no external building-data dependency —
+// a free public API proved too unreliable). Wind combines live Open-Meteo
+// data with the same floor-based openness estimate.
 
 export type SubScoreKey = 'sun' | 'shadeHeat' | 'view' | 'privacy' | 'wind';
 // Not built (needs data this repo doesn't have a source for yet): 'noise'.

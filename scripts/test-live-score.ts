@@ -1,9 +1,8 @@
 // scripts/test-live-score.ts
-// Local terminal test for the full LiveScore feature (Sun, Shade&Heat, View,
-// Privacy, Wind) — runs the scoring engine directly (no Next.js server, no
-// API key) against a few real scenarios. View/Privacy/Wind hit real Overpass
-// and Open-Meteo APIs, so this needs network access and will be a bit slower
-// than the v1 Sun+Shade-only test.
+// Local terminal test for the full LiveScore feature. Sun/Shade use real
+// solar geometry. View/Privacy are deterministic floor cutoffs — no network
+// call, always instant, always consistent. Wind hits the real Open-Meteo API
+// (needs network — this one genuinely tests live data).
 //
 // Run with: npx tsx scripts/test-live-score.ts
 
@@ -27,7 +26,7 @@ const scenarios: Scenario[] = [
 ];
 
 async function main() {
-  console.log('LiveScore — local test run (all 5 sub-scores)\n' + '='.repeat(70));
+  console.log('LiveScore — local test run\n' + '='.repeat(70));
 
   for (const s of scenarios) {
     const start = Date.now();
@@ -44,21 +43,16 @@ async function main() {
     for (const sub of result.subScores) {
       console.log(`    - ${sub.label}: ${sub.score}/100 — ${sub.summary}`);
     }
-    if (result.dataNotes.length) {
-      console.log(`  Data notes: ${result.dataNotes.join(' | ')}`);
-    }
   }
 
   console.log('\n' + '='.repeat(70));
-  console.log('Custom weighting test — privacy-obsessed user');
-  const weighted = await computeLiveScore({
-    ...BENGALURU, floor: 2, facing: 'South',
-    tzOffsetMinutes: 330,
-    weights: { sun: 0.1, shadeHeat: 0.1, view: 0.1, privacy: 0.6, wind: 0.1 },
-  });
-  console.log(`  2nd floor, South-facing → LiveScore: ${weighted.liveScore}/100 (${weighted.grade})`);
-  console.log(`  Weights used:`, weighted.weights);
-  console.log(`  Privacy sub-score: ${weighted.subScores.find(s => s.key === 'privacy')?.score}`);
+  console.log('Sanity check: does floor level correctly move View/Privacy?');
+  const ground = await computeLiveScore({ ...BENGALURU, floor: 0, facing: 'South', tzOffsetMinutes: 330 });
+  const high = await computeLiveScore({ ...BENGALURU, floor: 18, facing: 'South', tzOffsetMinutes: 330 });
+  const groundView = ground.subScores.find(s => s.key === 'view')!.score;
+  const highView = high.subScores.find(s => s.key === 'view')!.score;
+  console.log(`  Ground floor View: ${groundView}  |  18th floor View: ${highView}`);
+  console.log(`  Correctly increasing with floor: ${highView > groundView ? 'PASS' : 'FAIL'}`);
 
   console.log('\nDone.');
 }

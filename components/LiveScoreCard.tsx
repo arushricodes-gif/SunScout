@@ -1,103 +1,164 @@
 'use client';
 // components/LiveScoreCard.tsx
-// Pure display component for a /api/score result. Used inside LiveScoreModal,
-// but kept separate so it can be dropped elsewhere (e.g. a future compare
-// view) without dragging the floor/facing picker UI along with it.
+// Pure display component for a /api/score result. Sharp edges throughout (no
+// border-radius) to read as a technical instrument readout, not a marketing
+// card — matches the "transparency" requirement: every number shows its
+// basis, and the final composite shows its own formula, not just the result.
 
 interface SubScoreView {
   key: string;
   label: string;
   score: number;
   summary: string;
+  basis: string;
+}
+
+interface LiveScoreWeightsView {
+  sun: number;
+  shadeHeat: number;
+  view: number;
+  privacy: number;
+  wind: number;
 }
 
 interface LiveScoreResultView {
   liveScore: number;
   grade: 'Excellent' | 'Good' | 'Fair' | 'Poor';
   subScores: SubScoreView[];
+  weights: LiveScoreWeightsView;
   dataNotes: string[];
 }
 
 const ORG = '#E07B00';
-const TEXT_DARK = '#1A1A1A';
-const TEXT_SUB = '#888888';
+const INK = '#1A0A00';
+const SUB = '#8A8A8A';
+const LINE = 'rgba(26,10,0,0.12)';
+const MONO = "'IBM Plex Mono', monospace";
+const SANS = "'Plus Jakarta Sans', sans-serif";
+const DISPLAY = "'Space Grotesk', sans-serif";
 
 const GRADE_COLOR: Record<string, string> = {
   Excellent: '#16a34a',
   Good: '#65a30d',
-  Fair: '#E07B00',
+  Fair: ORG,
   Poor: '#dc2626',
-};
-
-const SUBSCORE_ICON: Record<string, string> = {
-  sun: '☀️',
-  shadeHeat: '🌤️',
-  view: '🏙️',
-  privacy: '🔒',
-  wind: '💨',
 };
 
 function scoreColor(score: number): string {
   if (score >= 75) return '#16a34a';
-  if (score >= 50) return '#E07B00';
+  if (score >= 50) return ORG;
   if (score >= 25) return '#ea580c';
   return '#dc2626';
 }
 
+const WEIGHT_KEY_MAP: Record<string, keyof LiveScoreWeightsView> = {
+  sun: 'sun', shadeHeat: 'shadeHeat', view: 'view', privacy: 'privacy', wind: 'wind',
+};
+
 export default function LiveScoreCard({ result }: { result: LiveScoreResultView }) {
+  const totalWeight = Object.values(result.weights).reduce((a, b) => a + b, 0) || 1;
+
   return (
-    <div>
-      {/* Big composite score */}
+    <div style={{ fontFamily: SANS }}>
+      {/* Composite score — sharp block, no radius */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexDirection: 'column', padding: '20px 0 24px',
+        border: `1px solid ${LINE}`,
+        borderLeft: `4px solid ${GRADE_COLOR[result.grade]}`,
+        padding: '22px 20px',
+        marginBottom: 18,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <div style={{
-          fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: 64, fontWeight: 800, color: ORG, lineHeight: 1,
-        }}>
-          {result.liveScore}
-          <span style={{ fontSize: 22, color: TEXT_SUB, fontWeight: 700 }}>/100</span>
+        <div>
+          <div style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: SUB, letterSpacing: '.14em', marginBottom: 6 }}>
+            LIVESCORE — COMPOSITE
+          </div>
+          <div style={{ fontFamily: DISPLAY, fontSize: 52, fontWeight: 800, color: INK, lineHeight: 1 }}>
+            {result.liveScore}<span style={{ fontSize: 18, color: SUB, fontWeight: 700 }}>/100</span>
+          </div>
         </div>
         <div style={{
-          marginTop: 10,
-          display: 'inline-block',
-          background: GRADE_COLOR[result.grade] + '18',
+          border: `1px solid ${GRADE_COLOR[result.grade]}`,
           color: GRADE_COLOR[result.grade],
-          fontSize: 13, fontWeight: 800,
-          padding: '5px 16px', borderRadius: 20,
-          textTransform: 'uppercase', letterSpacing: '.06em',
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontFamily: MONO, fontSize: 11, fontWeight: 500,
+          padding: '6px 14px',
+          textTransform: 'uppercase', letterSpacing: '.1em',
         }}>
           {result.grade}
         </div>
       </div>
 
-      {/* Sub-score breakdown */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {result.subScores.map(sub => (
-          <div key={sub.key} className="metric-card" style={{ padding: '14px 16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 14, color: TEXT_DARK, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                <span>{SUBSCORE_ICON[sub.key] ?? '•'}</span> {sub.label}
+      {/* Sub-score breakdown — each with basis for transparency */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {result.subScores.map((sub, i) => {
+          const weightKey = WEIGHT_KEY_MAP[sub.key];
+          const weightPct = weightKey ? Math.round((result.weights[weightKey] / totalWeight) * 100) : 0;
+          return (
+            <div key={sub.key} style={{
+              border: `1px solid ${LINE}`,
+              borderTop: i === 0 ? `1px solid ${LINE}` : 'none',
+              padding: '16px 18px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: INK, textTransform: 'uppercase', letterSpacing: '.02em' }}>
+                  {sub.label}
+                  <span style={{ fontFamily: MONO, fontWeight: 400, fontSize: 11, color: SUB, marginLeft: 10, textTransform: 'none', letterSpacing: 0 }}>
+                    weight {weightPct}%
+                  </span>
+                </div>
+                <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 20, color: scoreColor(sub.score) }}>
+                  {sub.score}
+                </div>
               </div>
-              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: 16, color: scoreColor(sub.score) }}>
-                {sub.score}
+
+              <div style={{ background: '#EFEBE3', height: 4, marginBottom: 10 }}>
+                <div style={{ width: `${sub.score}%`, height: '100%', background: scoreColor(sub.score) }} />
+              </div>
+
+              <div style={{ fontSize: 12.5, color: '#4A4A4A', lineHeight: 1.55, marginBottom: 8 }}>
+                {sub.summary}
+              </div>
+
+              <div style={{
+                fontFamily: MONO, fontSize: 10.5, color: SUB, lineHeight: 1.6,
+                borderTop: `1px dashed ${LINE}`, paddingTop: 7,
+              }}>
+                <span style={{ color: ORG, fontWeight: 500 }}>BASIS — </span>{sub.basis}
               </div>
             </div>
-            <div style={{ background: '#F0EDE8', borderRadius: 6, height: 6, overflow: 'hidden', marginBottom: 8 }}>
-              <div style={{ width: `${sub.score}%`, height: '100%', background: scoreColor(sub.score), borderRadius: 6, transition: 'width .3s ease' }} />
-            </div>
-            <div style={{ fontSize: 12, color: TEXT_SUB, lineHeight: 1.5 }}>{sub.summary}</div>
+          );
+        })}
+      </div>
+
+      {/* How the composite is calculated — full transparency on the formula */}
+      <div style={{ border: `1px solid ${LINE}`, borderTop: 'none', padding: '16px 18px', background: '#FBF8F2' }}>
+        <div style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: ORG, letterSpacing: '.12em', marginBottom: 10 }}>
+          HOW THE COMPOSITE IS CALCULATED
+        </div>
+        <div style={{ fontFamily: MONO, fontSize: 11.5, color: INK, lineHeight: 2 }}>
+          {result.subScores.map(sub => {
+            const weightKey = WEIGHT_KEY_MAP[sub.key];
+            const weightPct = weightKey ? Math.round((result.weights[weightKey] / totalWeight) * 100) : 0;
+            return (
+              <div key={sub.key} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{sub.label} ({sub.score} × {weightPct}%)</span>
+                <span>{(sub.score * (weightPct / 100)).toFixed(1)}</span>
+              </div>
+            );
+          })}
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${LINE}`, marginTop: 6, paddingTop: 6, fontWeight: 700 }}>
+            <span>SUM ÷ TOTAL WEIGHT</span>
+            <span>{result.liveScore}</span>
           </div>
-        ))}
+        </div>
       </div>
 
       {result.dataNotes.length > 0 && (
-        <div style={{ marginTop: 16, background: '#FFF8F0', border: '1px solid rgba(224,123,0,0.15)', borderRadius: 10, padding: '10px 14px' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: ORG, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 5 }}>Data notes</div>
+        <div style={{ marginTop: 14, border: `1px solid ${LINE}`, padding: '12px 16px' }}>
+          <div style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: ORG, letterSpacing: '.12em', marginBottom: 6 }}>
+            DATA NOTES
+          </div>
           {result.dataNotes.map((note, i) => (
-            <div key={i} style={{ fontSize: 11, color: TEXT_SUB, lineHeight: 1.6 }}>• {note}</div>
+            <div key={i} style={{ fontSize: 11.5, color: SUB, lineHeight: 1.6 }}>— {note}</div>
           ))}
         </div>
       )}
